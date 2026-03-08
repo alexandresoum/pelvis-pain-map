@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
   apiKey: "AIzaSyCp6WQB57Kr61WWN0qXmSGKI6CCe7-jjXE",
   authDomain: "pelvis-pain-map.firebaseapp.com",
