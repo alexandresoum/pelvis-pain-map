@@ -1,1 +1,94 @@
-<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Dashboard admin - Pelvis Pain Map</title><link rel='stylesheet' href='style.css'><script src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js'></script><script src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js'></script><script src='https://cdn.jsdelivr.net/npm/chart.js'></script><script src='firebase-config.js'></script></head><body><div id='pinOverlay' class='pinOverlay'><div class='pinCard'><h2>Accès Dashboard statistiques</h2><p>Réservé à Alexandre Soum</p><input type='password' id='pinInput' maxlength='4' class='pinInput' placeholder='Code PIN'><button class='primary' onclick='checkAdminPin()'>Entrer</button><p id='pinError' class='pinError'></p></div></div><div id='adminContent' style='display:none;'><header class='header'><h1>Dashboard statistiques anonymisées</h1><p class='info'>Extraction globale multi-praticiens</p></header><div class='container wide'><div class='toolbar'><button class='primary' onclick='exportAnonymousCSV()'>Exporter CSV anonyme</button></div><div class='statsGrid'><div class='statCard'><div class='statLabel'>Total dossiers</div><div class='statValue' id='statPatients'>0</div></div><div class='statCard'><div class='statLabel'>Douleur moyenne</div><div class='statValue' id='statPain'>0</div></div><div class='statCard'><div class='statLabel'>Endométriose compatible</div><div class='statValue' id='statEndo'>0</div></div><div class='statCard'><div class='statLabel'>Digestif présent</div><div class='statValue' id='statDigestif'>0</div></div></div><div class='chartGrid'><div class='card'><h2>Par praticien</h2><canvas id='practitionerChart'></canvas></div><div class='card'><h2>Profils cliniques</h2><canvas id='profilesChart'></canvas></div><div class='card'><h2>Résultats écho</h2><canvas id='echoChart'></canvas></div></div><div class='card'><h2>Données anonymisées</h2><div class='tableWrap'><table><thead><tr><th>Praticien</th><th>Âge</th><th>Intensité</th><th>Localisation</th><th>Quand</th><th>Digestif</th><th>Contraception</th><th>Phénotype</th><th>Endométriose</th><th>Adénomyose</th><th>Pudendal</th><th>Congestion</th><th>Résultats écho</th><th>Certitude</th></tr></thead><tbody id='tableBody'></tbody></table></div></div></div></div><script>const ADMIN_PIN=atob('MTYxMg==');let allPatients=[],practitionerChart=null,profilesChart=null,echoChart=null;function isCompatible(level){return level==='possible'||level==='élevé'}function contraceptionText(d){if(!d.contraceptionType)return '';if(d.contraceptionType==='Pilule'&&d.pillContinuous)return d.contraceptionType+' - en continu : '+d.pillContinuous;return d.contraceptionType}function checkAdminPin(){const pin=document.getElementById('pinInput').value;if(pin===ADMIN_PIN){document.getElementById('pinOverlay').style.display='none';document.getElementById('adminContent').style.display='block';loadAllPatients()}else{document.getElementById('pinError').innerText='Code incorrect.'}}function calcAge(dob){if(!dob)return '';const b=new Date(dob);if(isNaN(b))return '';const t=new Date();let age=t.getFullYear()-b.getFullYear();const m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))age--;return age}function drawChart(id,type,labels,data){let cur=id==='practitionerChart'?practitionerChart:id==='profilesChart'?profilesChart:echoChart;if(cur)cur.destroy();const ch=new Chart(document.getElementById(id),{type:type,data:{labels:labels,datasets:[{data:data}]},options:{responsive:true,maintainAspectRatio:false}});if(id==='practitionerChart')practitionerChart=ch;if(id==='profilesChart')profilesChart=ch;if(id==='echoChart')echoChart=ch}function updateStats(){const docs=allPatients,total=docs.length,painAvg=total?(docs.reduce((s,d)=>s+Number(d.pain||0),0)/total).toFixed(1):'0',endoCompatible=docs.filter(d=>isCompatible(d.endometriose)).length,digestifPresent=docs.filter(d=>Array.isArray(d.digestif)&&d.digestif.some(x=>x!=='Aucun signe digestif')).length;document.getElementById('statPatients').innerText=total;document.getElementById('statPain').innerText=painAvg+'/10';document.getElementById('statEndo').innerText=endoCompatible;document.getElementById('statDigestif').innerText=digestifPresent;const byP={};docs.forEach(d=>{const k=d.practitionerName||d.practitionerId||'Non renseigné';byP[k]=(byP[k]||0)+1});drawChart('practitionerChart','bar',Object.keys(byP),Object.values(byP));const profiles={Endométriose:docs.filter(d=>isCompatible(d.endometriose)).length,Adénomyose:docs.filter(d=>isCompatible(d.adenomyose)).length,Pudendal:docs.filter(d=>isCompatible(d.pudendal)).length,Congestion:docs.filter(d=>isCompatible(d.congestion)).length};drawChart('profilesChart','bar',Object.keys(profiles),Object.values(profiles));const echo={'Endométriose':0,'Adénomyose':0,'Névralgie pudendale':0,'Congestion pelvienne':0,'Normal / non contributif':0,'Mixte':0};docs.forEach(d=>(Array.isArray(d.diagnostic_echo)?d.diagnostic_echo:[]).forEach(x=>{if(echo[x]!==undefined)echo[x]++}));drawChart('echoChart','pie',Object.keys(echo),Object.values(echo))}function renderTable(){let html='';allPatients.forEach(d=>{html+=`<tr><td>${d.practitionerName||d.practitionerId||''}</td><td>${calcAge(d.dob)}</td><td>${d.pain||''}</td><td>${(d.topo||[]).join(', ')}</td><td>${(d.time||[]).join(', ')}</td><td>${(d.digestif||[]).join(', ')}</td><td>${contraceptionText(d)}</td><td>${d.phenotype||''}</td><td>${d.endometriose||''}</td><td>${d.adenomyose||''}</td><td>${d.pudendal||''}</td><td>${d.congestion||''}</td><td>${(d.diagnostic_echo||[]).join(', ')}</td><td>${d.echoCertainty||''}</td></tr>`});document.getElementById('tableBody').innerHTML=html||'<tr><td colspan="14">Aucune donnée.</td></tr>'}function exportAnonymousCSV(){const rows=[['praticien','age','intensite','localisation','quand','digestif','contraception','phenotype','endometriose','adenomyose','pudendal','congestion','diagnostic_echo','echo_certitude']];allPatients.forEach(d=>{rows.push([d.practitionerName||d.practitionerId||'',calcAge(d.dob),d.pain||'',(d.topo||[]).join(' | '),(d.time||[]).join(' | '),(d.digestif||[]).join(' | '),contraceptionText(d),d.phenotype||'',d.endometriose||'',d.adenomyose||'',d.pudendal||'',d.congestion||'',(d.diagnostic_echo||[]).join(' | '),d.echoCertainty||''])});const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pelvis_pain_map_anonyme.csv';a.click();URL.revokeObjectURL(url)}function loadAllPatients(){db.collection('patients').onSnapshot(s=>{allPatients=[];s.forEach(doc=>allPatients.push(doc.data()));updateStats();renderTable()})}document.addEventListener('keydown',e=>{if(document.getElementById('pinOverlay').style.display!=='none'&&e.key==='Enter')checkAdminPin()});</script></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Pelvis Pain Map</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="firebase-config.js"></script>
+</head>
+<body>
+<div id="pinOverlay" class="pinOverlay"><div class="pinCard">
+<h2>Accès Dashboard statistiques</h2><p>Réservé à Alexandre Soum</p>
+<input type="password" id="pinInput" maxlength="4" class="pinInput">
+<button class="primary" onclick="checkPin()">Entrer</button><p id="pinError" class="pinError"></p>
+</div></div>
+
+<div id="content" style="display:none;">
+<header class="header"><h1>Stats globales anonymisées</h1><p class="info">Toutes praticiennes, données anonymes</p></header>
+<div class="container wide">
+<div class="toolbar"><button class="primary" onclick="exportAnonymousCSV()">Exporter CSV anonyme</button></div>
+
+<div class="statsGrid">
+  <div class="statCard"><div class="statLabel">Nombre d'échos</div><div class="statValue" id="statEchoes">0</div></div>
+  <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue" id="statAge">0</div></div>
+  <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue" id="statPain">0</div></div>
+  <div class="statCard"><div class="statLabel">Digestif présent</div><div class="statValue" id="statDigestif">0</div></div>
+</div>
+
+<div class="statsGrid">
+  <div class="statCard"><div class="statLabel">Top localisation</div><div class="statValue smallValue" id="statTopo">-</div></div>
+  <div class="statCard"><div class="statLabel">Top temporalité</div><div class="statValue smallValue" id="statTime">-</div></div>
+  <div class="statCard"><div class="statLabel">Endométriose compatible</div><div class="statValue" id="statEndo">0</div></div>
+  <div class="statCard"><div class="statLabel">Congestion compatible</div><div class="statValue" id="statCong">0</div></div>
+</div>
+
+<div class="statsGrid">
+  <div class="statCard"><div class="statLabel">Diagnostic écho le plus fréquent</div><div class="statValue smallValue" id="statEchoTop">-</div></div>
+  <div class="statCard"><div class="statLabel">Contraception la plus fréquente</div><div class="statValue smallValue" id="statContraception">-</div></div>
+  <div class="statCard"><div class="statLabel">Top digestif</div><div class="statValue smallValue" id="statDigestifTop">-</div></div>
+  <div class="statCard"><div class="statLabel">Praticien le plus actif</div><div class="statValue smallValue" id="statPractitionerTop">-</div></div>
+</div>
+
+<div class="chartGrid">
+  <div class="card"><h2>Par praticien</h2><canvas id="practitionerChart"></canvas></div>
+  <div class="card"><h2>Profils cliniques</h2><canvas id="profilesChart"></canvas></div>
+  <div class="card"><h2>Résultats écho</h2><canvas id="echoChart"></canvas></div>
+</div>
+
+<div class="card"><h2>Données anonymisées</h2><div class="tableWrap"><table><thead><tr><th>Praticien</th><th>Âge</th><th>Intensité</th><th>Localisation</th><th>Quand</th><th>Digestif</th><th>Contraception</th><th>Phénotype</th><th>Endométriose</th><th>Adénomyose</th><th>Pudendal</th><th>Congestion</th><th>Résultats écho</th><th>Certitude</th></tr></thead><tbody id="tableBody"></tbody></table></div></div>
+</div>
+</div>
+
+<script>
+const ADMIN_PIN=atob("MTYxMg==");
+let rows=[], charts={};
+function isCompatible(level){return level==="possible"||level==="élevé";}
+function ageFromDob(dob){if(!dob)return null;const b=new Date(dob);if(isNaN(b))return null;const t=new Date();let a=t.getFullYear()-b.getFullYear();const m=t.getMonth()-b.getMonth();if(m<0||(m===0&&t.getDate()<b.getDate()))a--;return a;}
+function topLabel(map){const e=Object.entries(map).sort((a,b)=>b[1]-a[1]);return e.length?e[0][0]:"-";}
+function countValues(items){const m={};items.forEach(v=>{const k=v&&String(v).trim()?String(v):"Non renseigné";m[k]=(m[k]||0)+1});return m;}
+function contraceptionText(d){if(!d.contraceptionType)return "";if(d.contraceptionType==="Pilule"&&d.pillContinuous)return d.contraceptionType+" - en continu : "+d.pillContinuous;return d.contraceptionType;}
+function draw(id,type,labels,data){if(charts[id]) charts[id].destroy();charts[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets:[{data}]},options:{responsive:true,maintainAspectRatio:false}});}
+function checkPin(){const pin=document.getElementById("pinInput").value;if(pin===ADMIN_PIN){document.getElementById("pinOverlay").style.display="none";document.getElementById("content").style.display="block";loadRows();}else{document.getElementById("pinError").innerText="Code incorrect.";}}
+function updateStats(){
+ const docs=rows.map(r=>r.data), ages=docs.map(d=>ageFromDob(d.dob)).filter(v=>v!==null), topo=countValues(docs.flatMap(d=>d.topo||[])), times=countValues(docs.flatMap(d=>d.time||[])), digestif=countValues(docs.flatMap(d=>(d.digestif||[]).filter(x=>x!=="Aucun signe digestif"))), echos=countValues(docs.flatMap(d=>d.diagnostic_echo||[])), contraception=countValues(docs.map(d=>d.contraceptionType||"Non renseigné")), byPractitioner=countValues(docs.map(d=>d.practitionerName||d.practitionerId||"Non renseigné"));
+ document.getElementById("statEchoes").innerText=docs.length;
+ document.getElementById("statAge").innerText=ages.length?(ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1):"0";
+ document.getElementById("statPain").innerText=(docs.length?(docs.reduce((s,d)=>s+Number(d.pain||0),0)/docs.length).toFixed(1):"0")+"/10";
+ document.getElementById("statDigestif").innerText=docs.filter(d=>(d.digestif||[]).some(x=>x!=="Aucun signe digestif")).length;
+ document.getElementById("statTopo").innerText=topLabel(topo);
+ document.getElementById("statTime").innerText=topLabel(times);
+ document.getElementById("statEndo").innerText=docs.filter(d=>isCompatible(d.endometriose)).length;
+ document.getElementById("statCong").innerText=docs.filter(d=>isCompatible(d.congestion)).length;
+ document.getElementById("statEchoTop").innerText=topLabel(echos);
+ document.getElementById("statContraception").innerText=topLabel(contraception);
+ document.getElementById("statDigestifTop").innerText=topLabel(digestif);
+ document.getElementById("statPractitionerTop").innerText=topLabel(byPractitioner);
+ draw("practitionerChart","bar",Object.keys(byPractitioner),Object.values(byPractitioner));
+ draw("profilesChart","bar",["Endométriose","Adénomyose","Pudendal","Congestion"],[
+   docs.filter(d=>isCompatible(d.endometriose)).length,
+   docs.filter(d=>isCompatible(d.adenomyose)).length,
+   docs.filter(d=>isCompatible(d.pudendal)).length,
+   docs.filter(d=>isCompatible(d.congestion)).length
+ ]);
+ draw("echoChart","pie",Object.keys(echos),Object.values(echos));
+ let html=""; docs.forEach(d=>{html+=`<tr><td>${d.practitionerName||d.practitionerId||""}</td><td>${ageFromDob(d.dob)??""}</td><td>${d.pain||""}</td><td>${(d.topo||[]).join(", ")}</td><td>${(d.time||[]).join(", ")}</td><td>${(d.digestif||[]).join(", ")}</td><td>${contraceptionText(d)}</td><td>${d.phenotype||""}</td><td>${d.endometriose||""}</td><td>${d.adenomyose||""}</td><td>${d.pudendal||""}</td><td>${d.congestion||""}</td><td>${(d.diagnostic_echo||[]).join(", ")}</td><td>${d.echoCertainty||""}</td></tr>`}); document.getElementById("tableBody").innerHTML=html||'<tr><td colspan="14">Aucune donnée.</td></tr>';
+}
+function exportAnonymousCSV(){const docs=rows.map(r=>r.data);const rowsCsv=[["praticien","age","intensite","localisation","quand","digestif","contraception","phenotype","endometriose","adenomyose","pudendal","congestion","diagnostic_echo","echo_certitude"]];docs.forEach(d=>rowsCsv.push([d.practitionerName||d.practitionerId||"",ageFromDob(d.dob)??"",d.pain||"",(d.topo||[]).join(" | "),(d.time||[]).join(" | "),(d.digestif||[]).join(" | "),contraceptionText(d),d.phenotype||"",d.endometriose||"",d.adenomyose||"",d.pudendal||"",d.congestion||"",(d.diagnostic_echo||[]).join(" | "),d.echoCertainty||""]));const csv=rowsCsv.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="pelvis_pain_map_anonyme.csv";a.click();URL.revokeObjectURL(url);}
+function loadRows(){db.collection("patients").onSnapshot(s=>{rows=[];s.forEach(doc=>rows.push({id:doc.id,data:doc.data()}));updateStats();});}
+document.addEventListener("keydown",e=>{if(document.getElementById("pinOverlay").style.display!=="none"&&e.key==="Enter")checkPin()});
+</script>
+</body>
+</html>
