@@ -240,8 +240,9 @@ async function submitForm(){
   if(time.includes("En restant debout longtemps")) cong++;
   if(time.includes("Pendant les rapports sexuels")) cong++;
   if(time.includes("Après les rapports sexuels")) cong++;
+  if(time.includes("Douleur à l'ovulation")) cong++;
   if(type.includes("nociceptive")) cong++;
-
+  
   const endoTxt=endo>=4?"élevé":(endo>=2?"possible":"faible");
   const adenTxt=aden>=3?"élevé":(aden>=2?"possible":"faible");
   const pudTxt=pud>=3?"élevé":(pud>=2?"possible":"faible");
