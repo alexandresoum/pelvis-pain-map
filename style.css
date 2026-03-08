@@ -1,40 +1,48 @@
 *{box-sizing:border-box}
-body{font-family:Arial, Helvetica, sans-serif;background:#f4f6fb;margin:0;padding:20px;color:#1f2937;}
-.header{text-align:center;max-width:900px;margin:0 auto 20px auto;}
-.header h1{margin:0 0 6px 0;font-size:30px;color:#24324a;}
-.subhead{margin:0;font-weight:bold;}
-.subtitle{color:#6c63ff;font-weight:bold;margin:8px 0;}
-.info{max-width:700px;margin:0 auto;color:#4b5563;}
-.container{max-width:900px;margin:auto;}
-.container.wide{max-width:1700px;}
-.card{background:white;padding:22px;margin:18px 0;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.card h2{margin-top:0;color:#24324a;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-label{display:block;margin-bottom:8px;font-weight:600;}
-.choices label{display:block;font-weight:normal;margin:10px 0;}
-input[type="text"], input[type="date"], select, .searchInput, .sortSelect, .miniSelect, .pinInput{width:100%;padding:12px;border:1px solid #cfd7e6;border-radius:8px;font-size:16px;}
-.miniSelect{padding:8px;font-size:13px;}
-input[type="range"]{width:100%;margin-top:12px;}
-.rangeText{font-size:20px;font-weight:bold;color:#6c63ff;}
-button{border:none;padding:15px 18px;border-radius:10px;width:100%;font-size:16px;cursor:pointer;}
-.primary{background:#6c63ff;color:white;}
-.secondary{background:#eef1ff;color:#24324a;margin-top:12px;}
-.miniBtn{background:#6c63ff;color:white;padding:8px 12px;width:auto;font-size:13px;}
-.dangerBtn{background:#c0392b;color:white;padding:8px 12px;width:auto;font-size:13px;}
-.result{background:#eef1ff;padding:18px;border-radius:12px;margin-top:18px;}
-.toolbar{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px;}
-.statsGrid{display:grid;grid-template-columns:repeat(4, 1fr);gap:16px;margin-bottom:16px;}
-.statCard{background:white;padding:18px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.statLabel{font-size:14px;color:#4b5563;margin-bottom:8px;}
-.statValue{font-size:28px;font-weight:bold;color:#24324a;}
-.chartGrid{display:grid;grid-template-columns:repeat(3, 1fr);gap:16px;}
-.chartGrid .card{height:320px;}
-.tableWrap{overflow:auto;}
-table{width:100%;border-collapse:collapse;min-width:1700px;}
-th,td{border:1px solid #e5e7eb;padding:10px;vertical-align:top;text-align:left;font-size:14px;}
-th{background:#eef1ff;position:sticky;top:0;}
-.pinOverlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;}
-.pinCard{background:white;width:100%;max-width:380px;padding:24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);text-align:center;}
-.pinError{color:#c0392b;min-height:20px;}
-@media (max-width: 1100px){.statsGrid{grid-template-columns:repeat(2, 1fr);}.chartGrid{grid-template-columns:1fr;}}
-@media (max-width: 700px){.grid2{grid-template-columns:1fr;}.toolbar{grid-template-columns:1fr;}.statsGrid{grid-template-columns:1fr;}body{padding:12px;}.header h1{font-size:24px;}}
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6fb;margin:0;padding:20px;color:#1f2937}
+.header{text-align:center;max-width:900px;margin:0 auto 20px}
+.header h1{margin:0 0 6px;font-size:30px;color:#24324a}
+.subhead{margin:0;font-weight:bold}
+.subtitle{color:#6c63ff;font-weight:bold;margin:8px 0}
+.info{max-width:700px;margin:0 auto;color:#4b5563}
+.container{max-width:900px;margin:auto}
+.container.wide{max-width:1700px}
+.card{background:#fff;padding:22px;margin:18px 0;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.card h2{margin-top:0;color:#24324a}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;margin-bottom:8px;font-weight:600}
+.choices label{display:block;font-weight:normal;margin:10px 0}
+.columns2{columns:2;column-gap:32px}
+.columns2 label{break-inside:avoid}
+input[type="text"],input[type="date"],select,.searchInput,.sortSelect,.miniSelect,.pinInput{width:100%;padding:12px;border:1px solid #cfd7e6;border-radius:8px;font-size:16px}
+.miniSelect{padding:8px;font-size:13px}
+input[type="range"]{width:100%;margin-top:12px}
+.rangeText{font-size:20px;font-weight:bold;color:#6c63ff}
+button{border:none;padding:15px 18px;border-radius:10px;width:100%;font-size:16px;cursor:pointer}
+.primary{background:#6c63ff;color:#fff}
+.secondary{background:#eef1ff;color:#24324a;margin-top:12px}
+.miniBtn{background:#6c63ff;color:#fff;padding:8px 12px;width:auto;font-size:13px}
+.miniWideBtn{background:#6c63ff;color:#fff;padding:12px;width:100%;font-size:14px}
+.dangerBtn{background:#c0392b;color:#fff;padding:8px 12px;width:auto;font-size:13px}
+.result{background:#eef1ff;padding:18px;border-radius:12px;margin-top:18px}
+.toolbar{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px}
+.toolbar3{grid-template-columns:1fr 1fr 180px}
+.statsGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+.statCard{background:#fff;padding:18px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.statLabel{font-size:14px;color:#4b5563;margin-bottom:8px}
+.statValue{font-size:28px;font-weight:bold;color:#24324a}
+.chartGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.chartGrid .card{height:320px}
+.chartInner{height:360px}
+.tableWrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:1900px}
+th,td{border:1px solid #e5e7eb;padding:10px;vertical-align:top;text-align:left;font-size:14px}
+th{background:#eef1ff;position:sticky;top:0}
+.echo-group{display:grid;grid-template-columns:1fr;gap:6px;min-width:220px}
+.echoItem{font-weight:normal;margin:0}
+.simpleTable table{min-width:300px;width:100%;margin-top:16px}
+.pinOverlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:9999}
+.pinCard{background:#fff;width:100%;max-width:380px;padding:24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);text-align:center}
+.pinError{color:#c0392b;min-height:20px}
+@media (max-width:1100px){.statsGrid{grid-template-columns:repeat(2,1fr)}.chartGrid{grid-template-columns:1fr}.toolbar3{grid-template-columns:1fr}.columns2{columns:1}}
+@media (max-width:700px){.grid2{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.statsGrid{grid-template-columns:1fr}body{padding:12px}.header h1{font-size:24px}.columns2{columns:1}}

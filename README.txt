@@ -1,23 +1,19 @@
-Pelvis Pain Map - version multi-praticiens + admin anonymisé + cuisses
+Pelvis Pain Map - V11
+
+Ajouts :
+- item "Après les rapports sexuels" dans la question "Quand"
+- diagnostics échographiques multiples
+- statistiques libres dans le dashboard praticien
+- conservation de la base visuelle multi-praticiens + admin anonymisé
 
 Fichiers :
-- index.html : questionnaire patient
-- doctor.html : dashboard praticien filtré par praticien
-- admin.html : dashboard spécial statistiques anonymisées
+- index.html
+- doctor.html
+- admin.html
 - style.css
 - firebase-config.js
 
-Ajout :
-- localisations supplémentaires : cuisse droite / cuisse gauche
-
-Prototype :
-- les patientes choisissent leur praticien
-- chaque praticien ne voit que ses patientes
-- Alexandre peut ouvrir admin.html et exporter un CSV anonymisé global
-
-PIN prototype :
+Pins prototype :
 - Alexandre Soum : 1612
 - Praticien 2 : 2222
 - Praticien 3 : 3333
-
-Pour un usage commercial réel, il faudra déplacer l’authentification côté serveur.
