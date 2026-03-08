@@ -59,7 +59,11 @@ function topLabel(map){const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);
 function countValues(items){const m={};items.forEach(v=>{const k=v&&String(v).trim()?String(v):"Non renseigné";m[k]=(m[k]||0)+1});return m;}
 function draw(id,type,labels,data){if(charts[id]) charts[id].destroy();charts[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets:[{data}]},options:{responsive:true,maintainAspectRatio:false}});}
 
-function updateHeader(){document.getElementById("statsPractitioner").value=currentPractitioner;document.getElementById("subtitle").innerText=LABELS[currentPractitioner];}
+
+function updateHeader(){
+  document.getElementById("subtitle").innerText = LABELS[currentPractitioner] || "";
+}
+
 function updateStats(){
   const docs=rows.map(r=>r.data);
   const ages=docs.map(d=>ageFromDob(d.dob)).filter(v=>v!==null);
