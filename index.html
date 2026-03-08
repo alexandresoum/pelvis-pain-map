@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -60,6 +61,7 @@
       <label><input type="checkbox" class="time" value="Pendant les règles"> Pendant les règles</label>
       <label><input type="checkbox" class="time" value="Pendant les rapports sexuels"> Pendant les rapports sexuels</label>
       <label><input type="checkbox" class="time" value="Après les rapports sexuels"> Après les rapports sexuels</label>
+      <label><input type="checkbox" class="time" value="Douleur à l'ovulation"> Douleur à l'ovulation</label>
       <label><input type="checkbox" class="time" value="En urinant"> En urinant</label>
       <label><input type="checkbox" class="time" value="En allant à la selle"> En allant à la selle</label>
       <label><input type="checkbox" class="time" value="En position assise"> En position assise</label>
@@ -94,6 +96,7 @@
       <label><input type="checkbox" id="aden1"> Règles très abondantes</label>
       <label><input type="checkbox" id="endo2"> Douleur pendant les rapports profonds</label>
       <label><input type="checkbox" id="endo3"> Douleur à la selle pendant les règles</label>
+      <label><input type="checkbox" id="endo4"> Douleur à l'ovulation</label>
       <label><input type="checkbox" id="cong1"> Sensation de lourdeur dans le bassin</label>
       <label><input type="checkbox" id="pud1"> Douleur aggravée en position assise</label>
     </div>
@@ -112,7 +115,36 @@
   </div>
 
   <div class="card">
-    <h2>7. Depuis combien de temps avez-vous cette douleur ?</h2>
+    <h2>7. Type de contraception</h2>
+    <div class="grid2">
+      <div>
+        <label for="contraception">Contraception actuelle</label>
+        <select id="contraception" onchange="togglePiluleContinu()">
+          <option value="">Choisir...</option>
+          <option value="Pilule">Pilule</option>
+          <option value="Stérilet hormonal">Stérilet hormonal</option>
+          <option value="Stérilet cuivre">Stérilet cuivre</option>
+          <option value="Préservatifs">Préservatifs</option>
+          <option value="Anneau">Anneau</option>
+          <option value="Patch">Patch</option>
+          <option value="Implant">Implant</option>
+          <option value="Opération">Opération</option>
+          <option value="Pas de contraception">Pas de contraception</option>
+        </select>
+      </div>
+      <div id="piluleContinuWrap" style="display:none;">
+        <label for="piluleContinu">Pilule en continu</label>
+        <select id="piluleContinu">
+          <option value="">Choisir...</option>
+          <option value="Oui">Oui</option>
+          <option value="Non">Non</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>8. Depuis combien de temps avez-vous cette douleur ?</h2>
     <div class="choices columns2">
       <label><input type="radio" name="duration" value="Moins de 1 mois"> Moins de 1 mois</label>
       <label><input type="radio" name="duration" value="1 à 6 mois"> 1 à 6 mois</label>
@@ -122,7 +154,7 @@
   </div>
 
   <div class="card">
-    <h2>8. Avez-vous déjà un diagnostic connu ?</h2>
+    <h2>9. Avez-vous déjà un diagnostic connu ?</h2>
     <div class="choices columns2">
       <label><input type="checkbox" class="diag" value="Endométriose"> Endométriose</label>
       <label><input type="checkbox" class="diag" value="Adénomyose"> Adénomyose</label>
@@ -140,9 +172,23 @@
 <script>
 const PRACTITIONERS = {"alexandre_soum":"Alexandre Soum","praticien_2":"Praticien 2","praticien_3":"Praticien 3"};
 let lastResult = null;
+
+function togglePiluleContinu(){
+  const c = document.getElementById("contraception").value;
+  const wrap = document.getElementById("piluleContinuWrap");
+  wrap.style.display = c === "Pilule" ? "block" : "none";
+  if(c !== "Pilule"){ document.getElementById("piluleContinu").value = ""; }
+}
 function getCheckedValues(selector){return [...document.querySelectorAll(selector + ":checked")].map(e => e.value);}
 function getDuration(){const el = document.querySelector('input[name="duration"]:checked'); return el ? el.value : "";}
-function computePhenotype(type){const hasNeuro=type.includes("neuro"); const hasNociceptive=type.includes("nociceptive"); if(hasNeuro&&hasNociceptive) return "mixte"; if(hasNeuro) return "neuropathique"; return "nociceptif";}
+function computePhenotype(type){
+  const hasNeuro=type.includes("neuro");
+  const hasNociceptive=type.includes("nociceptive");
+  if(hasNeuro&&hasNociceptive) return "mixte";
+  if(hasNeuro) return "neuropathique";
+  return "nociceptif";
+}
+
 async function submitForm(){
   const practitionerId=document.getElementById("praticienId").value;
   const practitionerName=PRACTITIONERS[practitionerId]||"";
@@ -156,26 +202,98 @@ async function submitForm(){
   const duration=getDuration();
   const diagnostics=getCheckedValues(".diag");
   const digestif=getCheckedValues(".digestif");
+  const contraception=document.getElementById("contraception").value;
+  const piluleContinu=document.getElementById("piluleContinu").value;
+
   if(!practitionerId){alert("Merci de sélectionner le praticien."); return;}
   if(!nom || !prenom){alert("Merci de renseigner le nom et le prénom."); return;}
+
   const phenotype=computePhenotype(type);
-  let endo=0;if(document.getElementById("endo1").checked) endo++; if(document.getElementById("endo2").checked) endo++; if(document.getElementById("endo3").checked) endo++; if(time.includes("Pendant les règles")) endo++; if(time.includes("Après les rapports sexuels")) endo++; if(topo.includes("Douleur profonde dans le bassin")) endo++; if(digestif.includes("Douleur à la défécation")) endo++;
-  let aden=0;if(document.getElementById("endo1").checked) aden++; if(document.getElementById("aden1").checked) aden++; if(topo.includes("Bas du ventre (centre)")) aden++; if(time.includes("Pendant les règles")) aden++;
-  let pud=0;if(document.getElementById("pud1").checked) pud++; if(topo.includes("Périnée")) pud++; if(topo.includes("Vulve")) pud++; if(topo.includes("Cuisse droite")) pud++; if(topo.includes("Cuisse gauche")) pud++; if(type.includes("neuro")) pud++;
-  let cong=0;if(document.getElementById("cong1").checked) cong++; if(time.includes("En restant debout longtemps")) cong++; if(time.includes("Pendant les rapports sexuels")) cong++; if(time.includes("Après les rapports sexuels")) cong++; if(type.includes("nociceptive")) cong++;
+
+  let endo=0;
+  if(document.getElementById("endo1").checked) endo++;
+  if(document.getElementById("endo2").checked) endo++;
+  if(document.getElementById("endo3").checked) endo++;
+  if(document.getElementById("endo4").checked) endo++;
+  if(time.includes("Pendant les règles")) endo++;
+  if(time.includes("Après les rapports sexuels")) endo++;
+  if(time.includes("Douleur à l'ovulation")) endo++;
+  if(topo.includes("Douleur profonde dans le bassin")) endo++;
+  if(digestif.includes("Douleur à la défécation")) endo++;
+
+  let aden=0;
+  if(document.getElementById("endo1").checked) aden++;
+  if(document.getElementById("aden1").checked) aden++;
+  if(topo.includes("Bas du ventre (centre)")) aden++;
+  if(time.includes("Pendant les règles")) aden++;
+
+  let pud=0;
+  if(document.getElementById("pud1").checked) pud++;
+  if(topo.includes("Périnée")) pud++;
+  if(topo.includes("Vulve")) pud++;
+  if(topo.includes("Cuisse droite")) pud++;
+  if(topo.includes("Cuisse gauche")) pud++;
+  if(type.includes("neuro")) pud++;
+
+  let cong=0;
+  if(document.getElementById("cong1").checked) cong++;
+  if(time.includes("En restant debout longtemps")) cong++;
+  if(time.includes("Pendant les rapports sexuels")) cong++;
+  if(time.includes("Après les rapports sexuels")) cong++;
+  if(type.includes("nociceptive")) cong++;
+
   const endoTxt=endo>=4?"élevé":(endo>=2?"possible":"faible");
   const adenTxt=aden>=3?"élevé":(aden>=2?"possible":"faible");
   const pudTxt=pud>=3?"élevé":(pud>=2?"possible":"faible");
   const congTxt=cong>=3?"élevé":(cong>=2?"possible":"faible");
-  lastResult={practitionerId,practitionerName,nom,prenom,dob,pain,topo,time,type,duration,diagnostics,digestif,phenotype,endoTxt,adenTxt,pudTxt,congTxt,dateText:new Date().toLocaleString(),diagnostic_echo:[],echoCertainty:"Non renseigné"};
+
+  lastResult={practitionerId,practitionerName,nom,prenom,dob,pain,topo,time,type,duration,diagnostics,digestif,contraception,piluleContinu,phenotype,endoTxt,adenTxt,pudTxt,congTxt,dateText:new Date().toLocaleString(),diagnostic_echo:[],echoCertainty:"Non renseigné"};
+
   try{
-    await db.collection("patients").add({date:new Date(),practitionerId,practitionerName,nom,prenom,dob,pain,topo,time,type,duration,diagnostics,digestif,phenotype,endometriose:endoTxt,adenomyose:adenTxt,pudendal:pudTxt,congestion:congTxt,diagnostic_echo:[],echoCertainty:"Non renseigné"});
-  }catch(err){console.error(err);alert("Erreur lors de l'enregistrement dans la base de données"); return;}
-  document.getElementById("result").innerHTML = `<h3>Merci.</h3><p>Votre questionnaire a été transmis au praticien.</p><p><b>Praticien :</b> ${practitionerName}</p><p><b>Patiente :</b> ${prenom} ${nom}</p><p><b>Date de naissance :</b> ${dob || "Non renseignée"}</p><p><b>Intensité :</b> ${pain}/10</p><p><b>Localisation :</b> ${topo.join(", ") || "Non renseignée"}</p><p><b>Quand :</b> ${time.join(", ") || "Non renseignée"}</p><p><b>Signes digestifs :</b> ${digestif.join(", ") || "Aucun"}</p>`;
+    await db.collection("patients").add({
+      date:new Date(), practitionerId, practitionerName, nom, prenom, dob, pain,
+      topo, time, type, duration, diagnostics, digestif, contraception, piluleContinu,
+      phenotype, endometriose:endoTxt, adenomyose:adenTxt, pudendal:pudTxt, congestion:congTxt,
+      diagnostic_echo:[], echoCertainty:"Non renseigné"
+    });
+  }catch(err){console.error(err); alert("Erreur lors de l'enregistrement dans la base de données"); return;}
+
+  const contraceptionText = contraception ? (contraception === "Pilule" && piluleContinu ? contraception + " - en continu : " + piluleContinu : contraception) : "Non renseignée";
+
+  document.getElementById("result").innerHTML = `
+    <h3>Merci.</h3>
+    <p>Votre questionnaire a été transmis au praticien.</p>
+    <p><b>Praticien :</b> ${practitionerName}</p>
+    <p><b>Patiente :</b> ${prenom} ${nom}</p>
+    <p><b>Date de naissance :</b> ${dob || "Non renseignée"}</p>
+    <p><b>Intensité :</b> ${pain}/10</p>
+    <p><b>Localisation :</b> ${topo.join(", ") || "Non renseignée"}</p>
+    <p><b>Quand :</b> ${time.join(", ") || "Non renseignée"}</p>
+    <p><b>Signes digestifs :</b> ${digestif.join(", ") || "Aucun"}</p>
+    <p><b>Contraception :</b> ${contraceptionText}</p>`;
   document.getElementById("result").style.display = "block";
   document.getElementById("pdfBtn").style.display = "block";
 }
-function buildPdf(doc,data){let y=20; const line=(text)=>{const split=doc.splitTextToSize(text,170); doc.text(split,20,y); y+=split.length*7+3;}; doc.setFontSize(16); doc.text("Pelvis Pain Map - Résultat questionnaire",20,y); y+=12; doc.setFontSize(11); line("Date : "+data.dateText); line("Praticien : "+(data.practitionerName||"")); line("Patiente : "+data.prenom+" "+data.nom); line("Date de naissance : "+(data.dob||"Non renseignée")); line("Intensité : "+data.pain+"/10"); line("Localisation : "+(data.topo.join(", ")||"Non renseignée")); line("Quand : "+(data.time.join(", ")||"Non renseignée")); line("Signes digestifs : "+(data.digestif.join(", ")||"Aucun")); line("Endométriose : "+data.endoTxt); line("Adénomyose : "+data.adenTxt); line("Pudendal : "+data.pudTxt); line("Congestion : "+data.congTxt);}
+
+function buildPdf(doc,data){
+  let y=20;
+  const line=(text)=>{const split=doc.splitTextToSize(text,170); doc.text(split,20,y); y+=split.length*7+3;};
+  doc.setFontSize(16); doc.text("Pelvis Pain Map - Résultat questionnaire",20,y); y+=12;
+  doc.setFontSize(11);
+  line("Date : "+data.dateText);
+  line("Praticien : "+(data.practitionerName||""));
+  line("Patiente : "+data.prenom+" "+data.nom);
+  line("Date de naissance : "+(data.dob||"Non renseignée"));
+  line("Intensité : "+data.pain+"/10");
+  line("Localisation : "+(data.topo.join(", ")||"Non renseignée"));
+  line("Quand : "+(data.time.join(", ")||"Non renseignée"));
+  line("Signes digestifs : "+(data.digestif.join(", ")||"Aucun"));
+  line("Contraception : "+((data.contraception||"") ? (data.contraception === "Pilule" && data.piluleContinu ? data.contraception + " - en continu : " + data.piluleContinu : data.contraception) : "Non renseignée"));
+  line("Endométriose : "+data.endoTxt);
+  line("Adénomyose : "+data.adenTxt);
+  line("Pudendal : "+data.pudTxt);
+  line("Congestion : "+data.congTxt);
+}
 function generatePDF(){if(!lastResult) return; const { jsPDF } = window.jspdf; const doc = new jsPDF(); buildPdf(doc,lastResult); doc.save("pelvis_pain_map_resultat.pdf");}
 </script>
 </body>

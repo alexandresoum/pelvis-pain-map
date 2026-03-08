@@ -1,17 +1,12 @@
-Pelvis Pain Map - V11
+
+Pelvis Pain Map - V11 mise à jour
 
 Ajouts :
-- item "Après les rapports sexuels" dans la question "Quand"
-- diagnostics échographiques multiples
-- statistiques libres dans le dashboard praticien
-- conservation de la base visuelle multi-praticiens + admin anonymisé
-
-Fichiers :
-- index.html
-- doctor.html
-- admin.html
-- style.css
-- firebase-config.js
+- douleur à l'ovulation
+- contraception actuelle : pilule (continu oui/non), stérilet hormonal, stérilet cuivre,
+  préservatifs, anneau, patch, implant, opération, pas de contraception
+- statistiques modifiées : profils cliniques = cas "possible" + "élevé"
+- conservation de la structure précédente
 
 Pins prototype :
 - Alexandre Soum : 1612

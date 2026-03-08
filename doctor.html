@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -28,7 +29,7 @@
 <div class="statsGrid">
 <div class="statCard"><div class="statLabel">Patientes</div><div class="statValue" id="statPatients">0</div></div>
 <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue" id="statPain">0</div></div>
-<div class="statCard"><div class="statLabel">Endométriose élevée</div><div class="statValue" id="statEndo">0</div></div>
+<div class="statCard"><div class="statLabel">Endométriose possible ou élevée</div><div class="statValue" id="statEndo">0</div></div>
 <div class="statCard"><div class="statLabel">Digestif présent</div><div class="statValue" id="statDigestif">0</div></div>
 </div>
 
@@ -45,15 +46,16 @@
 <option value="topo">Localisation douleur</option>
 <option value="time">Quand douleur</option>
 <option value="digestif">Signes digestifs</option>
+<option value="contraception">Type de contraception</option>
 <option value="diagnostic_echo">Diagnostic écho</option>
 <option value="phenotype">Phénotype douleur</option>
 </select>
 <select id="freeFilter" class="sortSelect">
 <option value="">Sans filtre</option>
-<option value="endo_eleve">Filtre : endométriose élevée</option>
-<option value="adeno_eleve">Filtre : adénomyose élevée</option>
-<option value="pudendal_eleve">Filtre : pudendal élevé</option>
-<option value="congestion_eleve">Filtre : congestion élevée</option>
+<option value="endo_compatible">Filtre : endométriose possible ou élevée</option>
+<option value="adeno_compatible">Filtre : adénomyose possible ou élevée</option>
+<option value="pudendal_compatible">Filtre : pudendal possible ou élevé</option>
+<option value="congestion_compatible">Filtre : congestion possible ou élevée</option>
 </select>
 <button class="miniWideBtn" onclick="runFreeStats()">Analyser</button>
 </div>
@@ -61,7 +63,7 @@
 <div id="freeStatsTable" class="simpleTable"></div>
 </div>
 
-<div class="card"><h2>Résultats</h2><div class="tableWrap"><table><thead><tr><th>Date</th><th>Nom</th><th>Prénom</th><th>Date de naissance</th><th>Intensité</th><th>Localisation</th><th>Quand</th><th>Digestif</th><th>Phénotype</th><th>Endométriose</th><th>Adénomyose</th><th>Pudendal</th><th>Congestion</th><th>Résultats écho</th><th>Certitude</th><th>PDF</th><th>Supprimer</th></tr></thead><tbody id="tableBody"></tbody></table></div></div>
+<div class="card"><h2>Résultats</h2><div class="tableWrap"><table><thead><tr><th>Date</th><th>Nom</th><th>Prénom</th><th>Date de naissance</th><th>Intensité</th><th>Localisation</th><th>Quand</th><th>Digestif</th><th>Contraception</th><th>Phénotype</th><th>Endométriose</th><th>Adénomyose</th><th>Pudendal</th><th>Congestion</th><th>Résultats écho</th><th>Certitude</th><th>PDF</th><th>Supprimer</th></tr></thead><tbody id="tableBody"></tbody></table></div></div>
 </div></div>
 
 <script>
@@ -70,11 +72,24 @@ const PRACTITIONER_LABELS={"alexandre_soum":"Alexandre Soum","praticien_2":"Prat
 const echoOptions=["Endométriose","Adénomyose","Névralgie pudendale","Congestion pelvienne","Normal / non contributif","Mixte"];
 const certaintyOptions=["Non renseigné","Suspect","Compatible","Confirmé"];
 let currentPractitioner=null, allPatients=[], profilesChart=null, digestiveChart=null, echoChart=null, freeStatsChart=null;
+
+function isCompatible(level){ return level === "possible" || level === "élevé"; }
+function contraceptionText(d){
+  if(!d.contraception) return "";
+  if(d.contraception === "Pilule" && d.piluleContinu) return d.contraception + " - en continu : " + d.piluleContinu;
+  return d.contraception;
+}
 function checkPractitionerPin(){const pid=document.getElementById("practitionerLogin").value; const pin=document.getElementById("pinInput").value; if(pin===PRACTITIONER_PINS[pid]){currentPractitioner=pid; document.getElementById("pinOverlay").style.display="none"; document.getElementById("dashboardContent").style.display="block"; document.getElementById("dashboardSubtitle").innerText="Vue praticien – "+PRACTITIONER_LABELS[pid]; loadPatients();} else {document.getElementById("pinError").innerText="Code incorrect.";}}
 function fmtDate(d){if(!d) return ""; try{if(d.seconds) return new Date(d.seconds*1000).toLocaleString(); return new Date(d).toLocaleString();}catch(e){return "";}}
 function toTimestampValue(d){if(!d) return 0; try{if(d.seconds) return d.seconds; return new Date(d).getTime()/1000;}catch(e){return 0;}}
-function pdfDataFromDoc(d){return {nom:d.nom||"", prenom:d.prenom||"", dob:d.dob||"", pain:d.pain||"", topo:Array.isArray(d.topo)?d.topo:[], time:Array.isArray(d.time)?d.time:[], digestif:Array.isArray(d.digestif)?d.digestif:[], dateText:fmtDate(d.date), practitionerName:d.practitionerName||"", diagnostic_echo:Array.isArray(d.diagnostic_echo)?d.diagnostic_echo:[], echoCertainty:d.echoCertainty||"Non renseigné"};}
-function buildPdf(doc,data){let y=20; const line=(text)=>{const split=doc.splitTextToSize(text,170); doc.text(split,20,y); y+=split.length*7+3;}; doc.setFontSize(16); doc.text("Pelvis Pain Map - Résultat questionnaire",20,y); y+=12; doc.setFontSize(11); line("Date : "+data.dateText); line("Praticien : "+(data.practitionerName||"")); line("Patiente : "+data.prenom+" "+data.nom); line("Date de naissance : "+(data.dob||"Non renseignée")); line("Intensité : "+data.pain+"/10"); line("Localisation : "+(data.topo.join(", ")||"Non renseignée")); line("Quand : "+(data.time.join(", ")||"Non renseignée")); line("Signes digestifs : "+(data.digestif.join(", ")||"Aucun")); line("Résultats écho : "+(data.diagnostic_echo.join(", ")||"Non renseigné")); line("Certitude : "+(data.echoCertainty||"Non renseigné"));}
+function pdfDataFromDoc(d){return {nom:d.nom||"", prenom:d.prenom||"", dob:d.dob||"", pain:d.pain||"", topo:Array.isArray(d.topo)?d.topo:[], time:Array.isArray(d.time)?d.time:[], digestif:Array.isArray(d.digestif)?d.digestif:[], contraception:d.contraception||"", piluleContinu:d.piluleContinu||"", dateText:fmtDate(d.date), practitionerName:d.practitionerName||"", diagnostic_echo:Array.isArray(d.diagnostic_echo)?d.diagnostic_echo:[], echoCertainty:d.echoCertainty||"Non renseigné"};}
+function buildPdf(doc,data){
+  let y=20; const line=(text)=>{const split=doc.splitTextToSize(text,170); doc.text(split,20,y); y+=split.length*7+3;};
+  doc.setFontSize(16); doc.text("Pelvis Pain Map - Résultat questionnaire",20,y); y+=12; doc.setFontSize(11);
+  line("Date : "+data.dateText); line("Praticien : "+(data.practitionerName||"")); line("Patiente : "+data.prenom+" "+data.nom); line("Date de naissance : "+(data.dob||"Non renseignée")); line("Intensité : "+data.pain+"/10"); line("Localisation : "+(data.topo.join(", ")||"Non renseignée")); line("Quand : "+(data.time.join(", ")||"Non renseignée")); line("Signes digestifs : "+(data.digestif.join(", ")||"Aucun"));
+  line("Contraception : "+((data.contraception||"") ? (data.contraception === "Pilule" && data.piluleContinu ? data.contraception + " - en continu : " + data.piluleContinu : data.contraception) : "Non renseignée"));
+  line("Résultats écho : "+(data.diagnostic_echo.join(", ")||"Non renseigné")); line("Certitude : "+(data.echoCertainty||"Non renseigné"));
+}
 function generateDoctorPDF(encoded){const data=JSON.parse(decodeURIComponent(encoded)); const { jsPDF } = window.jspdf; const doc=new jsPDF(); buildPdf(doc,data); doc.save("pelvis_pain_map_"+(data.prenom||"")+"_"+(data.nom||"patiente")+".pdf");}
 function getEchoSelection(docId){return [...document.querySelectorAll('.echo-group[data-id="'+docId+'"] input[type="checkbox"]:checked')].map(el=>el.value);}
 async function updateEchoSelection(docId){await db.collection("patients").doc(docId).update({diagnostic_echo:getEchoSelection(docId)});}
@@ -82,11 +97,89 @@ async function updateEchoCertainty(docId,value){await db.collection("patients").
 async function deletePatient(docId, patientName){if(!confirm("Supprimer cette fiche : "+patientName+" ?")) return; await db.collection("patients").doc(docId).delete();}
 function renderEchoCheckboxes(docId,selected){const current=Array.isArray(selected)?selected:[]; return `<div class="echo-group" data-id="${docId}">${echoOptions.map(opt=>`<label class="echoItem"><input type="checkbox" value="${opt}" ${current.includes(opt)?"checked":""} onchange="updateEchoSelection('${docId}')"> ${opt}</label>`).join("")}</div>`;}
 function renderCertaintySelect(docId,selected){return `<select class="miniSelect" onchange="updateEchoCertainty('${docId}', this.value)">${certaintyOptions.map(opt=>`<option value="${opt}" ${opt===(selected||"Non renseigné")?"selected":""}>${opt}</option>`).join("")}</select>`;}
-function renderTable(rows){let html=""; rows.forEach(item=>{const d=item.data; const payload=encodeURIComponent(JSON.stringify(pdfDataFromDoc(d))); html+=`<tr><td>${fmtDate(d.date)}</td><td>${d.nom||""}</td><td>${d.prenom||""}</td><td>${d.dob||""}</td><td>${d.pain?d.pain+"/10":""}</td><td>${Array.isArray(d.topo)?d.topo.join(", "):""}</td><td>${Array.isArray(d.time)?d.time.join(", "):""}</td><td>${Array.isArray(d.digestif)?d.digestif.join(", "):""}</td><td>${d.phenotype||""}</td><td>${d.endometriose||""}</td><td>${d.adenomyose||""}</td><td>${d.pudendal||""}</td><td>${d.congestion||""}</td><td>${renderEchoCheckboxes(item.id,d.diagnostic_echo)}</td><td>${renderCertaintySelect(item.id,d.echoCertainty)}</td><td><button class="miniBtn" onclick='generateDoctorPDF("${payload}")'>PDF</button></td><td><button class="dangerBtn" onclick='deletePatient("${item.id}","${(d.prenom||"")+" "+(d.nom||"")}")'>Supprimer</button></td></tr>`;}); document.getElementById("tableBody").innerHTML=html||'<tr><td colspan="17">Aucun résultat.</td></tr>';}
-function drawChart(id,type,labels,data){let chart=null; if(id==="profilesChart") chart=profilesChart; if(id==="digestiveChart") chart=digestiveChart; if(id==="echoChart") chart=echoChart; if(id==="freeStatsChart") chart=freeStatsChart; if(chart) chart.destroy(); const newChart=new Chart(document.getElementById(id),{type:type,data:{labels:labels,datasets:[{data:data}]},options:{responsive:true,maintainAspectRatio:false}}); if(id==="profilesChart") profilesChart=newChart; if(id==="digestiveChart") digestiveChart=newChart; if(id==="echoChart") echoChart=newChart; if(id==="freeStatsChart") freeStatsChart=newChart;}
-function updateStats(rows){const docs=rows.map(r=>r.data); const total=docs.length; const painAvg=total?(docs.reduce((s,d)=>s+Number(d.pain||0),0)/total).toFixed(1):"0"; const endoHigh=docs.filter(d=>d.endometriose==="élevé").length; const digestifPresent=docs.filter(d=>Array.isArray(d.digestif)&&d.digestif.some(x=>x!=="Aucun signe digestif")).length; document.getElementById("statPatients").innerText=total; document.getElementById("statPain").innerText=painAvg+"/10"; document.getElementById("statEndo").innerText=endoHigh; document.getElementById("statDigestif").innerText=digestifPresent; drawChart("profilesChart","bar",["Endométriose","Adénomyose","Pudendal","Congestion"],[docs.filter(d=>d.endometriose==="élevé").length,docs.filter(d=>d.adenomyose==="élevé").length,docs.filter(d=>d.pudendal==="élevé").length,docs.filter(d=>d.congestion==="élevé").length]); const digCount={"Ballonnements":0,"Diarrhée":0,"Constipation":0,"Alternance diarrhée / constipation":0,"Douleur à la défécation":0}; docs.forEach(d=>(d.digestif||[]).forEach(x=>{if(digCount[x]!==undefined) digCount[x]++;})); drawChart("digestiveChart","bar",Object.keys(digCount),Object.values(digCount)); const echoCount={"Endométriose":0,"Adénomyose":0,"Névralgie pudendale":0,"Congestion pelvienne":0,"Normal / non contributif":0,"Mixte":0}; docs.forEach(d=>(Array.isArray(d.diagnostic_echo)?d.diagnostic_echo:[]).forEach(x=>{if(echoCount[x]!==undefined) echoCount[x]++;})); drawChart("echoChart","pie",Object.keys(echoCount),Object.values(echoCount));}
-function applyFiltersAndSort(){const query=(document.getElementById("searchInput").value||"").toLowerCase().trim(); const sort=document.getElementById("sortSelect").value; let rows=[...allPatients]; if(query){rows=rows.filter(item=>JSON.stringify(item.data).toLowerCase().includes(query));} rows.sort((a,b)=>{const da=a.data, db=b.data; switch(sort){case "date_asc": return toTimestampValue(da.date)-toTimestampValue(db.date); case "pain_desc": return Number(db.pain||0)-Number(da.pain||0); case "pain_asc": return Number(da.pain||0)-Number(db.pain||0); case "nom_asc": return String(da.nom||"").localeCompare(String(db.nom||""),"fr"); case "nom_desc": return String(db.nom||"").localeCompare(String(da.nom||""),"fr"); default: return toTimestampValue(db.date)-toTimestampValue(da.date);}}); renderTable(rows); updateStats(rows);}
-function runFreeStats(){let docs=allPatients.map(r=>r.data); const var1=document.getElementById("freeVar1").value; const filter=document.getElementById("freeFilter").value; if(filter==="endo_eleve") docs=docs.filter(d=>d.endometriose==="élevé"); if(filter==="adeno_eleve") docs=docs.filter(d=>d.adenomyose==="élevé"); if(filter==="pudendal_eleve") docs=docs.filter(d=>d.pudendal==="élevé"); if(filter==="congestion_eleve") docs=docs.filter(d=>d.congestion==="élevé"); const stats={}; docs.forEach(d=>{const value=d[var1]; const values=Array.isArray(value)?value:[value]; values.forEach(v=>{const key=v&&String(v).trim()?String(v):"Non renseigné"; stats[key]=(stats[key]||0)+1;});}); const labels=Object.keys(stats); const data=Object.values(stats); drawChart("freeStatsChart","bar",labels,data); let html='<table><thead><tr><th>Valeur</th><th>Nombre</th></tr></thead><tbody>'; labels.forEach((label,i)=>{html+=`<tr><td>${label}</td><td>${data[i]}</td></tr>`;}); html+='</tbody></table>'; document.getElementById("freeStatsTable").innerHTML=html;}
+function renderTable(rows){
+  let html="";
+  rows.forEach(item=>{
+    const d=item.data; const payload=encodeURIComponent(JSON.stringify(pdfDataFromDoc(d)));
+    html+=`<tr><td>${fmtDate(d.date)}</td><td>${d.nom||""}</td><td>${d.prenom||""}</td><td>${d.dob||""}</td><td>${d.pain?d.pain+"/10":""}</td><td>${Array.isArray(d.topo)?d.topo.join(", "):""}</td><td>${Array.isArray(d.time)?d.time.join(", "):""}</td><td>${Array.isArray(d.digestif)?d.digestif.join(", "):""}</td><td>${contraceptionText(d)}</td><td>${d.phenotype||""}</td><td>${d.endometriose||""}</td><td>${d.adenomyose||""}</td><td>${d.pudendal||""}</td><td>${d.congestion||""}</td><td>${renderEchoCheckboxes(item.id,d.diagnostic_echo)}</td><td>${renderCertaintySelect(item.id,d.echoCertainty)}</td><td><button class="miniBtn" onclick='generateDoctorPDF("${payload}")'>PDF</button></td><td><button class="dangerBtn" onclick='deletePatient("${item.id}","${(d.prenom||"")+" "+(d.nom||"")}")'>Supprimer</button></td></tr>`;
+  });
+  document.getElementById("tableBody").innerHTML=html||'<tr><td colspan="18">Aucun résultat.</td></tr>';
+}
+function drawChart(id,type,labels,data){
+  let chart=null; if(id==="profilesChart") chart=profilesChart; if(id==="digestiveChart") chart=digestiveChart; if(id==="echoChart") chart=echoChart; if(id==="freeStatsChart") chart=freeStatsChart;
+  if(chart) chart.destroy();
+  const newChart=new Chart(document.getElementById(id),{type:type,data:{labels:labels,datasets:[{data:data}]},options:{responsive:true,maintainAspectRatio:false}});
+  if(id==="profilesChart") profilesChart=newChart; if(id==="digestiveChart") digestiveChart=newChart; if(id==="echoChart") echoChart=newChart; if(id==="freeStatsChart") freeStatsChart=newChart;
+}
+function updateStats(rows){
+  const docs=rows.map(r=>r.data);
+  const total=docs.length;
+  const painAvg=total?(docs.reduce((s,d)=>s+Number(d.pain||0),0)/total).toFixed(1):"0";
+  const endoCompatible=docs.filter(d=>isCompatible(d.endometriose)).length;
+  const digestifPresent=docs.filter(d=>Array.isArray(d.digestif)&&d.digestif.some(x=>x!=="Aucun signe digestif")).length;
+  document.getElementById("statPatients").innerText=total;
+  document.getElementById("statPain").innerText=painAvg+"/10";
+  document.getElementById("statEndo").innerText=endoCompatible;
+  document.getElementById("statDigestif").innerText=digestifPresent;
+
+  drawChart("profilesChart","bar",["Endométriose","Adénomyose","Pudendal","Congestion"],[
+    docs.filter(d=>isCompatible(d.endometriose)).length,
+    docs.filter(d=>isCompatible(d.adenomyose)).length,
+    docs.filter(d=>isCompatible(d.pudendal)).length,
+    docs.filter(d=>isCompatible(d.congestion)).length
+  ]);
+
+  const digCount={"Ballonnements":0,"Diarrhée":0,"Constipation":0,"Alternance diarrhée / constipation":0,"Douleur à la défécation":0};
+  docs.forEach(d=>(d.digestif||[]).forEach(x=>{if(digCount[x]!==undefined) digCount[x]++;}));
+  drawChart("digestiveChart","bar",Object.keys(digCount),Object.values(digCount));
+
+  const echoCount={"Endométriose":0,"Adénomyose":0,"Névralgie pudendale":0,"Congestion pelvienne":0,"Normal / non contributif":0,"Mixte":0};
+  docs.forEach(d=>(Array.isArray(d.diagnostic_echo)?d.diagnostic_echo:[]).forEach(x=>{if(echoCount[x]!==undefined) echoCount[x]++;}));
+  drawChart("echoChart","pie",Object.keys(echoCount),Object.values(echoCount));
+}
+function applyFiltersAndSort(){
+  const query=(document.getElementById("searchInput").value||"").toLowerCase().trim();
+  const sort=document.getElementById("sortSelect").value;
+  let rows=[...allPatients];
+  if(query){rows=rows.filter(item=>JSON.stringify(item.data).toLowerCase().includes(query));}
+  rows.sort((a,b)=>{const da=a.data, db=b.data; switch(sort){
+    case "date_asc": return toTimestampValue(da.date)-toTimestampValue(db.date);
+    case "pain_desc": return Number(db.pain||0)-Number(da.pain||0);
+    case "pain_asc": return Number(da.pain||0)-Number(db.pain||0);
+    case "nom_asc": return String(da.nom||"").localeCompare(String(db.nom||""),"fr");
+    case "nom_desc": return String(db.nom||"").localeCompare(String(da.nom||""),"fr");
+    default: return toTimestampValue(db.date)-toTimestampValue(da.date);
+  }});
+  renderTable(rows); updateStats(rows);
+}
+function runFreeStats(){
+  let docs=allPatients.map(r=>r.data);
+  const var1=document.getElementById("freeVar1").value;
+  const filter=document.getElementById("freeFilter").value;
+  if(filter==="endo_compatible") docs=docs.filter(d=>isCompatible(d.endometriose));
+  if(filter==="adeno_compatible") docs=docs.filter(d=>isCompatible(d.adenomyose));
+  if(filter==="pudendal_compatible") docs=docs.filter(d=>isCompatible(d.pudendal));
+  if(filter==="congestion_compatible") docs=docs.filter(d=>isCompatible(d.congestion));
+
+  const stats={};
+  docs.forEach(d=>{
+    let value = d[var1];
+    if(var1 === "contraception"){ value = contraceptionText(d) || "Non renseigné"; }
+    const values=Array.isArray(value)?value:[value];
+    values.forEach(v=>{
+      const key=v&&String(v).trim()?String(v):"Non renseigné";
+      stats[key]=(stats[key]||0)+1;
+    });
+  });
+
+  const labels=Object.keys(stats);
+  const data=Object.values(stats);
+  drawChart("freeStatsChart","bar",labels,data);
+  let html='<table><thead><tr><th>Valeur</th><th>Nombre</th></tr></thead><tbody>';
+  labels.forEach((label,i)=>{html+=`<tr><td>${label}</td><td>${data[i]}</td></tr>`;});
+  html+='</tbody></table>';
+  document.getElementById("freeStatsTable").innerHTML=html;
+}
 function loadPatients(){db.collection("patients").where("practitionerId","==",currentPractitioner).onSnapshot(snapshot=>{allPatients=[]; snapshot.forEach(doc=>allPatients.push({id:doc.id,data:doc.data()})); applyFiltersAndSort(); runFreeStats();});}
 document.addEventListener("keydown", function(e){if(document.getElementById("pinOverlay").style.display!=="none" && e.key==="Enter") checkPractitionerPin();});
 </script>
