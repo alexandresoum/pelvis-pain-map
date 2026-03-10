@@ -53,9 +53,21 @@
         <table>
           <thead>
             <tr>
-              <th>Date</th><th>Nom</th><th>Prénom</th><th>Naissance</th><th>Intensité</th>
-              <th>Hypothèse lésionnelle</th><th>Type douleur</th><th>Orientation écho</th>
-              <th>Profils</th><th>Résultats écho</th><th>Certitude</th><th>PDF</th><th>Supprimer</th>
+              <th>Date</th>
+              <th>Nom</th>
+              <th>Prénom</th>
+              <th>Naissance</th>
+              <th>Intensité</th>
+              <th>Questionnaire</th>
+              <th>Hypothèse lésionnelle</th>
+              <th>Type douleur</th>
+              <th>Orientation écho</th>
+              <th>Profils</th>
+              <th>Résultats écho</th>
+              <th>Certitude</th>
+              <th>Commentaire</th>
+              <th>PDF</th>
+              <th>Supprimer</th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
@@ -71,13 +83,25 @@ const PINS = {
   praticien_2: atob("MjIyMg=="),
   praticien_3: atob("MzMzMw==")
 };
+
 const LABELS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
   praticien_3: "Anne-Laure Siraga"
 };
-const ECHOS = ["Endométriose","Adénomyose","Névralgie pudendale","Congestion pelvienne","Normal / non contributif","Mixte"];
-const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
+
+const ECHOS = [
+  "Endométriose",
+  "Adénomyose",
+  "Névralgie pudendale",
+  "Congestion pelvienne",
+  "OPK",
+  "Normal",
+  "Non contributif",
+  "Mixte"
+];
+
+const CERTS = ["Non renseigné", "Suspect", "Compatible", "Confirmé"];
 
 let currentPractitioner = null;
 let rows = [];
@@ -96,24 +120,45 @@ function checkPin() {
     document.getElementById("pinError").textContent = "Code incorrect.";
   }
 }
+
 function openStats() {
   sessionStorage.setItem("ppm_currentPractitioner", currentPractitioner);
   window.location.href = "doctor-stats.html";
 }
+
 function fmtDate(d) {
   if (!d) return "";
   try {
     if (d.seconds) return new Date(d.seconds * 1000).toLocaleString();
     return new Date(d).toLocaleString();
-  } catch (e) { return ""; }
+  } catch (e) {
+    return "";
+  }
 }
+
 function ts(d) {
   if (!d) return 0;
   try {
     if (d.seconds) return d.seconds;
     return new Date(d).getTime() / 1000;
-  } catch (e) { return 0; }
+  } catch (e) {
+    return 0;
+  }
 }
+
+function questionnaireSummary(d) {
+  return `
+    <div style="min-width:260px; line-height:1.5;">
+      <b>Topo :</b> ${(d.topo || []).join(", ") || "-"}<br>
+      <b>Quand :</b> ${(d.time || []).join(", ") || "-"}<br>
+      <b>Digestif :</b> ${(d.digestif || []).join(", ") || "-"}<br>
+      <b>Contraception :</b> ${d.contraceptionType || "-"}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}<br>
+      <b>Consultation antérieure :</b> ${d.consultation || "-"}<br>
+      <b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}
+    </div>
+  `;
+}
+
 function pdfData(d) {
   return {
     dateText: fmtDate(d.date),
@@ -122,6 +167,11 @@ function pdfData(d) {
     prenom: d.prenom || "",
     dob: d.dob || "",
     pain: d.pain || "",
+    topo: d.topo || [],
+    time: d.time || [],
+    digestif: d.digestif || [],
+    contraceptionType: d.contraceptionType || "",
+    pillContinuous: d.pillContinuous || "",
     consultation: d.consultation || "",
     previousDiagnosis: d.previousDiagnosis || "",
     lesionPrimary: d.lesionPrimary || "",
@@ -135,9 +185,11 @@ function pdfData(d) {
     pudendal: d.pudendal || "",
     congestion: d.congestion || "",
     diagnostic_echo: d.diagnostic_echo || [],
-    echoCertainty: d.echoCertainty || "Non renseigné"
+    echoCertainty: d.echoCertainty || "Non renseigné",
+    doctorComment: d.doctorComment || ""
   };
 }
+
 function buildPdf(doc, d) {
   let y = 18;
   const line = (t) => {
@@ -145,16 +197,22 @@ function buildPdf(doc, d) {
     doc.text(s, 20, y);
     y += s.length * 7 + 3;
   };
+
   doc.setFontSize(16);
   doc.text("Pelvis Pain Map - Résultat questionnaire", 20, y);
   y += 12;
   doc.setFontSize(11);
+
   [
     "Date : " + d.dateText,
     "Praticien : " + d.practitionerName,
     "Patiente : " + d.prenom + " " + d.nom,
     "Date de naissance : " + (d.dob || "Non renseignée"),
     "Intensité : " + d.pain + "/10",
+    "Localisation : " + ((d.topo || []).join(", ") || "Non renseignée"),
+    "Quand : " + ((d.time || []).join(", ") || "Non renseignée"),
+    "Signes digestifs : " + ((d.digestif || []).join(", ") || "Aucun"),
+    "Contraception : " + (d.contraceptionType || "Non précisée") + (d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""),
     "Consultation antérieure : " + (d.consultation || "Non précisé"),
     "Diagnostic déjà évoqué : " + (d.previousDiagnosis || "Non précisé"),
     "Hypothèse lésionnelle principale : " + d.lesionPrimary,
@@ -165,9 +223,11 @@ function buildPdf(doc, d) {
     "Orientations écho : " + (d.echoOrientations || []).map(x => x.label).join(" ; "),
     "Profils cliniques : Endométriose " + d.endometriose + " / Adénomyose " + d.adenomyose + " / Pudendal " + d.pudendal + " / Congestion " + d.congestion,
     "Résultats écho : " + (d.diagnostic_echo || []).join(", "),
-    "Certitude : " + (d.echoCertainty || "Non renseigné")
+    "Certitude : " + (d.echoCertainty || "Non renseigné"),
+    "Commentaire praticien : " + (d.doctorComment || "")
   ].forEach(line);
 }
+
 function generateDoctorPDF(payload) {
   const d = JSON.parse(decodeURIComponent(payload));
   const { jsPDF } = window.jspdf;
@@ -175,55 +235,100 @@ function generateDoctorPDF(payload) {
   buildPdf(doc, d);
   doc.save("pelvis_pain_map_" + (d.prenom || "") + "_" + (d.nom || "patiente") + ".pdf");
 }
+
 function selectedEcho(id) {
   return [...document.querySelectorAll('.echo-group[data-id="' + id + '"] input:checked')].map(e => e.value);
 }
+
 async function updateEcho(id) {
-  await db.collection("patients").doc(id).update({ diagnostic_echo: selectedEcho(id) });
+  await db.collection("patients").doc(id).update({
+    diagnostic_echo: selectedEcho(id)
+  });
 }
+
 async function updateCert(id, v) {
-  await db.collection("patients").doc(id).update({ echoCertainty: v });
+  await db.collection("patients").doc(id).update({
+    echoCertainty: v
+  });
 }
+
+async function updateComment(id, value) {
+  await db.collection("patients").doc(id).update({
+    doctorComment: value
+  });
+}
+
 async function delRow(id, name) {
   if (!confirm("Supprimer cette fiche : " + name + " ?")) return;
   await db.collection("patients").doc(id).delete();
 }
+
 function echoBox(id, sel) {
   const cur = Array.isArray(sel) ? sel : [];
-  return `<div class="echo-group" data-id="${id}">${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onchange="updateEcho('${id}')"> ${o}</label>`).join("")}</div>`;
+  return `<div class="echo-group" data-id="${id}">
+    ${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onchange="updateEcho('${id}')"> ${o}</label>`).join("")}
+  </div>`;
 }
+
 function certSel(id, sel) {
-  return `<select class="miniSelect" onchange="updateCert('${id}', this.value)">${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+  return `<select class="miniSelect" onchange="updateCert('${id}', this.value)">
+    ${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}
+  </select>`;
 }
+
+function commentBox(id, value) {
+  return `
+    <textarea
+      class="commentBox"
+      rows="4"
+      placeholder="Commentaire praticien..."
+      onchange="updateComment('${id}', this.value)"
+    >${value || ""}</textarea>
+  `;
+}
+
 function renderTable(list) {
   let html = "";
   list.forEach(r => {
     const d = r.data;
     const p = encodeURIComponent(JSON.stringify(pdfData(d)));
+
     html += `<tr>
       <td>${fmtDate(d.date)}</td>
       <td>${d.nom || ""}</td>
       <td>${d.prenom || ""}</td>
       <td>${d.dob || ""}</td>
       <td>${d.pain ? d.pain + "/10" : ""}</td>
+      <td>${questionnaireSummary(d)}</td>
       <td>${d.lesionPrimary || ""}</td>
       <td>${d.painTypePrimary || ""}</td>
       <td>${d.echoPrimary || ""}</td>
-      <td>Endo ${d.endometriose || ""}<br>Adéno ${d.adenomyose || ""}<br>Pudendal ${d.pudendal || ""}<br>Congestion ${d.congestion || ""}</td>
+      <td>
+        Endo ${d.endometriose || ""}<br>
+        Adéno ${d.adenomyose || ""}<br>
+        Pudendal ${d.pudendal || ""}<br>
+        Congestion ${d.congestion || ""}
+      </td>
       <td>${echoBox(r.id, d.diagnostic_echo)}</td>
       <td>${certSel(r.id, d.echoCertainty)}</td>
+      <td>${commentBox(r.id, d.doctorComment)}</td>
       <td><button class="miniBtn" onclick='generateDoctorPDF("${p}")'>PDF</button></td>
       <td><button class="dangerBtn" onclick='delRow("${r.id}", "${(d.prenom || "") + " " + (d.nom || "")}")'>Supprimer</button></td>
     </tr>`;
   });
-  document.getElementById("tableBody").innerHTML = html || '<tr><td colspan="13">Aucun résultat.</td></tr>';
+
+  document.getElementById("tableBody").innerHTML =
+    html || '<tr><td colspan="15">Aucun résultat.</td></tr>';
 }
+
 function applyFiltersAndSort() {
   const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
   const sort = document.getElementById("sortSelect").value;
   let list = [...rows];
+
   if (q) list = list.filter(r => JSON.stringify(r.data).toLowerCase().includes(q));
-  list.sort((a,b) => {
+
+  list.sort((a, b) => {
     const da = a.data, db = b.data;
     switch (sort) {
       case "date_asc": return ts(da.date) - ts(db.date);
@@ -234,8 +339,10 @@ function applyFiltersAndSort() {
       default: return ts(db.date) - ts(da.date);
     }
   });
+
   renderTable(list);
 }
+
 function loadRows() {
   db.collection("patients").where("practitionerId", "==", currentPractitioner).onSnapshot(s => {
     rows = [];
@@ -243,6 +350,7 @@ function loadRows() {
     applyFiltersAndSort();
   });
 }
+
 document.addEventListener("keydown", e => {
   if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
 });
