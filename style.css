@@ -47,3 +47,13 @@ th{background:#eef1ff;position:sticky;top:0}
 .pinError{color:#c0392b;min-height:20px}
 @media (max-width:1100px){.statsGrid{grid-template-columns:repeat(2,1fr)}.chartGrid{grid-template-columns:1fr}.toolbarTop{grid-template-columns:1fr}.columns2{columns:1}}
 @media (max-width:700px){.grid2{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.statsGrid{grid-template-columns:1fr}body{padding:12px}.header h1{font-size:24px}.columns2{columns:1}}
+.commentBox{
+  width:100%;
+  min-width:220px;
+  padding:10px;
+  border:1px solid #cfd7e6;
+  border-radius:8px;
+  font-size:14px;
+  font-family:Arial, Helvetica, sans-serif;
+  resize:vertical;
+}
