@@ -1,1 +1,182 @@
-<!-- Global anonymized statistics -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Pelvis Pain Map</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+<div id="pinOverlay" class="pinOverlay">
+  <div class="pinCard">
+    <h2>Accès Dashboard statistiques</h2>
+    <p>Réservé à Alexandre Soum</p>
+    <input type="password" id="pinInput" maxlength="4" class="pinInput">
+    <button class="primary" onclick="checkPin()">Entrer</button>
+    <p id="pinError" class="pinError"></p>
+  </div>
+</div>
+
+<div id="content" style="display:none;">
+  <header class="header">
+    <h1>Stats globales anonymisées</h1>
+    <p class="info">Toutes praticiennes, données anonymes</p>
+  </header>
+
+  <div class="container wide">
+    <div class="toolbar">
+      <button class="primary" onclick="exportAnonymousCSV()">Exporter CSV anonyme</button>
+    </div>
+
+    <div class="statsGrid">
+      <div class="statCard"><div class="statLabel">Nombre d'échos</div><div class="statValue" id="statEchoes">0</div></div>
+      <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue" id="statAge">0</div></div>
+      <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue" id="statPain">0</div></div>
+      <div class="statCard"><div class="statLabel">Top lésion suspectée</div><div class="statValue smallValue" id="statLesion">-</div></div>
+    </div>
+
+    <div class="chartGrid">
+      <div class="card"><h2>Par praticien</h2><canvas id="practitionerChart"></canvas></div>
+      <div class="card"><h2>Hypothèses lésionnelles</h2><canvas id="lesionChart"></canvas></div>
+      <div class="card"><h2>Orientations écho</h2><canvas id="echoOrientationChart"></canvas></div>
+    </div>
+
+    <div class="card">
+      <h2>Données anonymisées</h2>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Praticien</th><th>Âge</th><th>Intensité</th><th>Lésion suspectée</th>
+              <th>Type douleur</th><th>Orientation écho</th><th>Profils</th>
+              <th>Résultats écho</th><th>Certitude</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PIN = atob("MTYxMg==");
+let rows = [];
+let charts = {};
+
+function ageFromDob(dob) {
+  if (!dob) return null;
+  const b = new Date(dob);
+  if (isNaN(b)) return null;
+  const t = new Date();
+  let a = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+  return a;
+}
+function topLabel(map) {
+  const e = Object.entries(map).sort((a,b) => b[1] - a[1]);
+  return e.length ? e[0][0] : "-";
+}
+function countValues(items) {
+  const m = {};
+  items.forEach(v => {
+    const k = v && String(v).trim() ? String(v) : "Non renseigné";
+    m[k] = (m[k] || 0) + 1;
+  });
+  return m;
+}
+function draw(id, type, labels, data) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), {
+    type,
+    data: { labels, datasets: [{ data }] },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+}
+function checkPin() {
+  const pin = document.getElementById("pinInput").value;
+  if (pin === ADMIN_PIN) {
+    document.getElementById("pinOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    loadRows();
+  } else {
+    document.getElementById("pinError").textContent = "Code incorrect.";
+  }
+}
+function updateStats() {
+  const docs = rows.map(r => r.data);
+  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+  const byPractitioner = countValues(docs.map(d => d.practitionerName || d.practitionerId || "Non renseigné"));
+  const lesions = countValues(docs.map(d => d.lesionPrimary || "Non renseigné"));
+  const echoOrientations = countValues(docs.map(d => d.echoPrimary || "Non renseigné"));
+
+  document.getElementById("statEchoes").textContent = docs.length;
+  document.getElementById("statAge").textContent = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
+  document.getElementById("statPain").textContent = (docs.length ? (docs.reduce((s,d)=>s+Number(d.pain||0),0)/docs.length).toFixed(1) : "0") + "/10";
+  document.getElementById("statLesion").textContent = topLabel(lesions);
+
+  draw("practitionerChart", "bar", Object.keys(byPractitioner), Object.values(byPractitioner));
+  draw("lesionChart", "bar", Object.keys(lesions), Object.values(lesions));
+  draw("echoOrientationChart", "bar", Object.keys(echoOrientations), Object.values(echoOrientations));
+
+  let html = "";
+  docs.forEach(d => {
+    const age = ageFromDob(d.dob);
+    html += `<tr>
+      <td>${d.practitionerName || d.practitionerId || ""}</td>
+      <td>${age ?? ""}</td>
+      <td>${d.pain || ""}</td>
+      <td>${d.lesionPrimary || ""}</td>
+      <td>${d.painTypePrimary || ""}</td>
+      <td>${d.echoPrimary || ""}</td>
+      <td>Endo ${d.endometriose || ""}<br>Adéno ${d.adenomyose || ""}<br>Pudendal ${d.pudendal || ""}<br>Congestion ${d.congestion || ""}</td>
+      <td>${(d.diagnostic_echo || []).join(", ")}</td>
+      <td>${d.echoCertainty || ""}</td>
+    </tr>`;
+  });
+  document.getElementById("tableBody").innerHTML = html || '<tr><td colspan="9">Aucune donnée.</td></tr>';
+}
+function exportAnonymousCSV() {
+  const docs = rows.map(r => r.data);
+  const out = [["praticien","age","intensite","lesion_suspectee","type_douleur","orientation_echo","endometriose","adenomyose","pudendal","congestion","resultat_echo","echo_certitude"]];
+  docs.forEach(d => out.push([
+    d.practitionerName || d.practitionerId || "",
+    ageFromDob(d.dob) ?? "",
+    d.pain || "",
+    d.lesionPrimary || "",
+    d.painTypePrimary || "",
+    d.echoPrimary || "",
+    d.endometriose || "",
+    d.adenomyose || "",
+    d.pudendal || "",
+    d.congestion || "",
+    (d.diagnostic_echo || []).join(" | "),
+    d.echoCertainty || ""
+  ]));
+  const csv = out.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pelvis_pain_map_anonyme.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function loadRows() {
+  db.collection("patients").onSnapshot(s => {
+    rows = [];
+    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    updateStats();
+  });
+}
+document.addEventListener("keydown", e => {
+  if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
+});
+</script>
+</body>
+</html>

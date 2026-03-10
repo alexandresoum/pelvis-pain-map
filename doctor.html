@@ -1,1 +1,251 @@
-<!-- Practitioner dashboard -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard praticien</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+<div id="pinOverlay" class="pinOverlay">
+  <div class="pinCard">
+    <h2>Accès Dashboard praticien</h2>
+    <label for="practitionerLogin">Praticien</label>
+    <select id="practitionerLogin" class="pinInput">
+      <option value="alexandre_soum">Alexandre Soum</option>
+      <option value="praticien_2">Dr Jean-Marc Levaillant</option>
+      <option value="praticien_3">Anne-Laure Siraga</option>
+    </select>
+    <label for="pinInput">Code PIN</label>
+    <input type="password" id="pinInput" maxlength="4" class="pinInput">
+    <button class="primary" onclick="checkPin()">Entrer</button>
+    <p id="pinError" class="pinError"></p>
+  </div>
+</div>
+
+<div id="content" style="display:none;">
+  <header class="header">
+    <h1>Patientes</h1>
+    <p class="info" id="subtitle"></p>
+  </header>
+
+  <div class="container wide">
+    <div class="toolbar toolbarTop">
+      <input type="text" id="searchInput" class="searchInput" placeholder="Rechercher..." oninput="applyFiltersAndSort()">
+      <select id="sortSelect" class="sortSelect" onchange="applyFiltersAndSort()">
+        <option value="date_desc">Trier par date ↓</option>
+        <option value="date_asc">Trier par date ↑</option>
+        <option value="pain_desc">Trier par intensité ↓</option>
+        <option value="pain_asc">Trier par intensité ↑</option>
+        <option value="nom_asc">Trier par nom A → Z</option>
+        <option value="nom_desc">Trier par nom Z → A</option>
+      </select>
+      <button class="statsBtn" onclick="openStats()">Stats</button>
+    </div>
+
+    <div class="card">
+      <h2>Listing patientes</h2>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Nom</th><th>Prénom</th><th>Naissance</th><th>Intensité</th>
+              <th>Hypothèse lésionnelle</th><th>Type douleur</th><th>Orientation écho</th>
+              <th>Profils</th><th>Résultats écho</th><th>Certitude</th><th>PDF</th><th>Supprimer</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PINS = {
+  alexandre_soum: atob("MTYxMg=="),
+  praticien_2: atob("MjIyMg=="),
+  praticien_3: atob("MzMzMw==")
+};
+const LABELS = {
+  alexandre_soum: "Alexandre Soum",
+  praticien_2: "Dr Jean-Marc Levaillant",
+  praticien_3: "Anne-Laure Siraga"
+};
+const ECHOS = ["Endométriose","Adénomyose","Névralgie pudendale","Congestion pelvienne","Normal / non contributif","Mixte"];
+const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
+
+let currentPractitioner = null;
+let rows = [];
+
+function checkPin() {
+  const p = document.getElementById("practitionerLogin").value;
+  const pin = document.getElementById("pinInput").value;
+  if (pin === PINS[p]) {
+    currentPractitioner = p;
+    sessionStorage.setItem("ppm_currentPractitioner", p);
+    document.getElementById("pinOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    document.getElementById("subtitle").textContent = LABELS[p];
+    loadRows();
+  } else {
+    document.getElementById("pinError").textContent = "Code incorrect.";
+  }
+}
+function openStats() {
+  sessionStorage.setItem("ppm_currentPractitioner", currentPractitioner);
+  window.location.href = "doctor-stats.html";
+}
+function fmtDate(d) {
+  if (!d) return "";
+  try {
+    if (d.seconds) return new Date(d.seconds * 1000).toLocaleString();
+    return new Date(d).toLocaleString();
+  } catch (e) { return ""; }
+}
+function ts(d) {
+  if (!d) return 0;
+  try {
+    if (d.seconds) return d.seconds;
+    return new Date(d).getTime() / 1000;
+  } catch (e) { return 0; }
+}
+function pdfData(d) {
+  return {
+    dateText: fmtDate(d.date),
+    practitionerName: d.practitionerName || "",
+    nom: d.nom || "",
+    prenom: d.prenom || "",
+    dob: d.dob || "",
+    pain: d.pain || "",
+    consultation: d.consultation || "",
+    previousDiagnosis: d.previousDiagnosis || "",
+    lesionPrimary: d.lesionPrimary || "",
+    painTypePrimary: d.painTypePrimary || "",
+    echoPrimary: d.echoPrimary || "",
+    lesionHypotheses: d.lesionHypotheses || [],
+    painTypeHypotheses: d.painTypeHypotheses || [],
+    echoOrientations: d.echoOrientations || [],
+    endometriose: d.endometriose || "",
+    adenomyose: d.adenomyose || "",
+    pudendal: d.pudendal || "",
+    congestion: d.congestion || "",
+    diagnostic_echo: d.diagnostic_echo || [],
+    echoCertainty: d.echoCertainty || "Non renseigné"
+  };
+}
+function buildPdf(doc, d) {
+  let y = 18;
+  const line = (t) => {
+    const s = doc.splitTextToSize(t, 170);
+    doc.text(s, 20, y);
+    y += s.length * 7 + 3;
+  };
+  doc.setFontSize(16);
+  doc.text("Pelvis Pain Map - Résultat questionnaire", 20, y);
+  y += 12;
+  doc.setFontSize(11);
+  [
+    "Date : " + d.dateText,
+    "Praticien : " + d.practitionerName,
+    "Patiente : " + d.prenom + " " + d.nom,
+    "Date de naissance : " + (d.dob || "Non renseignée"),
+    "Intensité : " + d.pain + "/10",
+    "Consultation antérieure : " + (d.consultation || "Non précisé"),
+    "Diagnostic déjà évoqué : " + (d.previousDiagnosis || "Non précisé"),
+    "Hypothèse lésionnelle principale : " + d.lesionPrimary,
+    "Type de douleur dominant : " + d.painTypePrimary,
+    "Orientation échographique principale : " + d.echoPrimary,
+    "Hypothèses lésionnelles : " + (d.lesionHypotheses || []).map(x => x.label).join(" ; "),
+    "Types de douleur évoqués : " + (d.painTypeHypotheses || []).map(x => x.label).join(" ; "),
+    "Orientations écho : " + (d.echoOrientations || []).map(x => x.label).join(" ; "),
+    "Profils cliniques : Endométriose " + d.endometriose + " / Adénomyose " + d.adenomyose + " / Pudendal " + d.pudendal + " / Congestion " + d.congestion,
+    "Résultats écho : " + (d.diagnostic_echo || []).join(", "),
+    "Certitude : " + (d.echoCertainty || "Non renseigné")
+  ].forEach(line);
+}
+function generateDoctorPDF(payload) {
+  const d = JSON.parse(decodeURIComponent(payload));
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  buildPdf(doc, d);
+  doc.save("pelvis_pain_map_" + (d.prenom || "") + "_" + (d.nom || "patiente") + ".pdf");
+}
+function selectedEcho(id) {
+  return [...document.querySelectorAll('.echo-group[data-id="' + id + '"] input:checked')].map(e => e.value);
+}
+async function updateEcho(id) {
+  await db.collection("patients").doc(id).update({ diagnostic_echo: selectedEcho(id) });
+}
+async function updateCert(id, v) {
+  await db.collection("patients").doc(id).update({ echoCertainty: v });
+}
+async function delRow(id, name) {
+  if (!confirm("Supprimer cette fiche : " + name + " ?")) return;
+  await db.collection("patients").doc(id).delete();
+}
+function echoBox(id, sel) {
+  const cur = Array.isArray(sel) ? sel : [];
+  return `<div class="echo-group" data-id="${id}">${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onchange="updateEcho('${id}')"> ${o}</label>`).join("")}</div>`;
+}
+function certSel(id, sel) {
+  return `<select class="miniSelect" onchange="updateCert('${id}', this.value)">${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}</select>`;
+}
+function renderTable(list) {
+  let html = "";
+  list.forEach(r => {
+    const d = r.data;
+    const p = encodeURIComponent(JSON.stringify(pdfData(d)));
+    html += `<tr>
+      <td>${fmtDate(d.date)}</td>
+      <td>${d.nom || ""}</td>
+      <td>${d.prenom || ""}</td>
+      <td>${d.dob || ""}</td>
+      <td>${d.pain ? d.pain + "/10" : ""}</td>
+      <td>${d.lesionPrimary || ""}</td>
+      <td>${d.painTypePrimary || ""}</td>
+      <td>${d.echoPrimary || ""}</td>
+      <td>Endo ${d.endometriose || ""}<br>Adéno ${d.adenomyose || ""}<br>Pudendal ${d.pudendal || ""}<br>Congestion ${d.congestion || ""}</td>
+      <td>${echoBox(r.id, d.diagnostic_echo)}</td>
+      <td>${certSel(r.id, d.echoCertainty)}</td>
+      <td><button class="miniBtn" onclick='generateDoctorPDF("${p}")'>PDF</button></td>
+      <td><button class="dangerBtn" onclick='delRow("${r.id}", "${(d.prenom || "") + " " + (d.nom || "")}")'>Supprimer</button></td>
+    </tr>`;
+  });
+  document.getElementById("tableBody").innerHTML = html || '<tr><td colspan="13">Aucun résultat.</td></tr>';
+}
+function applyFiltersAndSort() {
+  const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const sort = document.getElementById("sortSelect").value;
+  let list = [...rows];
+  if (q) list = list.filter(r => JSON.stringify(r.data).toLowerCase().includes(q));
+  list.sort((a,b) => {
+    const da = a.data, db = b.data;
+    switch (sort) {
+      case "date_asc": return ts(da.date) - ts(db.date);
+      case "pain_desc": return Number(db.pain || 0) - Number(da.pain || 0);
+      case "pain_asc": return Number(da.pain || 0) - Number(db.pain || 0);
+      case "nom_asc": return String(da.nom || "").localeCompare(String(db.nom || ""), "fr");
+      case "nom_desc": return String(db.nom || "").localeCompare(String(da.nom || ""), "fr");
+      default: return ts(db.date) - ts(da.date);
+    }
+  });
+  renderTable(list);
+}
+function loadRows() {
+  db.collection("patients").where("practitionerId", "==", currentPractitioner).onSnapshot(s => {
+    rows = [];
+    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    applyFiltersAndSort();
+  });
+}
+document.addEventListener("keydown", e => {
+  if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
+});
+</script>
+</body>
+</html>
