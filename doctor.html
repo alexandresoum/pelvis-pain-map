@@ -5,113 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard praticien – V2</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C73b21b969ed74651cd4a08de7f6918a0%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088286509461150%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=l8lXYX7WUIAdChu0JSew1zZVBYzEPbjlG3cwajEWJmE%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C73b21b969ed74651cd4a08de7f6918a0%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088286509491452%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=4Sbn5qAa5heR7yU6cpxB%2BWmvdHUXBJadiaQUc6QBf%2Fc%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7C73b21b969ed74651cd4a08de7f6918a0%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088286509513269%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=3FArHyIK6lBQc0DGylp1mOz7GFLbHDkTtnPKdgZNN8c%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679404746%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pZtHRnsPyVg1KPg6tAmMI2QDChcKOS%2FYhwoekM27Cq0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679452030%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=qqF8EHTym%2BFHUv%2FF30C6lNefVH4vOU5eLcAedXD3GY8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679503058%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=kNy4HAl%2B6jTjfClhqtQsyRX1KLGXAewUJhOGdBovXjE%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .patientList{display:flex;flex-direction:column;gap:12px}
     .patientCard{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden;border:1px solid #eceff6}
-    .patientSummary{
-      display:grid;
-      grid-template-columns:44px 1.2fr .8fr .8fr 1.4fr 1.1fr;
-      gap:14px;
-      align-items:center;
-      padding:16px 18px;
-      cursor:pointer;
-    }
+    .patientSummary{display:grid;grid-template-columns:44px 1.2fr .8fr .8fr 1.4fr 1.1fr;gap:14px;align-items:center;padding:16px 18px;cursor:pointer}
     .patientSummary:hover{background:#fafbff}
     .patientCard.open .patientSummary{background:#f7f8ff}
-    .chevron{
-      font-size:22px;
-      font-weight:bold;
-      color:#6c63ff;
-      text-align:center;
-      user-select:none;
-    }
+    .chevron{font-size:22px;font-weight:bold;color:#6c63ff;text-align:center;user-select:none}
     .summaryMain{font-weight:700;color:#24324a}
     .summarySub{font-size:13px;color:#6b7280;margin-top:4px}
     .summaryCellTitle{font-size:12px;color:#6b7280;margin-bottom:4px}
     .summaryCellValue{font-weight:600;color:#1f2937}
-    .patientDetails{
-      display:none;
-      padding:0 18px 18px 18px;
-      border-top:1px solid #e5e7eb;
-      background:#fcfcff;
-    }
+    .patientDetails{display:none;padding:0 18px 18px 18px;border-top:1px solid #e5e7eb;background:#fcfcff}
     .patientCard.open .patientDetails{display:block}
-    .detailGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:16px;
-      margin-top:16px;
-    }
-    .detailBox{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:12px;
-      padding:14px;
-    }
-    .detailBox h3{
-      margin:0 0 10px 0;
-      font-size:16px;
-      color:#24324a;
-    }
+    .detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .detailBox{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+    .detailBox h3{margin:0 0 10px 0;font-size:16px;color:#24324a}
     .detailLine{line-height:1.6;margin:5px 0;color:#374151}
     .echo-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .echoItem{font-weight:normal;margin:0}
-    .commentBox{
-      width:100%;
-      min-height:110px;
-      padding:10px;
-      border:1px solid #cfd7e6;
-      border-radius:8px;
-      font-size:14px;
-      font-family:Arial, Helvetica, sans-serif;
-      resize:vertical;
-    }
+    .commentBox{width:100%;min-height:110px;padding:10px;border:1px solid #cfd7e6;border-radius:8px;font-size:14px;font-family:Arial, Helvetica, sans-serif;resize:vertical}
     .actionsRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .pill{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      margin:4px 6px 0 0;
-      background:#eef1ff;
-      color:#24324a;
-      border:1px solid #dde2ff;
-    }
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;margin:4px 6px 0 0;background:#eef1ff;color:#24324a;border:1px solid #dde2ff}
     .pill.soft{background:#f8f9fb;border-color:#eceff3;color:#4b5563}
     .pill.good{background:#ecfdf3;border-color:#d1fadf;color:#027a48}
     .pill.warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
     .pill.info{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
     .pill.dark{background:#f3f4f6;border-color:#d1d5db;color:#111827}
-    .emptyState{
-      background:#fff;
-      padding:22px;
-      border-radius:14px;
-      box-shadow:0 2px 10px rgba(0,0,0,.08);
-    }
+    .emptyState{background:#fff;padding:22px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
     .resultBadges{margin-top:6px}
-    .boxSectionTitle{
-      margin:12px 0 6px 0;
-      font-size:13px;
-      color:#6b7280;
-      font-weight:700;
-      text-transform:uppercase;
-      letter-spacing:.02em;
-    }
+    .boxSectionTitle{margin:12px 0 6px 0;font-size:13px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
     @media (max-width:1100px){
-      .patientSummary{
-        grid-template-columns:40px 1fr;
-        gap:10px;
-      }
-      .summaryResponsive{
-        grid-column:2 / -1;
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:10px;
-      }
+      .patientSummary{grid-template-columns:40px 1fr;gap:10px}
+      .summaryResponsive{grid-column:2 / -1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
       .detailGrid{grid-template-columns:1fr}
       .echo-group{grid-template-columns:1fr}
     }
@@ -183,7 +113,7 @@ const ECHOS = [
   "OPK",
   "Normal",
   "Non contributif",
-  "Mixte"
+  "Autre"
 ];
 
 const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
@@ -191,6 +121,7 @@ const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
 let currentPractitioner = null;
 let rows = [];
 let openCardId = null;
+let currentDisplayedList = [];
 
 function checkPin() {
   const p = document.getElementById("practitionerLogin").value;
@@ -258,7 +189,7 @@ function badgeClass(label) {
 }
 
 function pillsFromList(arr){
-  if (!arr || !arr.length) return `<span class="pill soft">-</span>`;
+  if (!arr || !arr.length) return '<span class="pill soft">-</span>';
   return arr.map(x => `<span class="pill ${badgeClass(x)}">${x}</span>`).join("");
 }
 
@@ -358,48 +289,38 @@ async function delRow(id, name) {
 function echoBox(id, sel) {
   const cur = Array.isArray(sel) ? sel : [];
   return `<div class="echo-group" data-id="${id}">
-    ${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onchange="updateEcho('${id}')"> ${o}</label>`).join("")}
+    ${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onclick="event.stopPropagation()" onchange="updateEcho('${id}')"> ${o}</label>`).join("")}
   </div>`;
 }
 
 function certSel(id, sel) {
-  return `<select class="miniSelect" onchange="updateCert('${id}', this.value)">
+  return `<select class="miniSelect" onclick="event.stopPropagation()" onchange="updateCert('${id}', this.value)">
     ${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}
   </select>`;
 }
 
 function commentBox(id, value) {
-  return `<textarea class="commentBox" placeholder="Commentaire praticien..." onchange="updateComment('${id}', this.value)">${value || ""}</textarea>`;
+  return `<textarea class="commentBox" placeholder="Commentaire praticien..." onclick="event.stopPropagation()" onchange="updateComment('${id}', this.value)">${value || ""}</textarea>`;
+}
+
+function getCurrentDisplayedList() {
+  return currentDisplayedList;
 }
 
 function toggleCard(id){
-  if (openCardId && openCardId !== id) {
-    const prev = document.getElementById("card-" + openCardId);
-    const prevChev = document.getElementById("chev-" + openCardId);
-    if (prev) prev.classList.remove("open");
-    if (prevChev) prevChev.textContent = "▸";
-  }
-
-  const el = document.getElementById("card-" + id);
-  const chev = document.getElementById("chev-" + id);
-
-  const isOpen = el.classList.contains("open");
-  if (isOpen) {
-    el.classList.remove("open");
-    chev.textContent = "▸";
+  if (openCardId === id) {
     openCardId = null;
   } else {
-    el.classList.add("open");
-    chev.textContent = "▾";
     openCardId = id;
   }
+  renderList(getCurrentDisplayedList());
 }
 
 function renderList(list) {
   const container = document.getElementById("patientList");
 
   if (!list.length) {
-    container.innerHTML = `<div class="emptyState">Aucun résultat.</div>`;
+    container.innerHTML = '<div class="emptyState">Aucun résultat.</div>';
     return;
   }
 
@@ -407,11 +328,12 @@ function renderList(list) {
     const d = r.data;
     const age = ageFromDob(d.dob);
     const p = encodeURIComponent(JSON.stringify(pdfData(d)));
+    const isOpen = openCardId === r.id;
 
     return `
-      <div class="patientCard" id="card-${r.id}">
+      <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
         <div class="patientSummary" onclick="toggleCard('${r.id}')">
-          <div class="chevron" id="chev-${r.id}">▸</div>
+          <div class="chevron" id="chev-${r.id}">${isOpen ? "▾" : "▸"}</div>
 
           <div>
             <div class="summaryMain">${d.nom || ""} ${d.prenom || ""}</div>
@@ -492,11 +414,6 @@ function renderList(list) {
       </div>
     `;
   }).join("");
-
-  if (openCardId) {
-    const stillThere = document.getElementById("card-" + openCardId);
-    if (!stillThere) openCardId = null;
-  }
 }
 
 function applyFiltersAndSort() {
@@ -520,6 +437,7 @@ function applyFiltersAndSort() {
     }
   });
 
+  currentDisplayedList = list;
   renderList(list);
 }
 
