@@ -5,10 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cdc5ea2c3996943b7641708de7f5fdcee%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088246858071051%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=%2FvKmSSInhvsgPl0a5Kh4h2q98ValiNTfqZFqMtg3ecs%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cdc5ea2c3996943b7641708de7f5fdcee%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088246858099231%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8v7gLqUsYxMHS4gfARVS0s3oJBRSi6mRzLQ79kJMRm8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cdc5ea2c3996943b7641708de7f5fdcee%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088246858113366%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=54EXPBJgipsshcNBDctm0tgGCsqlG9yp0Nyapv%2BW36s%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
+  <style>
+    .oneChart{grid-template-columns:1fr}
+    .freeStatsControls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+    .analysisCard{min-height:460px}
+    .analyzeToolbar{grid-template-columns:180px}
+    .simpleTable table{width:100%;min-width:300px;margin-top:16px}
+    .practitionerChooser{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 18px 0}
+    .practitionerChooser label{display:flex;align-items:center;gap:8px;font-weight:600;margin:0}
+    .inlineTools{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .secondaryMini{background:#eef1ff;color:#24324a;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+    @media (max-width:1100px){.freeStatsControls{grid-template-columns:1fr 1fr}}
+    @media (max-width:700px){.freeStatsControls{grid-template-columns:1fr}}
+  </style>
 </head>
 <body>
 <div id="pinOverlay" class="pinOverlay">
@@ -28,36 +41,189 @@
   </header>
 
   <div class="container wide">
-    <div class="toolbar">
-      <button class="primary" onclick="exportAnonymousCSV()">Exporter CSV anonyme</button>
+    <div class="card">
+      <h2>Périmètre d'analyse</h2>
+      <div class="practitionerChooser">
+        <label><input type="checkbox" id="p_all" checked onchange="toggleAllPractitioners()"> Tous</label>
+        <label><input type="checkbox" class="practitionerFilter" id="p1" value="alexandre_soum" checked onchange="syncAllPractitioners(); recomputeAll()"> Alexandre Soum</label>
+        <label><input type="checkbox" class="practitionerFilter" id="p2" value="praticien_2" checked onchange="syncAllPractitioners(); recomputeAll()"> Dr Jean-Marc Levaillant</label>
+        <label><input type="checkbox" class="practitionerFilter" id="p3" value="praticien_3" checked onchange="syncAllPractitioners(); recomputeAll()"> Anne-Laure Siraga</label>
+      </div>
+      <div class="inlineTools">
+        <button class="primary" onclick="exportAnonymousCSV()">Exporter CSV anonyme</button>
+      </div>
     </div>
 
     <div class="statsGrid">
-      <div class="statCard"><div class="statLabel">Nombre d'échos</div><div class="statValue" id="statEchoes">0</div></div>
-      <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue" id="statAge">0</div></div>
-      <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue" id="statPain">0</div></div>
-      <div class="statCard"><div class="statLabel">Top lésion suspectée</div><div class="statValue smallValue" id="statLesion">-</div></div>
+      <div class="statCard">
+        <div class="statLabel">Nombre de patientes</div>
+        <div class="statValue" id="statPatients">0</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Âge moyen</div>
+        <div class="statValue" id="statAge">0</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Douleur moyenne</div>
+        <div class="statValue" id="statPain">0/10</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Nombre d’échos renseignés</div>
+        <div class="statValue" id="statEchoes">0</div>
+      </div>
     </div>
 
-    <div class="chartGrid">
-      <div class="card"><h2>Par praticien</h2><canvas id="practitionerChart"></canvas></div>
-      <div class="card"><h2>Hypothèses lésionnelles</h2><canvas id="lesionChart"></canvas></div>
-      <div class="card"><h2>Orientations écho</h2><canvas id="echoOrientationChart"></canvas></div>
+    <div class="chartGrid oneChart">
+      <div class="card">
+        <h2>Diagnostics écho</h2>
+        <canvas id="diagnosticPieChart"></canvas>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Données anonymisées</h2>
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Praticien</th><th>Âge</th><th>Intensité</th><th>Lésion suspectée</th>
-              <th>Type douleur</th><th>Orientation écho</th><th>Profils</th>
-              <th>Résultats écho</th><th>Certitude</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+      <h2>Statistiques paramétrables</h2>
+
+      <div class="freeStatsControls">
+        <div>
+          <label for="mainVariable">Variable principale</label>
+          <select id="mainVariable" class="sortSelect">
+            <option value="diagnostic_echo">Diagnostic écho</option>
+            <option value="practitionerName">Praticien</option>
+            <option value="lesionPrimary">Hypothèse lésionnelle</option>
+            <option value="painTypePrimary">Type de douleur</option>
+            <option value="echoPrimary">Orientation écho</option>
+            <option value="topo">Localisation</option>
+            <option value="time">Temporalité</option>
+            <option value="digestif">Digestif</option>
+            <option value="contraceptionType">Contraception</option>
+            <option value="consultation">Consultation antérieure</option>
+            <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
+            <option value="echoCertainty">Certitude écho</option>
+            <option value="phenotype">Phénotype</option>
+            <option value="endometriose">Profil endométriose</option>
+            <option value="adenomyose">Profil adénomyose</option>
+            <option value="pudendal">Profil pudendal</option>
+            <option value="congestion">Profil congestion</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterField1">Filtre 1</label>
+          <select id="filterField1" class="sortSelect" onchange="refreshFilterOptions('1')">
+            <option value="">Aucun filtre</option>
+            <option value="practitionerName">Praticien</option>
+            <option value="diagnostic_echo">Diagnostic écho</option>
+            <option value="lesionPrimary">Hypothèse lésionnelle</option>
+            <option value="painTypePrimary">Type de douleur</option>
+            <option value="echoPrimary">Orientation écho</option>
+            <option value="topo">Localisation</option>
+            <option value="time">Temporalité</option>
+            <option value="digestif">Digestif</option>
+            <option value="contraceptionType">Contraception</option>
+            <option value="consultation">Consultation antérieure</option>
+            <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
+            <option value="echoCertainty">Certitude écho</option>
+            <option value="phenotype">Phénotype</option>
+            <option value="endometriose">Profil endométriose</option>
+            <option value="adenomyose">Profil adénomyose</option>
+            <option value="pudendal">Profil pudendal</option>
+            <option value="congestion">Profil congestion</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterValue1">Valeur filtre 1</label>
+          <select id="filterValue1" class="sortSelect">
+            <option value="">Choisir...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterField2">Filtre 2</label>
+          <select id="filterField2" class="sortSelect" onchange="refreshFilterOptions('2')">
+            <option value="">Aucun filtre</option>
+            <option value="practitionerName">Praticien</option>
+            <option value="diagnostic_echo">Diagnostic écho</option>
+            <option value="lesionPrimary">Hypothèse lésionnelle</option>
+            <option value="painTypePrimary">Type de douleur</option>
+            <option value="echoPrimary">Orientation écho</option>
+            <option value="topo">Localisation</option>
+            <option value="time">Temporalité</option>
+            <option value="digestif">Digestif</option>
+            <option value="contraceptionType">Contraception</option>
+            <option value="consultation">Consultation antérieure</option>
+            <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
+            <option value="echoCertainty">Certitude écho</option>
+            <option value="phenotype">Phénotype</option>
+            <option value="endometriose">Profil endométriose</option>
+            <option value="adenomyose">Profil adénomyose</option>
+            <option value="pudendal">Profil pudendal</option>
+            <option value="congestion">Profil congestion</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="filterValue2">Valeur filtre 2</label>
+          <select id="filterValue2" class="sortSelect">
+            <option value="">Choisir...</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="secondaryVariable">Variable secondaire</label>
+          <select id="secondaryVariable" class="sortSelect">
+            <option value="">Aucune</option>
+            <option value="practitionerName">Praticien</option>
+            <option value="diagnostic_echo">Diagnostic écho</option>
+            <option value="lesionPrimary">Hypothèse lésionnelle</option>
+            <option value="painTypePrimary">Type de douleur</option>
+            <option value="echoPrimary">Orientation écho</option>
+            <option value="topo">Localisation</option>
+            <option value="time">Temporalité</option>
+            <option value="digestif">Digestif</option>
+            <option value="contraceptionType">Contraception</option>
+            <option value="consultation">Consultation antérieure</option>
+            <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
+            <option value="echoCertainty">Certitude écho</option>
+            <option value="phenotype">Phénotype</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="chartType">Type de graphique</label>
+          <select id="chartType" class="sortSelect">
+            <option value="bar">Barres</option>
+            <option value="pie">Camembert</option>
+            <option value="doughnut">Anneau</option>
+            <option value="table">Tableau</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="displayMode">Affichage</label>
+          <select id="displayMode" class="sortSelect">
+            <option value="count">Effectifs</option>
+            <option value="percent">Pourcentages</option>
+            <option value="both">Effectifs + %</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toolbar analyzeToolbar">
+        <button class="primary" onclick="runCustomAnalysis()">Analyser</button>
+      </div>
+
+      <div class="inlineTools">
+        <button class="secondaryMini" onclick="exportCurrentChartPNG()">Exporter graphique PNG</button>
+        <button class="secondaryMini" onclick="exportCurrentTableCSV()">Exporter tableau CSV</button>
+      </div>
+
+      <div class="chartGrid oneChart">
+        <div class="card analysisCard">
+          <h2 id="analysisTitle">Analyse</h2>
+          <canvas id="customChart"></canvas>
+          <div id="customTableWrap" class="simpleTable" style="display:none;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -67,6 +233,25 @@
 const ADMIN_PIN = atob("MTYxMg==");
 let rows = [];
 let charts = {};
+let lastRenderedTableRows = [];
+let lastRenderedChartId = "customChart";
+
+const FIXED_ECHO_OPTIONS = [
+  "Endométriose",
+  "Adénomyose",
+  "Névralgie pudendale",
+  "Congestion pelvienne",
+  "OPK",
+  "Normal",
+  "Non contributif",
+  "Mixte"
+];
+
+const PRACTITIONER_LABELS = {
+  alexandre_soum: "Alexandre Soum",
+  praticien_2: "Dr Jean-Marc Levaillant",
+  praticien_3: "Anne-Laure Siraga"
+};
 
 function ageFromDob(dob) {
   if (!dob) return null;
@@ -78,74 +263,297 @@ function ageFromDob(dob) {
   if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
   return a;
 }
-function topLabel(map) {
-  const e = Object.entries(map).sort((a,b) => b[1] - a[1]);
-  return e.length ? e[0][0] : "-";
-}
-function countValues(items) {
-  const m = {};
-  items.forEach(v => {
-    const k = v && String(v).trim() ? String(v) : "Non renseigné";
-    m[k] = (m[k] || 0) + 1;
-  });
-  return m;
-}
-function draw(id, type, labels, data) {
+
+function drawChart(id, type, labels, data) {
   if (charts[id]) charts[id].destroy();
   charts[id] = new Chart(document.getElementById(id), {
     type,
-    data: { labels, datasets: [{ data }] },
-    options: { responsive: true, maintainAspectRatio: false }
+    data: {
+      labels,
+      datasets: [{ data }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
   });
 }
-function checkPin() {
-  const pin = document.getElementById("pinInput").value;
-  if (pin === ADMIN_PIN) {
-    document.getElementById("pinOverlay").style.display = "none";
-    document.getElementById("content").style.display = "block";
-    loadRows();
-  } else {
-    document.getElementById("pinError").textContent = "Code incorrect.";
-  }
-}
-function updateStats() {
-  const docs = rows.map(r => r.data);
-  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
-  const byPractitioner = countValues(docs.map(d => d.practitionerName || d.practitionerId || "Non renseigné"));
-  const lesions = countValues(docs.map(d => d.lesionPrimary || "Non renseigné"));
-  const echoOrientations = countValues(docs.map(d => d.echoPrimary || "Non renseigné"));
 
-  document.getElementById("statEchoes").textContent = docs.length;
+function selectedPractitioners() {
+  return [...document.querySelectorAll(".practitionerFilter:checked")].map(el => el.value);
+}
+
+function toggleAllPractitioners() {
+  const checked = document.getElementById("p_all").checked;
+  document.querySelectorAll(".practitionerFilter").forEach(el => el.checked = checked);
+  recomputeAll();
+}
+
+function syncAllPractitioners() {
+  const boxes = [...document.querySelectorAll(".practitionerFilter")];
+  document.getElementById("p_all").checked = boxes.every(x => x.checked);
+}
+
+function getScopedDocs() {
+  const selected = selectedPractitioners();
+  return rows.map(r => r.data).filter(d => selected.includes(d.practitionerId));
+}
+
+function getFieldValuesFromDocs(field, docs) {
+  const values = new Set();
+
+  docs.forEach(d => {
+    let v = d[field];
+    if (field === "practitionerName" && !v) v = PRACTITIONER_LABELS[d.practitionerId] || d.practitionerId || "Non renseigné";
+
+    if (Array.isArray(v)) {
+      v.forEach(x => values.add(x || "Non renseigné"));
+    } else {
+      values.add(v && String(v).trim() ? String(v) : "Non renseigné");
+    }
+  });
+
+  return [...values].sort((a,b) => String(a).localeCompare(String(b), "fr"));
+}
+
+function refreshFilterOptions(index) {
+  const docs = getScopedDocs();
+  const field = document.getElementById("filterField" + index).value;
+  const valueSelect = document.getElementById("filterValue" + index);
+  valueSelect.innerHTML = '<option value="">Choisir...</option>';
+
+  if (!field) return;
+
+  let values = [];
+  if (field === "diagnostic_echo") {
+    values = FIXED_ECHO_OPTIONS;
+  } else if (["endometriose","adenomyose","pudendal","congestion"].includes(field)) {
+    values = ["faible", "possible", "élevé"];
+  } else {
+    values = getFieldValuesFromDocs(field, docs);
+  }
+
+  values.forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.textContent = v;
+    valueSelect.appendChild(opt);
+  });
+}
+
+function updateFixedStats() {
+  const docs = getScopedDocs();
+  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+
+  document.getElementById("statPatients").textContent = docs.length;
   document.getElementById("statAge").textContent = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
   document.getElementById("statPain").textContent = (docs.length ? (docs.reduce((s,d)=>s+Number(d.pain||0),0)/docs.length).toFixed(1) : "0") + "/10";
-  document.getElementById("statLesion").textContent = topLabel(lesions);
+  document.getElementById("statEchoes").textContent = docs.filter(d => Array.isArray(d.diagnostic_echo) && d.diagnostic_echo.length > 0).length;
 
-  draw("practitionerChart", "bar", Object.keys(byPractitioner), Object.values(byPractitioner));
-  draw("lesionChart", "bar", Object.keys(lesions), Object.values(lesions));
-  draw("echoOrientationChart", "bar", Object.keys(echoOrientations), Object.values(echoOrientations));
+  const diagCounts = {};
+  FIXED_ECHO_OPTIONS.forEach(x => diagCounts[x] = 0);
 
-  let html = "";
   docs.forEach(d => {
-    const age = ageFromDob(d.dob);
-    html += `<tr>
-      <td>${d.practitionerName || d.practitionerId || ""}</td>
-      <td>${age ?? ""}</td>
-      <td>${d.pain || ""}</td>
-      <td>${d.lesionPrimary || ""}</td>
-      <td>${d.painTypePrimary || ""}</td>
-      <td>${d.echoPrimary || ""}</td>
-      <td>Endo ${d.endometriose || ""}<br>Adéno ${d.adenomyose || ""}<br>Pudendal ${d.pudendal || ""}<br>Congestion ${d.congestion || ""}</td>
-      <td>${(d.diagnostic_echo || []).join(", ")}</td>
-      <td>${d.echoCertainty || ""}</td>
-    </tr>`;
+    const arr = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    arr.forEach(x => { diagCounts[x] = (diagCounts[x] || 0) + 1; });
   });
-  document.getElementById("tableBody").innerHTML = html || '<tr><td colspan="9">Aucune donnée.</td></tr>';
+
+  const filteredEntries = Object.entries(diagCounts).filter(x => x[1] > 0);
+  if (filteredEntries.length) {
+    drawChart("diagnosticPieChart", "pie", filteredEntries.map(x => x[0]), filteredEntries.map(x => x[1]));
+  } else {
+    drawChart("diagnosticPieChart", "pie", ["Aucun diagnostic"], [1]);
+  }
 }
+
+function normalizeFieldValue(doc, field) {
+  let v = doc[field];
+  if (field === "practitionerName") v = v || PRACTITIONER_LABELS[doc.practitionerId] || doc.practitionerId;
+  return v;
+}
+
+function docMatchesFilter(doc, field, value) {
+  if (!field || !value) return true;
+  const v = normalizeFieldValue(doc, field);
+
+  if (Array.isArray(v)) return v.includes(value);
+  return (v && String(v).trim() ? String(v) : "Non renseigné") === value;
+}
+
+function flattenFieldValues(doc, field) {
+  const v = normalizeFieldValue(doc, field);
+  if (Array.isArray(v)) return v.length ? v.map(x => x && String(x).trim() ? String(x) : "Non renseigné") : ["Non renseigné"];
+  return [v && String(v).trim() ? String(v) : "Non renseigné"];
+}
+
+function aggregateField(docs, field) {
+  const counts = {};
+  docs.forEach(d => {
+    flattenFieldValues(d, field).forEach(key => {
+      counts[key] = (counts[key] || 0) + 1;
+    });
+  });
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+
+function buildCrossTable(docs, field1, field2) {
+  const rowSet = new Set();
+  const colSet = new Set();
+  const matrix = {};
+
+  docs.forEach(d => {
+    const vals1 = flattenFieldValues(d, field1);
+    const vals2 = flattenFieldValues(d, field2);
+
+    vals1.forEach(v1 => {
+      rowSet.add(v1);
+      if (!matrix[v1]) matrix[v1] = {};
+      vals2.forEach(v2 => {
+        colSet.add(v2);
+        matrix[v1][v2] = (matrix[v1][v2] || 0) + 1;
+      });
+    });
+  });
+
+  const rows = [...rowSet].sort((a,b) => String(a).localeCompare(String(b), "fr"));
+  const cols = [...colSet].sort((a,b) => String(a).localeCompare(String(b), "fr"));
+  return { rows, cols, matrix };
+}
+
+function labelForField(field) {
+  const labels = {
+    practitionerName: "Praticien",
+    diagnostic_echo: "Diagnostic écho",
+    lesionPrimary: "Hypothèse lésionnelle",
+    painTypePrimary: "Type de douleur",
+    echoPrimary: "Orientation écho",
+    topo: "Localisation",
+    time: "Temporalité",
+    digestif: "Digestif",
+    contraceptionType: "Contraception",
+    consultation: "Consultation antérieure",
+    previousDiagnosis: "Diagnostic déjà évoqué",
+    echoCertainty: "Certitude écho",
+    phenotype: "Phénotype",
+    endometriose: "Profil endométriose",
+    adenomyose: "Profil adénomyose",
+    pudendal: "Profil pudendal",
+    congestion: "Profil congestion"
+  };
+  return labels[field] || field;
+}
+
+function formatEntries(entries, total, mode) {
+  return entries.map(([label, count]) => {
+    const pct = total > 0 ? (count * 100 / total) : 0;
+    let displayLabel = label;
+    if (mode === "percent") displayLabel = `${label} (${pct.toFixed(1)}%)`;
+    if (mode === "both") displayLabel = `${label} (${count} | ${pct.toFixed(1)}%)`;
+    return { label, count, pct, displayLabel };
+  });
+}
+
+function runCustomAnalysis() {
+  const docs = getScopedDocs();
+  const mainVariable = document.getElementById("mainVariable").value;
+  const secondaryVariable = document.getElementById("secondaryVariable").value;
+  const filterField1 = document.getElementById("filterField1").value;
+  const filterValue1 = document.getElementById("filterValue1").value;
+  const filterField2 = document.getElementById("filterField2").value;
+  const filterValue2 = document.getElementById("filterValue2").value;
+  const chartType = document.getElementById("chartType").value;
+  const displayMode = document.getElementById("displayMode").value;
+
+  const filtered = docs.filter(d =>
+    docMatchesFilter(d, filterField1, filterValue1) &&
+    docMatchesFilter(d, filterField2, filterValue2)
+  );
+
+  const titleParts = ["Analyse : " + labelForField(mainVariable)];
+  if (secondaryVariable) titleParts.push("croisé avec " + labelForField(secondaryVariable));
+  if (filterField1 && filterValue1) titleParts.push(labelForField(filterField1) + " = " + filterValue1);
+  if (filterField2 && filterValue2) titleParts.push(labelForField(filterField2) + " = " + filterValue2);
+  document.getElementById("analysisTitle").textContent = titleParts.join(" | ");
+
+  const canvas = document.getElementById("customChart");
+  const tableWrap = document.getElementById("customTableWrap");
+  lastRenderedTableRows = [];
+
+  if (secondaryVariable) {
+    const cross = buildCrossTable(filtered, mainVariable, secondaryVariable);
+    canvas.style.display = "none";
+    tableWrap.style.display = "block";
+
+    const totalsByRow = {};
+    cross.rows.forEach(r => {
+      totalsByRow[r] = cross.cols.reduce((s,c) => s + (cross.matrix[r]?.[c] || 0), 0);
+    });
+
+    let html = `<table><thead><tr><th>${labelForField(mainVariable)} / ${labelForField(secondaryVariable)}</th>${cross.cols.map(c => `<th>${c}</th>`).join("")}<th>Total</th></tr></thead><tbody>`;
+    const csvRows = [[labelForField(mainVariable) + " / " + labelForField(secondaryVariable), ...cross.cols, "Total"]];
+
+    cross.rows.forEach(r => {
+      const rowCells = [];
+      html += `<tr><td>${r}</td>`;
+      cross.cols.forEach(c => {
+        const count = cross.matrix[r]?.[c] || 0;
+        const pct = totalsByRow[r] > 0 ? (count * 100 / totalsByRow[r]) : 0;
+        let cell = String(count);
+        if (displayMode === "percent") cell = pct.toFixed(1) + "%";
+        if (displayMode === "both") cell = count + " | " + pct.toFixed(1) + "%";
+        html += `<td>${cell}</td>`;
+        rowCells.push(cell);
+      });
+      html += `<td>${totalsByRow[r]}</td></tr>`;
+      csvRows.push([r, ...rowCells, totalsByRow[r]]);
+    });
+    html += `</tbody></table>`;
+    tableWrap.innerHTML = html;
+    lastRenderedTableRows = csvRows;
+
+    if (charts["customChart"]) {
+      charts["customChart"].destroy();
+      charts["customChart"] = null;
+    }
+    return;
+  }
+
+  const entriesRaw = aggregateField(filtered, mainVariable);
+  const formatted = formatEntries(entriesRaw, filtered.length, displayMode);
+
+  if (chartType === "table") {
+    canvas.style.display = "none";
+    tableWrap.style.display = "block";
+    tableWrap.innerHTML = `
+      <table>
+        <thead><tr><th>Valeur</th><th>Nombre</th><th>%</th></tr></thead>
+        <tbody>
+          ${formatted.map(x => `<tr><td>${x.label}</td><td>${x.count}</td><td>${x.pct.toFixed(1)}%</td></tr>`).join("") || "<tr><td colspan='3'>Aucune donnée</td></tr>"}
+        </tbody>
+      </table>
+    `;
+    lastRenderedTableRows = [["Valeur","Nombre","%"], ...formatted.map(x => [x.label, x.count, x.pct.toFixed(1) + "%"])];
+    if (charts["customChart"]) {
+      charts["customChart"].destroy();
+      charts["customChart"] = null;
+    }
+  } else {
+    canvas.style.display = "block";
+    tableWrap.style.display = "none";
+    drawChart("customChart", chartType, formatted.map(x => x.displayLabel), formatted.map(x => x.count));
+    lastRenderedTableRows = [["Valeur","Nombre","%"], ...formatted.map(x => [x.label, x.count, x.pct.toFixed(1) + "%"])];
+  }
+}
+
 function exportAnonymousCSV() {
-  const docs = rows.map(r => r.data);
-  const out = [["praticien","age","intensite","lesion_suspectee","type_douleur","orientation_echo","endometriose","adenomyose","pudendal","congestion","resultat_echo","echo_certitude"]];
+  const docs = getScopedDocs();
+  const out = [[
+    "praticien","age","intensite","lesion_suspectee","type_douleur","orientation_echo",
+    "endometriose","adenomyose","pudendal","congestion","resultat_echo","echo_certitude"
+  ]];
+
   docs.forEach(d => out.push([
-    d.practitionerName || d.practitionerId || "",
+    d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || d.practitionerId || "",
     ageFromDob(d.dob) ?? "",
     d.pain || "",
     d.lesionPrimary || "",
@@ -158,7 +566,8 @@ function exportAnonymousCSV() {
     (d.diagnostic_echo || []).join(" | "),
     d.echoCertainty || ""
   ]));
-  const csv = out.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+
+  const csv = out.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -167,13 +576,54 @@ function exportAnonymousCSV() {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+function exportCurrentTableCSV() {
+  if (!lastRenderedTableRows.length) return;
+  const csv = lastRenderedTableRows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "pelvis_pain_map_analyse.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCurrentChartPNG() {
+  const chart = charts[lastRenderedChartId];
+  if (!chart) return;
+  const link = document.createElement("a");
+  link.href = chart.toBase64Image();
+  link.download = "pelvis_pain_map_graphique.png";
+  link.click();
+}
+
+function checkPin() {
+  const pin = document.getElementById("pinInput").value;
+  if (pin === ADMIN_PIN) {
+    document.getElementById("pinOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    loadRows();
+  } else {
+    document.getElementById("pinError").textContent = "Code incorrect.";
+  }
+}
+
+function recomputeAll() {
+  updateFixedStats();
+  refreshFilterOptions("1");
+  refreshFilterOptions("2");
+  runCustomAnalysis();
+}
+
 function loadRows() {
   db.collection("patients").onSnapshot(s => {
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
-    updateStats();
+    recomputeAll();
   });
 }
+
 document.addEventListener("keydown", e => {
   if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
 });
