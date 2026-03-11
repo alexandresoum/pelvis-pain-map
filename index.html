@@ -2,117 +2,110 @@
 <html lang="fr">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Pelvis Pain Map</title>
 
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ce552031be31f4b900b6e08de7fb9ee64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088633697279804%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=vChzjf3r6kWJhj1pVsBzrvOm1c6MPgKEHI6aMKYYUy0%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ce552031be31f4b900b6e08de7fb9ee64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088633697315500%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=MWvjvekw2ccD3W9GYf1fijBZkjGEhivXuH3qgMO9TxI%3D&reserved=0"></script>
+<link rel="stylesheet" href="style.css">
+
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C409578383083400a19d208de7fbb9305%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088640744100285%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=sEDXvNnX4Llfnbsq%2F5efeIFU533CRpBuXnMeSZgJc8s%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C409578383083400a19d208de7fbb9305%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088640744121316%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=E%2FPQU80vvge9qb6pnyHaM7tEjD55huTRP8iUF0SFDhA%3D&reserved=0"></script>
+
 <script src="firebase-config.js"></script>
-
-<style>
-
-body{
-font-family:Arial;
-background:#f4f6fb;
-margin:0;
-padding:20px;
-}
-
-.container{
-max-width:800px;
-margin:auto;
-}
-
-.card{
-background:white;
-padding:20px;
-margin-bottom:15px;
-border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
-
-button{
-padding:12px 20px;
-background:#6c63ff;
-color:white;
-border:none;
-border-radius:8px;
-font-size:16px;
-cursor:pointer;
-}
-
-</style>
 
 </head>
 
 <body>
 
-<div class="container">
+<header class="header">
 
 <h1>Pelvis Pain Map</h1>
+<p class="subhead">Questionnaire douleurs pelviennes</p>
+
+</header>
+
+<div class="container">
 
 <div class="card">
-Nom<br>
+
+<h2>Identification</h2>
+
+<label>Nom</label>
 <input id="nom">
 
-<br><br>
-
-Prénom<br>
+<label>Prénom</label>
 <input id="prenom">
 
-<br><br>
-
-Date de naissance<br>
+<label>Date de naissance</label>
 <input type="date" id="dob">
 
 </div>
 
-<div class="card">
-
-<h3>Symptômes</h3>
-
-<label><input type="checkbox" id="endo1"> règles douloureuses</label><br>
-<label><input type="checkbox" id="endo2"> douleur rapports profonds</label><br>
-<label><input type="checkbox" id="endo3"> douleur selle pendant règles</label><br>
-<label><input type="checkbox" id="endo4"> douleur ovulation</label><br>
-
-<label><input type="checkbox" id="aden1"> règles abondantes</label><br>
-<label><input type="checkbox" id="aden2"> caillots règles</label><br>
-
-<label><input type="checkbox" id="cong1"> lourdeur bassin</label><br>
-<label><input type="checkbox" id="cong2"> douleur après rapports</label><br>
-
-<label><input type="checkbox" id="pud1"> douleur aggravée assise</label><br>
-
-<label><input type="checkbox" id="uri1"> symptômes urinaires</label><br>
-
-</div>
 
 <div class="card">
 
-<h3>Digestif</h3>
+<h2>Symptômes associés</h2>
 
-<label><input type="checkbox" id="bloating"> ballonnements</label><br>
-<label><input type="checkbox" id="bloatingEvening"> ballonnements soir</label><br>
+<label><input type="checkbox" id="endo1"> Règles très douloureuses</label>
+
+<label><input type="checkbox" id="aden1"> Règles très abondantes</label>
+
+<label><input type="checkbox" id="aden2"> Caillots pendant les règles</label>
+
+<label><input type="checkbox" id="endo2"> Douleur pendant les rapports profonds</label>
+
+<label><input type="checkbox" id="endo3"> Douleur à la selle pendant les règles</label>
+
+<label><input type="checkbox" id="endo4"> Douleur à l'ovulation</label>
+
+<label><input type="checkbox" id="cong1"> Sensation de lourdeur dans le bassin</label>
+
+<label><input type="checkbox" id="cong2"> Douleur après les rapports</label>
+
+<label><input type="checkbox" id="pud1"> Douleur aggravée en position assise</label>
+
+<label><input type="checkbox" id="uri1"> Brûlures urinaires / pollakiurie</label>
 
 </div>
+
 
 <div class="card">
 
-<h3>Cycles hors contraception</h3>
+<h2>Signes digestifs</h2>
 
-<label><input type="radio" name="cycle" value="reguliers"> réguliers</label><br>
-<label><input type="radio" name="cycle" value="irreguliers"> irréguliers</label><br>
-<label><input type="radio" name="cycle" value="NA"> non applicable</label>
+<label><input type="checkbox" id="bloating"> Ballonnements</label>
+
+<div id="eveningBlock" style="display:none">
+
+<label><input type="checkbox" id="bloatingEvening"> Ballonnements surtout le soir</label>
+
+</div>
 
 </div>
 
-<button onclick="submitForm()">Envoyer</button>
+
+<div class="card">
+
+<h2>Cycles hors contraception</h2>
+
+<label><input type="radio" name="cycle" value="regulier"> Réguliers</label>
+
+<label><input type="radio" name="cycle" value="irregulier"> Irréguliers</label>
+
+<label><input type="radio" name="cycle" value="NA"> Non applicable</label>
 
 </div>
+
+
+<button onclick="submitForm()">Envoyer le questionnaire</button>
+
+</div>
+
 
 <script>
+
 
 const PRACTITIONERS = {
 
@@ -122,29 +115,36 @@ praticien_3:"Anne-Laure Siraga"
 
 }
 
+
+
 function getPractitioner(){
 
 let params=new URLSearchParams(window.location.search)
 
 let doc=params.get("doc")
 
-return PRACTITIONERS[doc]||"Praticien inconnu"
+return PRACTITIONERS[doc] || "Praticien inconnu"
 
 }
 
+
+
+document.getElementById("bloating").addEventListener("change",function(){
+
+document.getElementById("eveningBlock").style.display=this.checked?"block":"none"
+
+})
+
+
+
 function submitForm(){
 
-let nom=document.getElementById("nom").value
-let prenom=document.getElementById("prenom").value
-let dob=document.getElementById("dob").value
-
 let endo1=document.getElementById("endo1").checked
+let aden1=document.getElementById("aden1").checked
+let aden2=document.getElementById("aden2").checked
 let endo2=document.getElementById("endo2").checked
 let endo3=document.getElementById("endo3").checked
 let endo4=document.getElementById("endo4").checked
-
-let aden1=document.getElementById("aden1").checked
-let aden2=document.getElementById("aden2").checked
 
 let cong1=document.getElementById("cong1").checked
 let cong2=document.getElementById("cong2").checked
@@ -158,59 +158,69 @@ let bloatingEvening=document.getElementById("bloatingEvening").checked
 
 let cycle=document.querySelector('input[name="cycle"]:checked')?.value
 
+
+
 let score={
 
-Endométriose:0,
-Adénomyose:0,
+"Endométriose":0,
+"Adénomyose":0,
 "Névralgie pudendale":0,
 "Congestion pelvienne":0,
-OPK:0,
+"OPK":0,
 "Hypersensibilisation centrale":0
 
 }
 
-if(endo1) score["Endométriose"]+=1
-if(endo2) score["Endométriose"]+=2
-if(endo3) score["Endométriose"]+=2
-if(endo4) score["Endométriose"]+=1
 
-if(aden1) score["Adénomyose"]+=2
-if(aden2) score["Adénomyose"]+=2
 
-if(bloating) score["Adénomyose"]+=1
+if(endo1)score["Endométriose"]+=1
+if(endo2)score["Endométriose"]+=2
+if(endo3)score["Endométriose"]+=2
+if(endo4)score["Endométriose"]+=1
 
-if(cong1) score["Congestion pelvienne"]+=2
-if(cong2) score["Congestion pelvienne"]+=2
+if(aden1)score["Adénomyose"]+=2
+if(aden2)score["Adénomyose"]+=2
 
-if(bloatingEvening) score["Congestion pelvienne"]+=2
+if(bloating)score["Adénomyose"]+=1
 
-if(pud1) score["Névralgie pudendale"]+=2
+if(cong1)score["Congestion pelvienne"]+=2
+if(cong2)score["Congestion pelvienne"]+=2
 
-if(cycle==="irreguliers") score["OPK"]+=3
+if(bloatingEvening)score["Congestion pelvienne"]+=2
+
+if(pud1)score["Névralgie pudendale"]+=2
+
+if(cycle==="irregulier")score["OPK"]+=3
+
+
 
 let ranked=Object.entries(score).sort((a,b)=>b[1]-a[1])
 
 let hypothese=ranked[0][0]
 
+
+
 let payload={
 
-date:new Date(),
-nom,
-prenom,
-dob,
+nom:document.getElementById("nom").value,
+prenom:document.getElementById("prenom").value,
+dob:document.getElementById("dob").value,
+
 praticien:getPractitioner(),
+
 hypothese,
-scores:score
+
+scores:score,
+
+date:new Date()
 
 }
+
+
 
 db.collection("patients").add(payload)
 
-showThanks()
 
-}
-
-function showThanks(){
 
 document.body.innerHTML=`
 
@@ -232,7 +242,10 @@ document.body.innerHTML=`
 
 }
 
+
+
 </script>
+
 
 </body>
 </html>
