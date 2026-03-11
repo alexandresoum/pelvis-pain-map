@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C7125037ac7b3402ac8de08de7f6343e9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088261469115729%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=6Olku9kgVVwlxvysh%2FG3mT4%2B3nc9fhjPJS0FRH5Tx1Q%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C7125037ac7b3402ac8de08de7f6343e9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088261469182411%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=E%2BEnlwldytizZbKgKrt%2BlzLhmejWJwSYriIZN8A%2FfGM%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7C7125037ac7b3402ac8de08de7f6343e9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088261469214956%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=iREFkCHBkqSHBtiWtyezCXleoSLlaEhePRUawDWlFFA%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
   <div class="card">
     <h2>Praticien</h2>
     <p><b>Praticien sélectionné :</b> <span id="practitionerDisplay">Non reconnu</span></p>
-   
+    <p class="muted">Lien attendu : <code>?doc=alexandre_soum</code>, <code>?doc=praticien_2</code> ou <code>?doc=praticien_3</code>.</p>
   </div>
 
   <div class="card">
@@ -149,7 +149,6 @@
       <option value="">Aucun / Non précisé</option>
       <option value="Endométriose">Endométriose</option>
       <option value="Adénomyose">Adénomyose</option>
-      <option value="Endométriose">Endométriome</option>
       <option value="Congestion pelvienne">Congestion pelvienne</option>
       <option value="Névralgie pudendale">Névralgie pudendale</option>
       <option value="Syndrome de l'intestin irritable">Syndrome de l'intestin irritable</option>
@@ -160,7 +159,7 @@
   </div>
 
   <div class="card">
-    <h2>9. Depuis combien de temps avez vous mal ?</h2>
+    <h2>9. Depuis combien de temps ?</h2>
     <div class="choices columns2">
       <label><input type="radio" name="duration" value="Moins de 1 mois"> Moins de 1 mois</label>
       <label><input type="radio" name="duration" value="1 à 6 mois"> 1 à 6 mois</label>
@@ -169,7 +168,7 @@
     </div>
   </div>
 
-  <button class="primary" onclick="submitForm()">Envoyer le questionnaire</button>
+  <button id="submitBtn" class="primary" onclick="submitForm()">Envoyer le questionnaire</button>
   <div id="result" class="result" style="display:none"></div>
   <button id="pdfBtn" class="secondary" onclick="generatePDF()" style="display:none">Télécharger le PDF</button>
 </div>
@@ -183,6 +182,7 @@ const PRACTITIONERS = {
 
 let selectedPractitionerId = "";
 let lastResult = null;
+let isSubmitting = false;
 
 function getPractitionerFromUrl() {
   const params = new URLSearchParams(window.location.search);
@@ -205,10 +205,12 @@ function togglePillOptions() {
 function checked(selector) {
   return [...document.querySelectorAll(selector + ":checked")].map(el => el.value);
 }
+
 function radioValue(name) {
   const el = document.querySelector('input[name="' + name + '"]:checked');
   return el ? el.value : "";
 }
+
 function computePhenotype(typeArr) {
   const n = typeArr.includes("neuro");
   const c = typeArr.includes("nociceptive");
@@ -216,9 +218,11 @@ function computePhenotype(typeArr) {
   if (n) return "neuropathique";
   return "nociceptif";
 }
+
 function addWeighted(map, key, weight) {
   map[key] = (map[key] || 0) + weight;
 }
+
 function sortEntriesDesc(map) {
   return Object.entries(map).sort((a,b) => b[1] - a[1]);
 }
@@ -304,11 +308,61 @@ function buildDiagnosticHypotheses(data) {
   };
 }
 
+function showThankYouScreen(practitionerName) {
+  document.body.innerHTML = `
+    <div style="
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#f4f6fb;
+      padding:20px;
+      font-family:Arial, Helvetica, sans-serif;
+    ">
+      <div style="
+        max-width:700px;
+        width:100%;
+        background:white;
+        padding:40px;
+        border-radius:16px;
+        box-shadow:0 4px 20px rgba(0,0,0,0.08);
+        text-align:center;
+      ">
+        <div style="font-size:54px; margin-bottom:10px;">✅</div>
+        <h1 style="margin-top:0;color:#24324a;">Merci</h1>
+        <p style="font-size:18px;color:#374151;line-height:1.6;">
+          Merci pour votre participation à ce questionnaire.
+        </p>
+        <p style="font-size:18px;color:#374151;line-height:1.6;">
+          Vos réponses ont bien été transmises à :
+        </p>
+        <p style="font-size:22px;font-weight:bold;color:#6c63ff;">
+          ${practitionerName}
+        </p>
+        <p style="margin-top:24px;color:#6b7280;">
+          Vous pouvez maintenant fermer cette page.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
 async function submitForm() {
+  if (isSubmitting) return;
+  isSubmitting = true;
+
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Envoi en cours...";
+
   if (!selectedPractitionerId) {
     alert("QR code praticien non reconnu.");
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Envoyer le questionnaire";
     return;
   }
+
   const practitionerId = selectedPractitionerId;
   const practitionerName = PRACTITIONERS[practitionerId];
   const nom = document.getElementById("nom").value.trim();
@@ -317,6 +371,9 @@ async function submitForm() {
 
   if (!nom || !prenom) {
     alert("Merci de renseigner nom et prénom.");
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Envoyer le questionnaire";
     return;
   }
 
@@ -389,26 +446,20 @@ async function submitForm() {
 
   try {
     await db.collection("patients").add(payload);
+
+    lastResult = {
+      ...payload,
+      dateText: new Date().toLocaleString()
+    };
+
+    showThankYouScreen(practitionerName);
   } catch (e) {
-    alert("Erreur d'enregistrement Firebase.");
     console.error(e);
-    return;
+    alert("Erreur d'enregistrement. Merci de réessayer.");
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Envoyer le questionnaire";
   }
-
-  lastResult = {
-    ...payload,
-    dateText: new Date().toLocaleString()
-  };
-
-  document.getElementById("result").innerHTML = `
-    <h3>Merci.</h3>
-    <p>Le questionnaire a été transmis à <b>${practitionerName}</b>.</p>
-    <p><b>Hypothèse lésionnelle principale :</b> ${diagnostic.lesionPrimary}</p>
-    <p><b>Type de douleur dominant :</b> ${diagnostic.painTypePrimary}</p>
-    <p><b>Orientation échographique principale :</b> ${diagnostic.echoPrimary}</p>
-  `;
-  document.getElementById("result").style.display = "block";
-  document.getElementById("pdfBtn").style.display = "block";
 }
 
 function buildPdf(doc, d) {
