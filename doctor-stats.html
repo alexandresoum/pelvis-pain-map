@@ -3,165 +3,250 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Statistiques praticien</title>
+  <title>Stats praticien</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319329472%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=GGvV5ck6f%2BkV4AS2syFJSpYvXbJtF7%2FSGurlHGVMO0k%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319350900%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=fUIfTROW7wJiw3JvXwpQEHCrEVNi1KnLVr4kTZPhVag%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319364910%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=yL27nZAMQABhvn5BOdhPmxdtFZXVVR9SjF8IaC%2B9U3U%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
-    .oneChart{grid-template-columns:1fr}
-    .freeStatsControls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
-    .analysisCard{height:460px}
-    .analyzeToolbar{grid-template-columns:180px}
-    .simpleTable table{width:100%;min-width:300px;margin-top:16px}
-    @media (max-width:1100px){.freeStatsControls{grid-template-columns:1fr 1fr}}
-    @media (max-width:700px){.freeStatsControls{grid-template-columns:1fr}}
+    .statsGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin:18px 0 24px 0;
+    }
+    .statCard{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+    .statLabel{
+      font-size:14px;
+      color:#6b7280;
+      margin-bottom:8px;
+    }
+    .statValue{
+      font-size:34px;
+      font-weight:800;
+      color:#24324a;
+      line-height:1.1;
+    }
+    .statSub{
+      margin-top:8px;
+      font-size:13px;
+      color:#6b7280;
+    }
+    .chartGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:18px;
+      margin-top:18px;
+    }
+    .card{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+    .card h2{
+      margin-top:0;
+      font-size:20px;
+      color:#24324a;
+    }
+    .toolbar{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      margin:12px 0 8px 0;
+    }
+    .toolbar select,.toolbar input{
+      min-width:180px;
+    }
+    canvas{
+      max-width:100%;
+      min-height:280px;
+    }
+    .muted{
+      color:#6b7280;
+      font-size:14px;
+    }
   </style>
 </head>
 <body>
-<header class="header">
-  <h1>Statistiques praticien</h1>
-  <p class="info" id="subtitle"></p>
-</header>
+  <header class="header">
+    <h1>Statistiques praticien</h1>
+    <p class="info" id="subtitle"></p>
+  </header>
 
-<div class="container wide">
-  <div class="toolbar toolbarTop">
-    <button class="secondaryAction" onclick="window.location.href='doctor.html'">← Retour patientes</button>
-  </div>
+  <div class="container wide">
+    <div class="toolbar">
+      <button class="secondaryAction" onclick="window.location.href='doctor.html'">← Retour patientes</button>
+    </div>
 
-  <div class="statsGrid">
-    <div class="statCard">
-      <div class="statLabel">Nombre de patientes</div>
-      <div class="statValue" id="statPatients">0</div>
-    </div>
-    <div class="statCard">
-      <div class="statLabel">Âge moyen</div>
-      <div class="statValue" id="statAge">0</div>
-    </div>
-    <div class="statCard">
-      <div class="statLabel">Douleur moyenne</div>
-      <div class="statValue" id="statPain">0/10</div>
-    </div>
-    <div class="statCard">
-      <div class="statLabel">Nombre d’échos renseignés</div>
-      <div class="statValue" id="statEchoes">0</div>
-    </div>
-  </div>
+    <div class="statsGrid">
+      <div class="statCard">
+        <div class="statLabel">Nombre d’échos</div>
+        <div class="statValue" id="statEchos">0</div>
+      </div>
 
-  <div class="chartGrid oneChart">
+      <div class="statCard">
+        <div class="statLabel">Âge moyen</div>
+        <div class="statValue" id="statAge">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Douleur moyenne</div>
+        <div class="statValue" id="statPain">0/10</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Digestif présent</div>
+        <div class="statValue" id="statDigestif">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top temporalité</div>
+        <div class="statValue" id="statTopTime">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Endométriose compatible</div>
+        <div class="statValue" id="statEndo">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Congestion compatible</div>
+        <div class="statValue" id="statCong">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Contraception la plus fréquente</div>
+        <div class="statValue" id="statContraception">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top digestif</div>
+        <div class="statValue" id="statTopDigestif">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top résultat écho</div>
+        <div class="statValue" id="statTopEcho">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Concordance questionnaire / écho</div>
+        <div class="statValue" id="statConcordance">0%</div>
+        <div class="statSub" id="statConcordanceDetail">0 / 0 concordants</div>
+      </div>
+    </div>
+
     <div class="card">
-      <h2>Diagnostics écho</h2>
-      <canvas id="diagnosticPieChart"></canvas>
-    </div>
-  </div>
+      <h2>Validation diagnostique paramétrable</h2>
+      <p class="muted">Le test correspond au questionnaire. La référence correspond au diagnostic écho.</p>
 
-  <div class="card">
-    <h2>Statistiques paramétrables</h2>
+      <div class="toolbar">
+        <div>
+          <label for="metricPathology"><b>Pathologie</b></label><br>
+          <select id="metricPathology" onchange="updateStats()">
+            <option value="Endométriose">Endométriose</option>
+            <option value="Adénomyose">Adénomyose</option>
+            <option value="Congestion pelvienne">Congestion pelvienne</option>
+            <option value="Névralgie pudendale">Névralgie pudendale</option>
+            <option value="OPK">OPK</option>
+          </select>
+        </div>
 
-    <div class="freeStatsControls">
-      <div>
-        <label for="mainVariable">Variable principale</label>
-        <select id="mainVariable" class="sortSelect">
-          <option value="diagnostic_echo">Diagnostic écho</option>
-          <option value="lesionPrimary">Hypothèse lésionnelle</option>
-          <option value="painTypePrimary">Type de douleur</option>
-          <option value="echoPrimary">Orientation écho</option>
-          <option value="topo">Localisation</option>
-          <option value="time">Temporalité</option>
-          <option value="digestif">Digestif</option>
-          <option value="contraceptionType">Contraception</option>
-          <option value="consultation">Consultation antérieure</option>
-          <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
-          <option value="echoCertainty">Certitude écho</option>
-          <option value="phenotype">Phénotype</option>
-        </select>
+        <div>
+          <label for="metricThreshold"><b>Seuil questionnaire</b></label><br>
+          <select id="metricThreshold" onchange="updateStats()">
+            <option value="possible">possible ou élevé</option>
+            <option value="eleve">élevé uniquement</option>
+          </select>
+        </div>
       </div>
 
-      <div>
-        <label for="filterField1">Filtre 1</label>
-        <select id="filterField1" class="sortSelect" onchange="refreshFilterOptions('1')">
-          <option value="">Aucun filtre</option>
-          <option value="diagnostic_echo">Diagnostic écho</option>
-          <option value="lesionPrimary">Hypothèse lésionnelle</option>
-          <option value="painTypePrimary">Type de douleur</option>
-          <option value="echoPrimary">Orientation écho</option>
-          <option value="topo">Localisation</option>
-          <option value="time">Temporalité</option>
-          <option value="digestif">Digestif</option>
-          <option value="contraceptionType">Contraception</option>
-          <option value="consultation">Consultation antérieure</option>
-          <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
-          <option value="echoCertainty">Certitude écho</option>
-          <option value="phenotype">Phénotype</option>
-          <option value="endometriose">Profil endométriose</option>
-          <option value="adenomyose">Profil adénomyose</option>
-          <option value="pudendal">Profil pudendal</option>
-          <option value="congestion">Profil congestion</option>
-        </select>
+      <div class="statsGrid" style="margin-top:16px;">
+        <div class="statCard">
+          <div class="statLabel">Sensibilité</div>
+          <div class="statValue" id="metricSensitivity">0%</div>
+          <div class="statSub" id="metricSensitivitySub">0 / 0</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Spécificité</div>
+          <div class="statValue" id="metricSpecificity">0%</div>
+          <div class="statSub" id="metricSpecificitySub">0 / 0</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">VPP</div>
+          <div class="statValue" id="metricPPV">0%</div>
+          <div class="statSub" id="metricPPVSub">0 / 0</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">VPN</div>
+          <div class="statValue" id="metricNPV">0%</div>
+          <div class="statSub" id="metricNPVSub">0 / 0</div>
+        </div>
       </div>
 
-      <div>
-        <label for="filterValue1">Valeur filtre 1</label>
-        <select id="filterValue1" class="sortSelect">
-          <option value="">Choisir...</option>
-        </select>
-      </div>
+      <div class="statsGrid" style="margin-top:4px;">
+        <div class="statCard">
+          <div class="statLabel">Vrais positifs</div>
+          <div class="statValue" id="metricTP">0</div>
+        </div>
 
-      <div>
-        <label for="filterField2">Filtre 2</label>
-        <select id="filterField2" class="sortSelect" onchange="refreshFilterOptions('2')">
-          <option value="">Aucun filtre</option>
-          <option value="diagnostic_echo">Diagnostic écho</option>
-          <option value="lesionPrimary">Hypothèse lésionnelle</option>
-          <option value="painTypePrimary">Type de douleur</option>
-          <option value="echoPrimary">Orientation écho</option>
-          <option value="topo">Localisation</option>
-          <option value="time">Temporalité</option>
-          <option value="digestif">Digestif</option>
-          <option value="contraceptionType">Contraception</option>
-          <option value="consultation">Consultation antérieure</option>
-          <option value="previousDiagnosis">Diagnostic déjà évoqué</option>
-          <option value="echoCertainty">Certitude écho</option>
-          <option value="phenotype">Phénotype</option>
-          <option value="endometriose">Profil endométriose</option>
-          <option value="adenomyose">Profil adénomyose</option>
-          <option value="pudendal">Profil pudendal</option>
-          <option value="congestion">Profil congestion</option>
-        </select>
-      </div>
+        <div class="statCard">
+          <div class="statLabel">Faux positifs</div>
+          <div class="statValue" id="metricFP">0</div>
+        </div>
 
-      <div>
-        <label for="filterValue2">Valeur filtre 2</label>
-        <select id="filterValue2" class="sortSelect">
-          <option value="">Choisir...</option>
-        </select>
-      </div>
+        <div class="statCard">
+          <div class="statLabel">Faux négatifs</div>
+          <div class="statValue" id="metricFN">0</div>
+        </div>
 
-      <div>
-        <label for="chartType">Type de graphique</label>
-        <select id="chartType" class="sortSelect">
-          <option value="bar">Barres</option>
-          <option value="pie">Camembert</option>
-          <option value="doughnut">Anneau</option>
-          <option value="table">Tableau</option>
-        </select>
+        <div class="statCard">
+          <div class="statLabel">Vrais négatifs</div>
+          <div class="statValue" id="metricTN">0</div>
+        </div>
       </div>
     </div>
 
-    <div class="toolbar analyzeToolbar">
-      <button class="primary" onclick="runCustomAnalysis()">Analyser</button>
-    </div>
+    <div class="chartGrid">
+      <div class="card">
+        <h2>Top localisations</h2>
+        <canvas id="topoChart"></canvas>
+      </div>
 
-    <div class="chartGrid oneChart">
-      <div class="card analysisCard">
-        <h2 id="analysisTitle">Analyse</h2>
-        <canvas id="customChart"></canvas>
-        <div id="customTableWrap" class="simpleTable" style="display:none;"></div>
+      <div class="card">
+        <h2>Top temporalités</h2>
+        <canvas id="timeChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Digestif</h2>
+        <canvas id="digestiveChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Résultats écho</h2>
+        <canvas id="echoChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Contraception</h2>
+        <canvas id="contraceptionChart"></canvas>
       </div>
     </div>
   </div>
-</div>
 
 <script>
 const LABELS = {
@@ -174,21 +259,10 @@ let currentPractitioner = sessionStorage.getItem("ppm_currentPractitioner") || "
 let rows = [];
 let charts = {};
 
-const FIXED_ECHO_OPTIONS = [
-  "Endométriose",
-  "Adénomyose",
-  "Névralgie pudendale",
-  "Congestion pelvienne",
-  "OPK",
-  "Normal",
-  "Non contributif",
-  "Autre"
-];
-
-function ageFromDob(dob) {
-  if (!dob) return null;
+function ageFromDob(dob){
+  if(!dob) return null;
   const b = new Date(dob);
-  if (isNaN(b)) return null;
+  if(isNaN(b)) return null;
   const t = new Date();
   let a = t.getFullYear() - b.getFullYear();
   const m = t.getMonth() - b.getMonth();
@@ -196,7 +270,12 @@ function ageFromDob(dob) {
   return a;
 }
 
-function countValues(items) {
+function topLabel(map){
+  const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  return entries.length ? entries[0][0] : "-";
+}
+
+function countValues(items){
   const m = {};
   items.forEach(v => {
     const key = v && String(v).trim() ? String(v) : "Non renseigné";
@@ -205,216 +284,184 @@ function countValues(items) {
   return m;
 }
 
-function drawChart(id, type, labels, data) {
-  if (charts[id]) charts[id].destroy();
-  charts[id] = new Chart(document.getElementById(id), {
-    type,
-    data: {
-      labels,
-      datasets: [{ data }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false
-    }
-  });
-}
-
-function updateHeader() {
-  document.getElementById("subtitle").textContent = LABELS[currentPractitioner] || "";
-}
-
-function getFieldValuesFromDocs(field, docs) {
-  const values = new Set();
+function computeConcordance(docs){
+  let total = 0;
+  let concordant = 0;
 
   docs.forEach(d => {
-    const v = d[field];
+    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
 
-    if (Array.isArray(v)) {
-      v.forEach(x => values.add(x || "Non renseigné"));
-    } else {
-      values.add(v && String(v).trim() ? String(v) : "Non renseigné");
-    }
-  });
+    if (!hypo || !echos.length) return;
 
-  return [...values].sort((a,b) => String(a).localeCompare(String(b), "fr"));
-}
-
-function refreshFilterOptions(index) {
-  const field = document.getElementById("filterField" + index).value;
-  const valueSelect = document.getElementById("filterValue" + index);
-  valueSelect.innerHTML = '<option value="">Choisir...</option>';
-
-  if (!field) return;
-
-  let values = [];
-  const docs = rows.map(r => r.data);
-
-  if (field === "diagnostic_echo") {
-    values = FIXED_ECHO_OPTIONS;
-  } else if (["endometriose","adenomyose","pudendal","congestion"].includes(field)) {
-    values = ["faible", "possible", "élevé"];
-  } else {
-    values = getFieldValuesFromDocs(field, docs);
-  }
-
-  values.forEach(v => {
-    const opt = document.createElement("option");
-    opt.value = v;
-    opt.textContent = v;
-    valueSelect.appendChild(opt);
-  });
-}
-
-function updateFixedStats() {
-  const docs = rows.map(r => r.data);
-  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
-
-  document.getElementById("statPatients").textContent = docs.length;
-  document.getElementById("statAge").textContent =
-    ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
-
-  document.getElementById("statPain").textContent =
-    (docs.length ? (docs.reduce((s,d)=>s+Number(d.pain||0),0)/docs.length).toFixed(1) : "0") + "/10";
-
-  document.getElementById("statEchoes").textContent =
-    docs.filter(d => Array.isArray(d.diagnostic_echo) && d.diagnostic_echo.length > 0).length;
-
-  const diagCounts = {};
-  FIXED_ECHO_OPTIONS.forEach(x => diagCounts[x] = 0);
-
-  docs.forEach(d => {
-    const arr = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-    arr.forEach(x => {
-      diagCounts[x] = (diagCounts[x] || 0) + 1;
-    });
-  });
-
-  const filteredEntries = Object.entries(diagCounts).filter(x => x[1] > 0);
-  if (filteredEntries.length) {
-    drawChart(
-      "diagnosticPieChart",
-      "pie",
-      filteredEntries.map(x => x[0]),
-      filteredEntries.map(x => x[1])
+    const validEchos = echos.filter(x =>
+      x &&
+      x !== "Normal" &&
+      x !== "Non contributif" &&
+      x !== "Autre"
     );
-  } else {
-    drawChart("diagnosticPieChart", "pie", ["Aucun diagnostic"], [1]);
-  }
+
+    if (!validEchos.length) return;
+
+    total++;
+    if (validEchos.includes(hypo)) concordant++;
+  });
+
+  const discordant = total - concordant;
+  const rate = total ? Math.round((concordant / total) * 100) : 0;
+  return { total, concordant, discordant, rate };
 }
 
-function docMatchesFilter(doc, field, value) {
-  if (!field || !value) return true;
-  const v = doc[field];
+function getQuestionnairePositive(d, pathology, thresholdMode){
+  const map = {
+    "Endométriose": d.endometriose || "",
+    "Adénomyose": d.adenomyose || "",
+    "Congestion pelvienne": d.congestion || "",
+    "Névralgie pudendale": d.pudendal || "",
+    "OPK": d.opk || ""
+  };
 
-  if (Array.isArray(v)) {
-    return v.includes(value);
-  }
-  return (v && String(v).trim() ? String(v) : "Non renseigné") === value;
+  const level = map[pathology] || "";
+
+  if (thresholdMode === "eleve") return level === "élevé";
+  return level === "possible" || level === "élevé";
 }
 
-function aggregateField(docs, field) {
-  const counts = {};
+function getEchoPositive(d, pathology){
+  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+  return echos.includes(pathology);
+}
+
+function pct(num, den){
+  return den ? Math.round((num / den) * 100) : 0;
+}
+
+function computeDiagnosticMetrics(docs, pathology, thresholdMode){
+  let TP = 0;
+  let FP = 0;
+  let FN = 0;
+  let TN = 0;
 
   docs.forEach(d => {
-    const v = d[field];
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    if (!echos.length) return;
 
-    if (Array.isArray(v)) {
-      if (v.length === 0) {
-        counts["Non renseigné"] = (counts["Non renseigné"] || 0) + 1;
-      } else {
-        v.forEach(x => {
-          const key = x && String(x).trim() ? String(x) : "Non renseigné";
-          counts[key] = (counts[key] || 0) + 1;
-        });
-      }
-    } else {
-      const key = v && String(v).trim() ? String(v) : "Non renseigné";
-      counts[key] = (counts[key] || 0) + 1;
-    }
+    const hasUsableEcho = echos.some(x => x && x !== "Non contributif");
+    if (!hasUsableEcho) return;
+
+    const testPositive = getQuestionnairePositive(d, pathology, thresholdMode);
+    const diseasePositive = getEchoPositive(d, pathology);
+
+    if (testPositive && diseasePositive) TP++;
+    else if (testPositive && !diseasePositive) FP++;
+    else if (!testPositive && diseasePositive) FN++;
+    else TN++;
   });
 
-  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
-}
-
-function labelForField(field) {
-  const labels = {
-    diagnostic_echo: "Diagnostic écho",
-    lesionPrimary: "Hypothèse lésionnelle",
-    painTypePrimary: "Type de douleur",
-    echoPrimary: "Orientation écho",
-    topo: "Localisation",
-    time: "Temporalité",
-    digestif: "Digestif",
-    contraceptionType: "Contraception",
-    consultation: "Consultation antérieure",
-    previousDiagnosis: "Diagnostic déjà évoqué",
-    echoCertainty: "Certitude écho",
-    phenotype: "Phénotype",
-    endometriose: "Profil endométriose",
-    adenomyose: "Profil adénomyose",
-    pudendal: "Profil pudendal",
-    congestion: "Profil congestion"
+  return {
+    TP, FP, FN, TN,
+    sensitivity: pct(TP, TP + FN),
+    specificity: pct(TN, TN + FP),
+    ppv: pct(TP, TP + FP),
+    npv: pct(TN, TN + FN)
   };
-  return labels[field] || field;
 }
 
-function runCustomAnalysis() {
-  const docs = rows.map(r => r.data);
+function updateDiagnosticMetrics(docs){
+  const pathology = document.getElementById("metricPathology").value;
+  const thresholdMode = document.getElementById("metricThreshold").value;
+  const m = computeDiagnosticMetrics(docs, pathology, thresholdMode);
 
-  const mainVariable = document.getElementById("mainVariable").value;
-  const filterField1 = document.getElementById("filterField1").value;
-  const filterValue1 = document.getElementById("filterValue1").value;
-  const filterField2 = document.getElementById("filterField2").value;
-  const filterValue2 = document.getElementById("filterValue2").value;
-  const chartType = document.getElementById("chartType").value;
+  document.getElementById("metricSensitivity").innerText = m.sensitivity + "%";
+  document.getElementById("metricSpecificity").innerText = m.specificity + "%";
+  document.getElementById("metricPPV").innerText = m.ppv + "%";
+  document.getElementById("metricNPV").innerText = m.npv + "%";
 
-  let filtered = docs.filter(d =>
-    docMatchesFilter(d, filterField1, filterValue1) &&
-    docMatchesFilter(d, filterField2, filterValue2)
-  );
+  document.getElementById("metricSensitivitySub").innerText = m.TP + " / " + (m.TP + m.FN);
+  document.getElementById("metricSpecificitySub").innerText = m.TN + " / " + (m.TN + m.FP);
+  document.getElementById("metricPPVSub").innerText = m.TP + " / " + (m.TP + m.FP);
+  document.getElementById("metricNPVSub").innerText = m.TN + " / " + (m.TN + m.FN);
 
-  const entries = aggregateField(filtered, mainVariable);
-  const titleParts = ["Analyse : " + labelForField(mainVariable)];
-  if (filterField1 && filterValue1) titleParts.push(labelForField(filterField1) + " = " + filterValue1);
-  if (filterField2 && filterValue2) titleParts.push(labelForField(filterField2) + " = " + filterValue2);
-  document.getElementById("analysisTitle").textContent = titleParts.join(" | ");
+  document.getElementById("metricTP").innerText = m.TP;
+  document.getElementById("metricFP").innerText = m.FP;
+  document.getElementById("metricFN").innerText = m.FN;
+  document.getElementById("metricTN").innerText = m.TN;
+}
 
-  const canvas = document.getElementById("customChart");
-  const tableWrap = document.getElementById("customTableWrap");
+function draw(id, type, labels, data){
+  const el = document.getElementById(id);
+  if (!el) return;
+  if(charts[id]) charts[id].destroy();
 
-  if (chartType === "table") {
-    canvas.style.display = "none";
-    tableWrap.style.display = "block";
-    tableWrap.innerHTML = `
-      <table>
-        <thead><tr><th>Valeur</th><th>Nombre</th></tr></thead>
-        <tbody>
-          ${entries.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td></tr>`).join("") || "<tr><td colspan='2'>Aucune donnée</td></tr>"}
-        </tbody>
-      </table>
-    `;
-    if (charts["customChart"]) {
-      charts["customChart"].destroy();
-      charts["customChart"] = null;
+  charts[id] = new Chart(el, {
+    type,
+    data:{
+      labels,
+      datasets:[{ data }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{ legend:{ display:type === "pie" || type === "doughnut" } }
     }
-  } else {
-    canvas.style.display = "block";
-    tableWrap.style.display = "none";
-    drawChart("customChart", chartType, entries.map(x => x[0]), entries.map(x => x[1]));
-  }
+  });
 }
 
-function loadRows() {
+function updateHeader(){
+  document.getElementById("subtitle").innerText = LABELS[currentPractitioner] || "";
+}
+
+function updateStats(){
+  const docs = rows.map(r=>r.data);
+
+  const ages = docs.map(d=>ageFromDob(d.dob)).filter(v=>v!==null);
+  const topo = countValues(docs.flatMap(d=>d.topo || []));
+  const times = countValues(docs.flatMap(d=>d.time || []));
+  const digestif = countValues(
+    docs.flatMap(d=>(d.digestif || []).filter(x => x !== "Aucun signe digestif"))
+  );
+  const echos = countValues(docs.flatMap(d=>d.diagnostic_echo || []));
+  const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
+  const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
+  const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
+  const endoCompat = docs.filter(d => d.endometriose === "possible" || d.endometriose === "élevé").length;
+  const congCompat = docs.filter(d => d.congestion === "possible" || d.congestion === "élevé").length;
+  const concordance = computeConcordance(docs);
+
+  document.getElementById("statEchos").innerText = docs.length;
+  document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
+  document.getElementById("statPain").innerText = painAvg + "/10";
+  document.getElementById("statDigestif").innerText = digestifPresent;
+  document.getElementById("statTopTime").innerText = topLabel(times);
+  document.getElementById("statEndo").innerText = endoCompat;
+  document.getElementById("statCong").innerText = congCompat;
+  document.getElementById("statContraception").innerText = topLabel(contraception);
+  document.getElementById("statTopDigestif").innerText = topLabel(digestif);
+  document.getElementById("statTopEcho").innerText = topLabel(echos);
+  document.getElementById("statConcordance").innerText = concordance.rate + "%";
+  document.getElementById("statConcordanceDetail").innerText =
+    concordance.concordant + " concordants • " +
+    concordance.discordant + " discordants • " +
+    concordance.total + " dossiers exploitables";
+
+  updateDiagnosticMetrics(docs);
+
+  draw("topoChart", "bar", Object.keys(topo), Object.values(topo));
+  draw("timeChart", "bar", Object.keys(times), Object.values(times));
+  draw("digestiveChart", "pie", Object.keys(digestif), Object.values(digestif));
+  draw("echoChart", "doughnut", Object.keys(echos), Object.values(echos));
+  draw("contraceptionChart", "bar", Object.keys(contraception), Object.values(contraception));
+}
+
+function loadRows(){
   updateHeader();
-  db.collection("patients").where("practitionerId", "==", currentPractitioner).onSnapshot(s => {
-    rows = [];
-    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
-    updateFixedStats();
-    refreshFilterOptions("1");
-    refreshFilterOptions("2");
-    runCustomAnalysis();
-  });
+  db.collection("patients")
+    .where("practitionerId", "==", currentPractitioner)
+    .onSnapshot(s => {
+      rows = [];
+      s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+      updateStats();
+    });
 }
 
 loadRows();
