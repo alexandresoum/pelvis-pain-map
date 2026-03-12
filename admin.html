@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C37d659362cc3465f29f208de7fca457f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088703878459855%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=7exvMAqzAJQwo3%2Br4I7d4LTwcgF8nthe7rFnTDGPeDQ%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C37d659362cc3465f29f208de7fca457f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088703878501910%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=voFrKx%2B%2FZeCalA70LaMdDo3T9rnpWC4MgbfuXAVrtbM%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C37d659362cc3465f29f208de7fca457f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088703878521631%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=5yK1McZuNglSiy5TpuqHVzeyyRg61DMXWzCagOPfKSo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cd581c6b79c17441340b508de80479c91%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089242208343963%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=52lEByO%2FkRZ%2FEtJXTj47ehLr386WPFbVEiLa01jMHJI%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cd581c6b79c17441340b508de80479c91%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089242208435534%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rMPleqQeSaCE2atz1jTerIJxDUT2P62HqFJlQZk7xkM%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cd581c6b79c17441340b508de80479c91%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089242208495723%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=vTyU%2FvboN%2B%2F%2F6Tm9Csdn7nPUxL47H%2FjPaFO44H1q%2F%2F4%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -207,6 +207,11 @@
       </div>
 
       <div class="statCard">
+        <div class="statLabel">OPK compatible</div>
+        <div class="statValue big" id="statOpk">0</div>
+      </div>
+
+      <div class="statCard">
         <div class="statLabel">Contraception la plus fréquente</div>
         <div class="statValue small" id="statContraception">-</div>
       </div>
@@ -247,7 +252,7 @@
         <div>
           <label for="metricThresholdAdmin"><b>Seuil questionnaire</b></label><br>
           <select id="metricThresholdAdmin" onchange="updateAll()">
-            <option value="possible">possible ou élevé</option>
+            <option value="modere">modéré ou élevé</option>
             <option value="eleve">élevé uniquement</option>
           </select>
         </div>
@@ -363,15 +368,22 @@ const PRACTITIONER_LABELS = {
 let rows = [];
 let charts = {};
 
+function normalizeLevel(v){
+  if (!v) return "";
+  if (v === "possible") return "modéré";
+  return v;
+}
+
 const VARIABLE_DEFS = {
   practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || "Non renseigné"] },
   hypothesisPrimary: { label:"Hypothèse principale", extractor:d => [d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "Non renseigné"] },
+  hypothesisPrimaryPct: { label:"Poids hypothèse principale", extractor:d => [d.hypothesisPrimaryPct !== undefined && d.hypothesisPrimaryPct !== null && d.hypothesisPrimaryPct !== "" ? String(d.hypothesisPrimaryPct) + "%" : "Non renseigné"] },
   diagnostic_echo: { label:"Diagnostic écho", extractor:d => Array.isArray(d.diagnostic_echo) && d.diagnostic_echo.length ? d.diagnostic_echo : ["Non renseigné"] },
-  endometriose: { label:"Score endométriose", extractor:d => [d.endometriose || "Non renseigné"] },
-  adenomyose: { label:"Score adénomyose", extractor:d => [d.adenomyose || "Non renseigné"] },
-  congestion: { label:"Score congestion", extractor:d => [d.congestion || "Non renseigné"] },
-  pudendal: { label:"Score pudendal", extractor:d => [d.pudendal || "Non renseigné"] },
-  opk: { label:"Score OPK", extractor:d => [d.opk || "Non renseigné"] },
+  endometriose: { label:"Score endométriose", extractor:d => [normalizeLevel(d.endometriose) || "Non renseigné"] },
+  adenomyose: { label:"Score adénomyose", extractor:d => [normalizeLevel(d.adenomyose) || "Non renseigné"] },
+  congestion: { label:"Score congestion", extractor:d => [normalizeLevel(d.congestion) || "Non renseigné"] },
+  pudendal: { label:"Score pudendal", extractor:d => [normalizeLevel(d.pudendal) || "Non renseigné"] },
+  opk: { label:"Score OPK", extractor:d => [normalizeLevel(d.opk) || "Non renseigné"] },
   consultation: { label:"Consultation antérieure", extractor:d => [d.consultation || "Non renseigné"] },
   previousDiagnosis: { label:"Diagnostic évoqué", extractor:d => [d.previousDiagnosis || "Non renseigné"] },
   contraceptionType: { label:"Contraception", extractor:d => [d.contraceptionType || "Non renseignée"] },
@@ -459,15 +471,15 @@ function computeConcordance(docs){
 
 function getQuestionnairePositive(d, pathology, thresholdMode){
   const map = {
-    "Endométriose": d.endometriose || "",
-    "Adénomyose": d.adenomyose || "",
-    "Congestion pelvienne": d.congestion || "",
-    "Névralgie pudendale": d.pudendal || "",
-    "OPK": d.opk || ""
+    "Endométriose": normalizeLevel(d.endometriose || ""),
+    "Adénomyose": normalizeLevel(d.adenomyose || ""),
+    "Congestion pelvienne": normalizeLevel(d.congestion || ""),
+    "Névralgie pudendale": normalizeLevel(d.pudendal || ""),
+    "OPK": normalizeLevel(d.opk || "")
   };
   const level = map[pathology] || "";
   if (thresholdMode === "eleve") return level === "élevé";
-  return level === "possible" || level === "élevé";
+  return level === "modéré" || level === "élevé";
 }
 
 function getEchoPositive(d, pathology){
@@ -601,8 +613,18 @@ function updateKpis(docs){
   const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
   const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
-  const endoCompat = docs.filter(d => d.endometriose === "possible" || d.endometriose === "élevé").length;
-  const congCompat = docs.filter(d => d.congestion === "possible" || d.congestion === "élevé").length;
+  const endoCompat = docs.filter(d => {
+    const x = normalizeLevel(d.endometriose);
+    return x === "modéré" || x === "élevé";
+  }).length;
+  const congCompat = docs.filter(d => {
+    const x = normalizeLevel(d.congestion);
+    return x === "modéré" || x === "élevé";
+  }).length;
+  const opkCompat = docs.filter(d => {
+    const x = normalizeLevel(d.opk);
+    return x === "modéré" || x === "élevé";
+  }).length;
   const concordance = computeConcordance(docs);
 
   document.getElementById("statEchos").innerText = docs.length;
@@ -612,6 +634,7 @@ function updateKpis(docs){
   document.getElementById("statTopTime").innerText = topLabel(times);
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
+  document.getElementById("statOpk").innerText = opkCompat;
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
