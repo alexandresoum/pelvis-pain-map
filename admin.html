@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cb79ed59581f84414d2b008de807a1988%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089459050975772%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8vusfDhfFCRMpSM2Uxg7Ir7NCoqYWV02Y%2FcNRlZ2zo0%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cb79ed59581f84414d2b008de807a1988%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089459051003402%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ZP3Qnr2kGrptV5LcnIsvzPyzN5jnL0ei3NHabpb1SBc%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cb79ed59581f84414d2b008de807a1988%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089459051018283%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=EiCbep4zCcd%2Blv%2FzTlkunfb7GQJy4kx91Ov0%2B6Z%2FBQs%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345429868%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=P%2Bgh3ZKIasj3gqew6rL1sspJpnE58L4i7nGPGhaQPjE%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345474656%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=bsBe%2FFh7AJBXA4w4iXsp8wuiH8Uj8cAgKEdjwF%2BrPr4%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345500325%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=wuUndvLMxLmNDewINoBKsADoNNfiNz25gNCrc7xnXlY%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -320,6 +320,57 @@
     </div>
 
     <div class="card">
+      <h2>Discrimination continue (AUC ROC)</h2>
+      <p class="muted">Le score continu correspond au pourcentage questionnaire de la pathologie sélectionnée. La référence est le diagnostic écho.</p>
+
+      <div class="toolbar">
+        <div>
+          <label for="rocPathology"><b>Pathologie ROC</b></label><br>
+          <select id="rocPathology" onchange="updateAll()">
+            <option value="Endométriose">Endométriose</option>
+            <option value="Adénomyose">Adénomyose</option>
+            <option value="Congestion pelvienne">Congestion pelvienne</option>
+            <option value="Névralgie pudendale">Névralgie pudendale</option>
+            <option value="OPK">OPK</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="statsGrid" style="margin-top:16px;">
+        <div class="statCard">
+          <div class="statLabel">AUC ROC</div>
+          <div class="statValue big" id="rocAucValue">0.00</div>
+          <div class="statSub" id="rocAucDetail">0 dossiers exploitables</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Interprétation</div>
+          <div class="statValue small" id="rocAucInterpretation">-</div>
+        </div>
+      </div>
+
+      <canvas id="rocChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Courbe d’apprentissage</h2>
+      <p class="muted">Évolution cumulative de la performance du score au fil des dossiers.</p>
+
+      <div class="toolbar">
+        <div>
+          <label for="learningMetric"><b>Métrique</b></label><br>
+          <select id="learningMetric" onchange="updateAll()">
+            <option value="exact">Exact match</option>
+            <option value="top2" selected>Top-2 match</option>
+            <option value="gt70">Compatible &gt; 70%</option>
+          </select>
+        </div>
+      </div>
+
+      <canvas id="learningCurveChart"></canvas>
+    </div>
+
+    <div class="card">
       <h2>Statistiques paramétrables</h2>
 
       <div class="toolbar">
@@ -473,6 +524,17 @@ function getProfileList(d){
   ].sort((a,b) => b.pct - a.pct);
 }
 
+function getPathologyPct(d, pathology){
+  const map = {
+    "Endométriose": Number(d.endometriose_pct || 0),
+    "Adénomyose": Number(d.adenomyose_pct || 0),
+    "Congestion pelvienne": Number(d.congestion_pct || 0),
+    "Névralgie pudendale": Number(d.pudendal_pct || 0),
+    "OPK": Number(d.opk_pct || 0)
+  };
+  return map[pathology] || 0;
+}
+
 function computeExactMatch(docs){
   let total = 0;
   let concordant = 0;
@@ -589,6 +651,143 @@ function computeDiagnosticMetrics(docs, pathology, thresholdMode){
   };
 }
 
+function buildRocData(docs, pathology){
+  const usable = docs.filter(d => {
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echos.some(x => x && x !== "Non contributif");
+  }).map(d => ({
+    score: getPathologyPct(d, pathology),
+    positive: getEchoPositive(d, pathology)
+  }));
+
+  const positives = usable.filter(x => x.positive).length;
+  const negatives = usable.filter(x => !x.positive).length;
+
+  if (!usable.length || positives === 0 || negatives === 0) {
+    return { auc: 0, points: [], n: usable.length, interprete: "Non calculable" };
+  }
+
+  const thresholds = [];
+  for (let t = 101; t >= -1; t--) thresholds.push(t);
+
+  const rawPoints = thresholds.map(threshold => {
+    let TP = 0, FP = 0, FN = 0, TN = 0;
+
+    usable.forEach(item => {
+      const predictedPositive = item.score >= threshold;
+      if (predictedPositive && item.positive) TP++;
+      else if (predictedPositive && !item.positive) FP++;
+      else if (!predictedPositive && item.positive) FN++;
+      else TN++;
+    });
+
+    const tpr = (TP + FN) ? TP / (TP + FN) : 0;
+    const fpr = (FP + TN) ? FP / (FP + TN) : 0;
+
+    return { threshold, tpr, fpr };
+  });
+
+  const byFpr = rawPoints
+    .sort((a,b) => a.fpr - b.fpr || a.tpr - b.tpr);
+
+  const uniquePoints = [];
+  byFpr.forEach(p => {
+    const last = uniquePoints[uniquePoints.length - 1];
+    if (!last || last.fpr !== p.fpr || last.tpr !== p.tpr) {
+      uniquePoints.push(p);
+    }
+  });
+
+  let auc = 0;
+  for (let i = 1; i < uniquePoints.length; i++) {
+    const x1 = uniquePoints[i - 1].fpr;
+    const x2 = uniquePoints[i].fpr;
+    const y1 = uniquePoints[i - 1].tpr;
+    const y2 = uniquePoints[i].tpr;
+    auc += (x2 - x1) * ((y1 + y2) / 2);
+  }
+
+  let interprete = "Faible";
+  if (auc >= 0.9) interprete = "Excellent";
+  else if (auc >= 0.8) interprete = "Bon";
+  else if (auc >= 0.7) interprete = "Correct";
+  else if (auc >= 0.6) interprete = "Modeste";
+  else if (auc >= 0.5) interprete = "Faible";
+  else interprete = "Sous le hasard";
+
+  return {
+    auc,
+    points: uniquePoints,
+    n: usable.length,
+    interprete
+  };
+}
+
+function evalExactCase(d){
+  const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+  const validEchos = getValidEchos(d);
+  if (!hypo || !validEchos.length) return null;
+  return validEchos.includes(hypo) ? 1 : 0;
+}
+
+function evalTop2Case(d){
+  const validEchos = getValidEchos(d);
+  if (!validEchos.length) return null;
+
+  const profiles = getProfileList(d)
+    .filter(p => p.pct > 0)
+    .slice(0, 2)
+    .map(p => p.name);
+
+  if (!profiles.length) return null;
+  return profiles.some(name => validEchos.includes(name)) ? 1 : 0;
+}
+
+function evalGt70Case(d){
+  const validEchos = getValidEchos(d);
+  if (!validEchos.length) return null;
+
+  const compatible = getProfileList(d)
+    .filter(p => p.pct >= 70)
+    .map(p => p.name);
+
+  if (!compatible.length) return null;
+  return compatible.some(name => validEchos.includes(name)) ? 1 : 0;
+}
+
+function docTimestamp(d){
+  if (!d.date) return 0;
+  if (d.date.seconds) return d.date.seconds * 1000;
+  const t = new Date(d.date).getTime();
+  return isNaN(t) ? 0 : t;
+}
+
+function buildLearningCurve(docs, mode){
+  const sorted = [...docs].sort((a,b) => docTimestamp(a) - docTimestamp(b));
+
+  const labels = [];
+  const values = [];
+
+  let validCount = 0;
+  let successCount = 0;
+
+  sorted.forEach(d => {
+    let result = null;
+    if (mode === "exact") result = evalExactCase(d);
+    else if (mode === "top2") result = evalTop2Case(d);
+    else result = evalGt70Case(d);
+
+    if (result === null) return;
+
+    validCount++;
+    successCount += result;
+    labels.push(String(validCount));
+    values.push(Math.round((successCount / validCount) * 100));
+  });
+
+  return { labels, values, validCount };
+}
+
 function updateAdminMetrics(docs){
   const pathology = document.getElementById("metricPathologyAdmin").value;
   const thresholdMode = document.getElementById("metricThresholdAdmin").value;
@@ -672,13 +871,88 @@ function draw(id, type, labels, data){
 
   charts[id] = new Chart(el, {
     type,
-    data:{ labels, datasets:[{ data }] },
+    data:{
+      labels,
+      datasets:[{
+        data,
+        fill:false,
+        tension:0.25
+      }]
+    },
     options:{
       responsive:true,
       maintainAspectRatio:false,
-      plugins:{ legend:{ display:type === "pie" || type === "doughnut" } }
+      scales: type === "line" ? {
+        y: { min: 0, max: 100 }
+      } : {},
+      plugins:{
+        legend:{ display:type === "pie" || type === "doughnut" }
+      }
     }
   });
+}
+
+function drawRocCurve(points){
+  const el = document.getElementById("rocChart");
+  if (!el) return;
+  if (charts["rocChart"]) charts["rocChart"].destroy();
+
+  const rocPoints = points.length ? points : [{fpr:0,tpr:0},{fpr:1,tpr:1}];
+
+  charts["rocChart"] = new Chart(el, {
+    type: "line",
+    data: {
+      datasets: [
+        {
+          label: "Courbe ROC",
+          data: rocPoints.map(p => ({ x: p.fpr, y: p.tpr })),
+          fill: false,
+          tension: 0.15
+        },
+        {
+          label: "Hasard",
+          data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 1,
+          title: { display: true, text: "1 - Spécificité (FPR)" }
+        },
+        y: {
+          min: 0,
+          max: 1,
+          title: { display: true, text: "Sensibilité (TPR)" }
+        }
+      }
+    }
+  });
+}
+
+function updateRoc(docs){
+  const pathology = document.getElementById("rocPathology").value;
+  const roc = buildRocData(docs, pathology);
+
+  document.getElementById("rocAucValue").innerText = roc.auc.toFixed(2);
+  document.getElementById("rocAucDetail").innerText = roc.n + " dossiers exploitables";
+  document.getElementById("rocAucInterpretation").innerText = roc.interprete;
+
+  drawRocCurve(roc.points);
+}
+
+function updateLearningCurve(docs){
+  const mode = document.getElementById("learningMetric")?.value || "top2";
+  const curve = buildLearningCurve(docs, mode);
+  draw("learningCurveChart", "line", curve.labels, curve.values);
 }
 
 function updateKpis(docs){
@@ -834,6 +1108,8 @@ function runCustomAnalysis(){
 function updateAll(){
   const docs = filteredDocs();
   updateKpis(docs);
+  updateRoc(docs);
+  updateLearningCurve(docs);
   refreshFilterValues();
   runCustomAnalysis();
 }
