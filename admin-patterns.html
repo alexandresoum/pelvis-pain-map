@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Patterns - Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611566471%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=RvlAD2St%2B7ZGPWUTS%2BQme9mVtfpKxkYTTOQ59Q5HnqU%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611604326%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=6I%2BAN5gOPieC0LfRLX2WN53syZKLpPMiVD6IKVXDNfI%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611625120%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gi1qACdONMW4rfhUnYogmAiL43PReRCdVeOm6Lz9nq4%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375424375%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=usyWXIyXb02BLPbabggk62RqmQ82rsA61WFIVvqAdWo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375450585%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=AKRGBiHE3%2BUKZWf1kQLvsv8NUJs2AFxt0%2FWZoks2LFs%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375463856%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8rKSQRZNtIeZ%2B4LAd5OxlUKF8VVRKYYWXQGGRtNs%2BI0%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -100,7 +100,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:14px;
-      min-width:900px;
+      min-width:1200px;
     }
     .simpleTable th,.simpleTable td{
       border-bottom:1px solid #e5e7eb;
@@ -144,6 +144,25 @@
       border:1px solid #dde2ff;
       margin-right:8px;
       margin-top:6px;
+    }
+    .pill.good{
+      background:#ecfdf3;
+      border-color:#d1fadf;
+      color:#027a48;
+    }
+    .pill.warn{
+      background:#fff7ed;
+      border-color:#fed7aa;
+      color:#c2410c;
+    }
+    .pill.soft{
+      background:#f8f9fb;
+      border-color:#eceff3;
+      color:#4b5563;
+    }
+    .interpretBox{
+      line-height:1.7;
+      color:#374151;
     }
   </style>
 </head>
@@ -191,8 +210,9 @@
         <div>
           <label for="sortMode"><b>Tri</b></label><br>
           <select id="sortMode" onchange="updateAll()">
-            <option value="pct_desc">Pourcentage décroissant</option>
-            <option value="pct_asc">Pourcentage croissant</option>
+            <option value="ratio_desc">Ratio décroissant</option>
+            <option value="pct_desc">Pourcentage pathologie décroissant</option>
+            <option value="pct_asc">Pourcentage pathologie croissant</option>
             <option value="label_asc">Nom A → Z</option>
             <option value="label_desc">Nom Z → A</option>
           </select>
@@ -223,14 +243,15 @@
       </div>
 
       <div class="statCard">
-        <div class="statLabel">Top item</div>
+        <div class="statLabel">Top item discriminant</div>
         <div class="statValue" id="statTopItem">-</div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Résumé</h2>
+      <h2>Résumé intelligent</h2>
       <div id="summaryPills"></div>
+      <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
     </div>
 
     <div class="card">
@@ -238,6 +259,14 @@
       <p class="muted">Pourcentage de patientes ayant coché l’item parmi les dossiers avec le diagnostic écho sélectionné.</p>
       <div class="chartBox">
         <canvas id="patternChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Top ratios discriminants</h2>
+      <p class="muted">Le ratio compare la fréquence dans la pathologie à la fréquence chez les autres patientes.</p>
+      <div class="chartBox">
+        <canvas id="ratioChart"></canvas>
       </div>
     </div>
 
@@ -349,26 +378,62 @@ function ageFromDob(dob){
   return a;
 }
 
-function computePatternStats(docs){
-  const total = docs.length;
+function getDiscriminantLevel(ratio, pctPathology){
+  if (pctPathology < 15) return "signal faible";
+  if (ratio === null) return "non calculable";
+  if (ratio >= 5) return "très discriminant";
+  if (ratio >= 3) return "bon discriminant";
+  if (ratio >= 2) return "discriminant modéré";
+  if (ratio >= 1.2) return "faiblement discriminant";
+  return "peu utile";
+}
+
+function getDiscriminantBadgeClass(ratio, pctPathology){
+  const level = getDiscriminantLevel(ratio, pctPathology);
+  if (level === "très discriminant" || level === "bon discriminant") return "good";
+  if (level === "discriminant modéré" || level === "faiblement discriminant") return "warn";
+  return "soft";
+}
+
+function computePatternStats(pathologyDocs, allDocs){
+  const totalPathology = pathologyDocs.length;
+  const otherDocs = allDocs.filter(d => !pathologyDocs.includes(d));
+  const totalOthers = otherDocs.length;
+
   const rows = ITEM_DEFS.map(item => {
-    const count = docs.filter(d => item.test(d)).length;
-    const pct = total ? Math.round((count / total) * 100) : 0;
+    const countPathology = pathologyDocs.filter(d => item.test(d)).length;
+    const countOthers = otherDocs.filter(d => item.test(d)).length;
+
+    const pctPathology = totalPathology ? (countPathology / totalPathology) * 100 : 0;
+    const pctOthers = totalOthers ? (countOthers / totalOthers) * 100 : 0;
+
+    const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
+
     return {
       key: item.key,
       label: item.label,
-      count,
-      pct
+      countPathology,
+      pctPathology,
+      countOthers,
+      pctOthers,
+      ratio,
+      level: getDiscriminantLevel(ratio, pctPathology)
     };
   });
 
   const sortMode = document.getElementById("sortMode").value;
   rows.sort((a,b) => {
     switch(sortMode){
-      case "pct_asc": return a.pct - b.pct || a.label.localeCompare(b.label, "fr");
-      case "label_asc": return a.label.localeCompare(b.label, "fr");
-      case "label_desc": return b.label.localeCompare(a.label, "fr");
-      default: return b.pct - a.pct || a.label.localeCompare(b.label, "fr");
+      case "pct_desc":
+        return b.pctPathology - a.pctPathology || ((b.ratio || 0) - (a.ratio || 0));
+      case "pct_asc":
+        return a.pctPathology - b.pctPathology || a.label.localeCompare(b.label, "fr");
+      case "label_asc":
+        return a.label.localeCompare(b.label, "fr");
+      case "label_desc":
+        return b.label.localeCompare(a.label, "fr");
+      default:
+        return (b.ratio || 0) - (a.ratio || 0) || b.pctPathology - a.pctPathology;
     }
   });
 
@@ -378,18 +443,44 @@ function computePatternStats(docs){
 function updateKpis(docs, patternStats){
   const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
   const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
-  const topItem = patternStats.length ? patternStats[0] : null;
+  const topItem = patternStats.find(x => x.ratio !== null && x.pctPathology >= 15) || patternStats[0] || null;
 
   document.getElementById("statCases").innerText = docs.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
-  document.getElementById("statTopItem").innerText = topItem ? (topItem.label + " · " + topItem.pct + "%") : "-";
+  document.getElementById("statTopItem").innerText = topItem
+    ? `${topItem.label} · ratio ${topItem.ratio && topItem.ratio !== 999 ? topItem.ratio.toFixed(2) : "∞"}`
+    : "-";
 
-  const pills = patternStats.slice(0, 8).map(x =>
-    `<span class="pill">${x.label} · ${x.pct}%</span>`
-  ).join("");
+  const pills = patternStats
+    .filter(x => x.pctPathology >= 15)
+    .slice(0, 8)
+    .map(x => {
+      const ratioText = x.ratio === 999 ? "∞" : (x.ratio ? x.ratio.toFixed(2) : "-");
+      return `<span class="pill ${getDiscriminantBadgeClass(x.ratio, x.pctPathology)}">${x.label} · ${x.pctPathology.toFixed(0)}% · ratio ${ratioText}</span>`;
+    }).join("");
 
   document.getElementById("summaryPills").innerHTML = pills || '<span class="muted">Aucun item exploitable.</span>';
+
+  const strong = patternStats.filter(x => x.ratio !== null && x.ratio >= 3 && x.pctPathology >= 20).slice(0, 3);
+  const moderate = patternStats.filter(x => x.ratio !== null && x.ratio >= 2 && x.ratio < 3 && x.pctPathology >= 20).slice(0, 3);
+  const frequentNotSpecific = patternStats.filter(x => x.pctPathology >= 40 && x.ratio !== null && x.ratio < 1.5).slice(0, 3);
+
+  let text = "";
+  if (strong.length) {
+    text += `<p><b>Items les plus utiles pour le score :</b> ${strong.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+  }
+  if (moderate.length) {
+    text += `<p><b>Items intéressants mais moins spécifiques :</b> ${moderate.map(x => `${x.label} (ratio ${x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+  }
+  if (frequentNotSpecific.length) {
+    text += `<p><b>Items fréquents mais peu discriminants :</b> ${frequentNotSpecific.map(x => `${x.label} (${x.pctPathology.toFixed(0)}% dans la pathologie, ratio ${x.ratio.toFixed(2)})`).join(" ; ")}. Ils décrivent bien les patientes, mais ne doivent pas être surpondérés.</p>`;
+  }
+  if (!text) {
+    text = `<p>Pas encore assez de signal stable. Il faut plus de dossiers ou des items plus spécifiques pour affiner les pondérations du score.</p>`;
+  }
+
+  document.getElementById("interpretationBox").innerHTML = text;
 }
 
 function renderTable(patternStats){
@@ -398,16 +489,24 @@ function renderTable(patternStats){
       <thead>
         <tr>
           <th>Item</th>
-          <th>Nombre</th>
-          <th>Pourcentage</th>
+          <th>Nb pathologie</th>
+          <th>% pathologie</th>
+          <th>Nb autres</th>
+          <th>% autres</th>
+          <th>Ratio discriminant</th>
+          <th>Interprétation</th>
         </tr>
       </thead>
       <tbody>
         ${patternStats.map(r => `
           <tr>
             <td>${r.label}</td>
-            <td>${r.count}</td>
-            <td>${r.pct}%</td>
+            <td>${r.countPathology}</td>
+            <td>${r.pctPathology.toFixed(1)}%</td>
+            <td>${r.countOthers}</td>
+            <td>${r.pctOthers.toFixed(1)}%</td>
+            <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
+            <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology)}">${r.level}</span></td>
           </tr>
         `).join("")}
       </tbody>
@@ -416,7 +515,10 @@ function renderTable(patternStats){
 }
 
 function drawPatternChart(patternStats){
-  const top = patternStats.slice(0, 15);
+  const top = [...patternStats]
+    .sort((a,b) => b.pctPathology - a.pctPathology)
+    .slice(0, 15);
+
   const el = document.getElementById("patternChart");
   if (!el) return;
   if (charts["patternChart"]) charts["patternChart"].destroy();
@@ -426,7 +528,8 @@ function drawPatternChart(patternStats){
     data: {
       labels: top.map(x => x.label),
       datasets: [{
-        data: top.map(x => x.pct)
+        label: "% pathologie",
+        data: top.map(x => Number(x.pctPathology.toFixed(1)))
       }]
     },
     options: {
@@ -439,7 +542,46 @@ function drawPatternChart(patternStats){
           max: 100,
           title: {
             display: true,
-            text: "Pourcentage"
+            text: "Pourcentage pathologie"
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+function drawRatioChart(patternStats){
+  const top = patternStats
+    .filter(x => x.ratio !== null && x.pctPathology >= 15)
+    .sort((a,b) => (b.ratio || 0) - (a.ratio || 0))
+    .slice(0, 15);
+
+  const el = document.getElementById("ratioChart");
+  if (!el) return;
+  if (charts["ratioChart"]) charts["ratioChart"].destroy();
+
+  charts["ratioChart"] = new Chart(el, {
+    type: "bar",
+    data: {
+      labels: top.map(x => x.label),
+      datasets: [{
+        label: "Ratio discriminant",
+        data: top.map(x => x.ratio === 999 ? 10 : Number(x.ratio.toFixed(2)))
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: "y",
+      scales: {
+        x: {
+          min: 0,
+          title: {
+            display: true,
+            text: "Ratio discriminant"
           }
         }
       },
@@ -452,12 +594,14 @@ function drawPatternChart(patternStats){
 
 function updateAll(){
   const diagnosis = document.getElementById("echoTarget").value;
-  const docs = filteredDocs().filter(d => hasEchoDiagnosis(d, diagnosis));
-  const patternStats = computePatternStats(docs);
+  const allDocs = filteredDocs();
+  const docs = allDocs.filter(d => hasEchoDiagnosis(d, diagnosis));
+  const patternStats = computePatternStats(docs, allDocs);
 
   updateKpis(docs, patternStats);
   renderTable(patternStats);
   drawPatternChart(patternStats);
+  drawRatioChart(patternStats);
 }
 
 function loadRows(){
