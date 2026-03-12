@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard praticien – V2</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679404746%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pZtHRnsPyVg1KPg6tAmMI2QDChcKOS%2FYhwoekM27Cq0%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679452030%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=qqF8EHTym%2BFHUv%2FF30C6lNefVH4vOU5eLcAedXD3GY8%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679503058%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=kNy4HAl%2B6jTjfClhqtQsyRX1KLGXAewUJhOGdBovXjE%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ca46382cb0e93436d61c808de803ee557%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089204772234055%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=JOYzZGcMsPhq34dgF3fj6VZmK68wz005oW7Yk2ojMT4%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ca46382cb0e93436d61c808de803ee557%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089204772271159%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=f%2F9crrpspKUBYUusccbraKEQTAqLJJwmkFgOaUy1h8w%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7Ca46382cb0e93436d61c808de803ee557%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089204772304451%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=aeUExKF7ZDBm7rRLNMXOcTCaTF6fU%2BcHjz59JqzAKRs%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .patientList{display:flex;flex-direction:column;gap:12px}
@@ -174,6 +174,12 @@ function safeList(arr){
   return (arr && arr.length) ? arr.join(", ") : "-";
 }
 
+function normalizeLevel(v) {
+  if (!v) return "";
+  if (v === "possible") return "modéré";
+  return v;
+}
+
 function badgeClass(label) {
   if (!label) return "soft";
   const x = String(label).toLowerCase();
@@ -185,12 +191,82 @@ function badgeClass(label) {
   if (x.includes("confirm")) return "good";
   if (x.includes("compatible")) return "info";
   if (x.includes("suspect")) return "warn";
+  if (x.includes("élevé")) return "warn";
+  if (x.includes("modéré")) return "info";
+  if (x.includes("faible")) return "soft";
   return "soft";
 }
 
 function pillsFromList(arr){
   if (!arr || !arr.length) return '<span class="pill soft">-</span>';
   return arr.map(x => `<span class="pill ${badgeClass(x)}">${x}</span>`).join("");
+}
+
+function getMainHypothesis(d){
+  return d.hypothesisPrimary || d.lesionPrimary || "-";
+}
+
+function getMainHypothesisPct(d){
+  return (d.hypothesisPrimaryPct !== undefined && d.hypothesisPrimaryPct !== null && d.hypothesisPrimaryPct !== "")
+    ? `${d.hypothesisPrimaryPct}%`
+    : "-";
+}
+
+function buildSymptomsSummary(d){
+  const items = [];
+  if (d.endo1) items.push("Règles très douloureuses");
+  if (d.aden1) items.push("Règles très abondantes");
+  if (d.aden2) items.push("Caillots pendant les règles");
+  if (d.endo2) items.push("Douleur pendant les rapports profonds");
+  if (d.endo3) items.push("Douleur à la selle pendant les règles");
+  if (d.endo4) items.push("Douleur à l'ovulation");
+  if (d.cong1) items.push("Sensation de lourdeur dans le bassin");
+  if (d.cong2) items.push("Douleur après les rapports");
+  if (d.pud1) items.push("Douleur aggravée en position assise");
+  if (d.uri1) items.push("Brûlures / pollakiurie / dysurie");
+  return items.length ? items.join(", ") : "-";
+}
+
+function buildDigestiveSummary(d){
+  const items = Array.isArray(d.digestif) ? [...d.digestif] : [];
+  if ((d.bloatingEvening || d.ballonnementsSoir === "Oui") && !items.includes("Ballonnements surtout le soir")) {
+    items.push("Ballonnements surtout le soir");
+  }
+  return items.length ? items.join(", ") : "-";
+}
+
+function profileEntries(d){
+  return [
+    { label: "Endométriose", level: normalizeLevel(d.endometriose), pct: d.endometriose_pct },
+    { label: "Adénomyose", level: normalizeLevel(d.adenomyose), pct: d.adenomyose_pct },
+    { label: "Névralgie pudendale", level: normalizeLevel(d.pudendal), pct: d.pudendal_pct },
+    { label: "Congestion pelvienne", level: normalizeLevel(d.congestion), pct: d.congestion_pct },
+    { label: "OPK", level: normalizeLevel(d.opk), pct: d.opk_pct },
+    { label: "Hypersensibilisation centrale", level: normalizeLevel(d.hypersensibilisation), pct: d.hypersensibilisation_pct }
+  ].filter(x => x.level);
+}
+
+function profileLabel(entry){
+  const hasPct = entry.pct !== undefined && entry.pct !== null && entry.pct !== "";
+  return `${entry.label} (${entry.level}${hasPct ? " – " + entry.pct + "%" : ""})`;
+}
+
+function compatibleProfiles(d){
+  return profileEntries(d)
+    .filter(x => x.level === "modéré" || x.level === "élevé")
+    .sort((a,b) => Number(b.pct || 0) - Number(a.pct || 0));
+}
+
+function allProfilesAsPills(d){
+  const entries = profileEntries(d).sort((a,b) => Number(b.pct || 0) - Number(a.pct || 0));
+  if (!entries.length) return '<span class="pill soft">-</span>';
+  return entries.map(x => `<span class="pill ${badgeClass(x.level)}">${profileLabel(x)}</span>`).join("");
+}
+
+function compatibleProfilesPills(d){
+  const entries = compatibleProfiles(d);
+  if (!entries.length) return '<span class="pill soft">-</span>';
+  return entries.map(x => `<span class="pill ${badgeClass(x.level)}">${profileLabel(x)}</span>`).join("");
 }
 
 function pdfData(d) {
@@ -208,19 +284,29 @@ function pdfData(d) {
     pillContinuous: d.pillContinuous || "",
     consultation: d.consultation || "",
     previousDiagnosis: d.previousDiagnosis || "",
+    cycleRegularity: d.cycleRegularity || "",
+    hypothesisPrimary: getMainHypothesis(d),
+    hypothesisPrimaryPct: d.hypothesisPrimaryPct || "",
     lesionPrimary: d.lesionPrimary || "",
     painTypePrimary: d.painTypePrimary || "",
     echoPrimary: d.echoPrimary || "",
-    lesionHypotheses: d.lesionHypotheses || [],
-    painTypeHypotheses: d.painTypeHypotheses || [],
-    echoOrientations: d.echoOrientations || [],
-    endometriose: d.endometriose || "",
-    adenomyose: d.adenomyose || "",
-    pudendal: d.pudendal || "",
-    congestion: d.congestion || "",
+    endometriose: normalizeLevel(d.endometriose) || "",
+    endometriose_pct: d.endometriose_pct || "",
+    adenomyose: normalizeLevel(d.adenomyose) || "",
+    adenomyose_pct: d.adenomyose_pct || "",
+    pudendal: normalizeLevel(d.pudendal) || "",
+    pudendal_pct: d.pudendal_pct || "",
+    congestion: normalizeLevel(d.congestion) || "",
+    congestion_pct: d.congestion_pct || "",
+    opk: normalizeLevel(d.opk) || "",
+    opk_pct: d.opk_pct || "",
+    hypersensibilisation: normalizeLevel(d.hypersensibilisation) || "",
+    hypersensibilisation_pct: d.hypersensibilisation_pct || "",
     diagnostic_echo: d.diagnostic_echo || [],
     echoCertainty: d.echoCertainty || "Non renseigné",
-    doctorComment: d.doctorComment || ""
+    doctorComment: d.doctorComment || "",
+    symptoms: buildSymptomsSummary(d),
+    digestifSummary: buildDigestiveSummary(d)
   };
 }
 
@@ -231,10 +317,15 @@ function buildPdf(doc, d) {
     doc.text(s, 20, y);
     y += s.length * 7 + 3;
   };
+
+  const compatible = compatibleProfiles(d).map(profileLabel);
+  const allProfiles = profileEntries(d).map(profileLabel);
+
   doc.setFontSize(16);
   doc.text("Pelvis Pain Map - Résultat questionnaire", 20, y);
   y += 12;
   doc.setFontSize(11);
+
   [
     "Date : " + d.dateText,
     "Praticien : " + d.practitionerName,
@@ -244,13 +335,18 @@ function buildPdf(doc, d) {
     "Intensité : " + d.pain + "/10",
     "Localisation : " + safeList(d.topo),
     "Quand : " + safeList(d.time),
-    "Digestif : " + safeList(d.digestif),
+    "Symptômes associés : " + (d.symptoms || "-"),
+    "Digestif : " + (d.digestifSummary || "-"),
     "Contraception : " + (d.contraceptionType || "-") + (d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""),
+    "Cycles hors contraception : " + (d.cycleRegularity || "-"),
     "Consultation antérieure : " + (d.consultation || "-"),
     "Diagnostic évoqué : " + (d.previousDiagnosis || "-"),
-    "Hypothèse lésionnelle principale : " + (d.lesionPrimary || "-"),
+    "Hypothèse principale : " + (d.hypothesisPrimary || "-"),
+    "Poids hypothèse : " + (d.hypothesisPrimaryPct ? d.hypothesisPrimaryPct + "%" : "-"),
     "Type de douleur dominant : " + (d.painTypePrimary || "-"),
     "Orientation échographique principale : " + (d.echoPrimary || "-"),
+    "Profils compatibles : " + (compatible.length ? compatible.join(", ") : "-"),
+    "Profils détaillés : " + (allProfiles.length ? allProfiles.join(", ") : "-"),
     "Résultats écho : " + safeList(d.diagnostic_echo),
     "Certitude : " + (d.echoCertainty || "Non renseigné"),
     "Commentaire praticien : " + (d.doctorComment || "")
@@ -329,6 +425,8 @@ function renderList(list) {
     const age = ageFromDob(d.dob);
     const p = encodeURIComponent(JSON.stringify(pdfData(d)));
     const isOpen = openCardId === r.id;
+    const hypothesis = getMainHypothesis(d);
+    const hypothesisPct = getMainHypothesisPct(d);
 
     return `
       <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
@@ -353,7 +451,12 @@ function renderList(list) {
 
             <div>
               <div class="summaryCellTitle">Hypothèse</div>
-              <div class="summaryCellValue">${d.lesionPrimary || "-"}</div>
+              <div class="summaryCellValue">${hypothesis}</div>
+            </div>
+
+            <div>
+              <div class="summaryCellTitle">Poids hypothèse</div>
+              <div class="summaryCellValue">${hypothesisPct}</div>
             </div>
 
             <div>
@@ -369,24 +472,26 @@ function renderList(list) {
               <h3>Questionnaire</h3>
               <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
               <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
-              <div class="detailLine"><b>Digestif :</b> ${safeList(d.digestif)}</div>
+              <div class="detailLine"><b>Symptômes associés :</b> ${buildSymptomsSummary(d)}</div>
+              <div class="detailLine"><b>Digestif :</b> ${buildDigestiveSummary(d)}</div>
+              <div class="detailLine"><b>Cycles hors contraception :</b> ${d.cycleRegularity || "-"}</div>
               <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
               <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
               <div class="detailLine"><b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}</div>
+
+              <div class="boxSectionTitle">Profils compatibles</div>
+              <div>${compatibleProfilesPills(d)}</div>
             </div>
 
             <div class="detailBox">
               <h3>Hypothèses et profils</h3>
-              <div class="detailLine"><b>Hypothèse principale :</b> ${d.lesionPrimary || "-"}</div>
+              <div class="detailLine"><b>Hypothèse principale :</b> ${hypothesis}</div>
+              <div class="detailLine"><b>Poids hypothèse :</b> ${hypothesisPct}</div>
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
-              <div class="boxSectionTitle">Profils</div>
-              <div>
-                <span class="pill ${badgeClass(d.endometriose)}">Endo ${d.endometriose || "-"}</span>
-                <span class="pill ${badgeClass(d.adenomyose)}">Adéno ${d.adenomyose || "-"}</span>
-                <span class="pill ${badgeClass(d.pudendal)}">Pudendal ${d.pudendal || "-"}</span>
-                <span class="pill ${badgeClass(d.congestion)}">Congestion ${d.congestion || "-"}</span>
-              </div>
+
+              <div class="boxSectionTitle">Profils détaillés</div>
+              <div>${allProfilesAsPills(d)}</div>
             </div>
 
             <div class="detailBox">
