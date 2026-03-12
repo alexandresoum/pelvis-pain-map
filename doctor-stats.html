@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stats praticien</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708060945675%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ggFL2Con1BgmSO%2FkYhG5mWyPKFwwseXFHkKkWuAY%2BYQ%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708060985233%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Xbr%2FSNPfbaPAuLnuOgc3qETnSBpUDx0tE22AF0MnPh8%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708061008726%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=DtEmCBJwgi%2BXjwTXfhvzllXQOzgUKkpk2lo8yGPE4RQ%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225069979048%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=RMwyii9jCSM5XAaM68nWMJwhuNCO3%2FWNtGShVIRT2kM%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225070010189%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gLYu4wjUWysrYwjE3P6H9HgmYyCDJdl9S5TQxj9q5rs%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225070029018%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=FhMu33Lbs2bjaQhIy3yTTW1779x%2BtzH319SiLYN%2BKZg%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .statsGrid{
@@ -136,6 +136,11 @@
       </div>
 
       <div class="statCard">
+        <div class="statLabel">OPK compatible</div>
+        <div class="statValue big" id="statOpk">0</div>
+      </div>
+
+      <div class="statCard">
         <div class="statLabel">Contraception la plus fréquente</div>
         <div class="statValue small" id="statContraception">-</div>
       </div>
@@ -176,7 +181,7 @@
         <div>
           <label for="metricThreshold"><b>Seuil questionnaire</b></label><br>
           <select id="metricThreshold" onchange="updateStats()">
-            <option value="possible">possible ou élevé</option>
+            <option value="modere">modéré ou élevé</option>
             <option value="eleve">élevé uniquement</option>
           </select>
         </div>
@@ -270,6 +275,12 @@ let currentPractitioner = sessionStorage.getItem("ppm_currentPractitioner") || "
 let rows = [];
 let charts = {};
 
+function normalizeLevel(v){
+  if (!v) return "";
+  if (v === "possible") return "modéré";
+  return v;
+}
+
 function ageFromDob(dob){
   if(!dob) return null;
   const b = new Date(dob);
@@ -325,17 +336,17 @@ function computeConcordance(docs){
 
 function getQuestionnairePositive(d, pathology, thresholdMode){
   const map = {
-    "Endométriose": d.endometriose || "",
-    "Adénomyose": d.adenomyose || "",
-    "Congestion pelvienne": d.congestion || "",
-    "Névralgie pudendale": d.pudendal || "",
-    "OPK": d.opk || ""
+    "Endométriose": normalizeLevel(d.endometriose || ""),
+    "Adénomyose": normalizeLevel(d.adenomyose || ""),
+    "Congestion pelvienne": normalizeLevel(d.congestion || ""),
+    "Névralgie pudendale": normalizeLevel(d.pudendal || ""),
+    "OPK": normalizeLevel(d.opk || "")
   };
 
   const level = map[pathology] || "";
 
   if (thresholdMode === "eleve") return level === "élevé";
-  return level === "possible" || level === "élevé";
+  return level === "modéré" || level === "élevé";
 }
 
 function getEchoPositive(d, pathology){
@@ -435,8 +446,18 @@ function updateStats(){
   const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
   const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
-  const endoCompat = docs.filter(d => d.endometriose === "possible" || d.endometriose === "élevé").length;
-  const congCompat = docs.filter(d => d.congestion === "possible" || d.congestion === "élevé").length;
+  const endoCompat = docs.filter(d => {
+    const x = normalizeLevel(d.endometriose);
+    return x === "modéré" || x === "élevé";
+  }).length;
+  const congCompat = docs.filter(d => {
+    const x = normalizeLevel(d.congestion);
+    return x === "modéré" || x === "élevé";
+  }).length;
+  const opkCompat = docs.filter(d => {
+    const x = normalizeLevel(d.opk);
+    return x === "modéré" || x === "élevé";
+  }).length;
   const concordance = computeConcordance(docs);
 
   document.getElementById("statEchos").innerText = docs.length;
@@ -446,6 +467,7 @@ function updateStats(){
   document.getElementById("statTopTime").innerText = topLabel(times);
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
+  document.getElementById("statOpk").innerText = opkCompat;
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
