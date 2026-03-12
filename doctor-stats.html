@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stats praticien</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225069979048%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=RMwyii9jCSM5XAaM68nWMJwhuNCO3%2FWNtGShVIRT2kM%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225070010189%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gLYu4wjUWysrYwjE3P6H9HgmYyCDJdl9S5TQxj9q5rs%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cc3901fb1403940cda78508de80439f03%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089225070029018%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=FhMu33Lbs2bjaQhIy3yTTW1779x%2BtzH319SiLYN%2BKZg%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209804580%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Z1WkVm3bOD8CYaFZLgN%2FNzVfFW6MiGeymsDOvmtZndw%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209857484%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=EeKmKBn7vQIBl35peV%2B6%2FHFn1YKYxSJGwgbWLZbL4oo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209883798%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=HEO%2FIikFlKa8cBPAx8lKUM6VL3aMo4ur6Ys0IbKCMCU%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .statsGrid{
@@ -156,9 +156,21 @@
       </div>
 
       <div class="statCard">
-        <div class="statLabel">Concordance questionnaire / écho</div>
-        <div class="statValue big" id="statConcordance">0%</div>
-        <div class="statSub" id="statConcordanceDetail">0 / 0 concordants</div>
+        <div class="statLabel">Exact match</div>
+        <div class="statValue big" id="statExactMatch">0%</div>
+        <div class="statSub" id="statExactMatchDetail">0 / 0 concordants</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top-2 match</div>
+        <div class="statValue big" id="statTop2Match">0%</div>
+        <div class="statSub" id="statTop2MatchDetail">0 / 0 concordants</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Compatible &gt; 70%</div>
+        <div class="statValue big" id="statCompatible70">0%</div>
+        <div class="statSub" id="statCompatible70Detail">0 / 0 concordants</div>
       </div>
     </div>
 
@@ -306,56 +318,89 @@ function countValues(items){
   return m;
 }
 
-function computeConcordance(docs){
+function getValidEchos(d){
+  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+  return echos.filter(x =>
+    x &&
+    x !== "Normal" &&
+    x !== "Non contributif" &&
+    x !== "Autre"
+  );
+}
+
+function getProfileList(d){
+  return [
+    { name: "Endométriose", pct: Number(d.endometriose_pct || 0) },
+    { name: "Adénomyose", pct: Number(d.adenomyose_pct || 0) },
+    { name: "Congestion pelvienne", pct: Number(d.congestion_pct || 0) },
+    { name: "Névralgie pudendale", pct: Number(d.pudendal_pct || 0) },
+    { name: "OPK", pct: Number(d.opk_pct || 0) }
+  ].sort((a,b) => b.pct - a.pct);
+}
+
+function computeExactMatch(docs){
   let total = 0;
   let concordant = 0;
 
   docs.forEach(d => {
-    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+    const validEchos = getValidEchos(d);
 
-    if (!echos.length) return;
-
-    const validEchos = echos.filter(x =>
-      x &&
-      x !== "Normal" &&
-      x !== "Non contributif" &&
-      x !== "Autre"
-    );
-
-    if (!validEchos.length) return;
+    if (!hypo || !validEchos.length) return;
 
     total++;
-
-    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
-
-    let concordantCase = false;
-
-    // 1) concordance directe sur l’hypothèse principale
-    if (hypo && validEchos.includes(hypo)) {
-      concordantCase = true;
-    }
-
-    // 2) sinon concordance si au moins un profil >= 70% correspond à l’écho
-    if (!concordantCase) {
-      const strongProfiles = [
-        { name: "Endométriose", pct: Number(d.endometriose_pct || 0) },
-        { name: "Adénomyose", pct: Number(d.adenomyose_pct || 0) },
-        { name: "Congestion pelvienne", pct: Number(d.congestion_pct || 0) },
-        { name: "Névralgie pudendale", pct: Number(d.pudendal_pct || 0) },
-        { name: "OPK", pct: Number(d.opk_pct || 0) }
-      ];
-
-      if (strongProfiles.some(p => p.pct >= 70 && validEchos.includes(p.name))) {
-        concordantCase = true;
-      }
-    }
-
-    if (concordantCase) concordant++;
+    if (validEchos.includes(hypo)) concordant++;
   });
 
   const discordant = total - concordant;
   const rate = total ? Math.round((concordant / total) * 100) : 0;
+  return { total, concordant, discordant, rate };
+}
 
+function computeTop2Match(docs){
+  let total = 0;
+  let concordant = 0;
+
+  docs.forEach(d => {
+    const validEchos = getValidEchos(d);
+    if (!validEchos.length) return;
+
+    const profiles = getProfileList(d)
+      .filter(p => p.pct > 0)
+      .slice(0, 2)
+      .map(p => p.name);
+
+    if (!profiles.length) return;
+
+    total++;
+    if (profiles.some(name => validEchos.includes(name))) concordant++;
+  });
+
+  const discordant = total - concordant;
+  const rate = total ? Math.round((concordant / total) * 100) : 0;
+  return { total, concordant, discordant, rate };
+}
+
+function computeCompatible70(docs){
+  let total = 0;
+  let concordant = 0;
+
+  docs.forEach(d => {
+    const validEchos = getValidEchos(d);
+    if (!validEchos.length) return;
+
+    const compatible = getProfileList(d)
+      .filter(p => p.pct >= 70)
+      .map(p => p.name);
+
+    if (!compatible.length) return;
+
+    total++;
+    if (compatible.some(name => validEchos.includes(name))) concordant++;
+  });
+
+  const discordant = total - concordant;
+  const rate = total ? Math.round((concordant / total) * 100) : 0;
   return { total, concordant, discordant, rate };
 }
 
@@ -483,7 +528,9 @@ function updateStats(){
     const x = normalizeLevel(d.opk);
     return x === "modéré" || x === "élevé";
   }).length;
-  const concordance = computeConcordance(docs);
+  const exactMatch = computeExactMatch(docs);
+  const top2Match = computeTop2Match(docs);
+  const compatible70 = computeCompatible70(docs);
 
   document.getElementById("statEchos").innerText = docs.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
@@ -496,11 +543,24 @@ function updateStats(){
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
-  document.getElementById("statConcordance").innerText = concordance.rate + "%";
-  document.getElementById("statConcordanceDetail").innerText =
-    concordance.concordant + " concordants • " +
-    concordance.discordant + " discordants • " +
-    concordance.total + " dossiers exploitables";
+
+  document.getElementById("statExactMatch").innerText = exactMatch.rate + "%";
+  document.getElementById("statExactMatchDetail").innerText =
+    exactMatch.concordant + " concordants • " +
+    exactMatch.discordant + " discordants • " +
+    exactMatch.total + " dossiers exploitables";
+
+  document.getElementById("statTop2Match").innerText = top2Match.rate + "%";
+  document.getElementById("statTop2MatchDetail").innerText =
+    top2Match.concordant + " concordants • " +
+    top2Match.discordant + " discordants • " +
+    top2Match.total + " dossiers exploitables";
+
+  document.getElementById("statCompatible70").innerText = compatible70.rate + "%";
+  document.getElementById("statCompatible70Detail").innerText =
+    compatible70.concordant + " concordants • " +
+    compatible70.discordant + " discordants • " +
+    compatible70.total + " dossiers exploitables";
 
   updateDiagnosticMetrics(docs);
 
