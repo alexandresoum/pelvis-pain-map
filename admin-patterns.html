@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Patterns - Pelvis Pain Map</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611566471%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=RvlAD2St%2B7ZGPWUTS%2BQme9mVtfpKxkYTTOQ59Q5HnqU%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611604326%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=6I%2BAN5gOPieC0LfRLX2WN53syZKLpPMiVD6IKVXDNfI%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cb5a8af27392547915f1c08de808c6449%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089537611625120%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gi1qACdONMW4rfhUnYogmAiL43PReRCdVeOm6Lz9nq4%3D&reserved=0"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+    .pinOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+      backdrop-filter:blur(4px);
+    }
+    .pinCard{
+      width:min(92vw,420px);
+      background:#fff;
+      border-radius:16px;
+      padding:24px;
+      box-shadow:0 8px 30px rgba(0,0,0,.18);
+    }
+    .pinInput{
+      width:100%;
+      margin:8px 0 14px 0;
+      padding:12px;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      font-size:16px;
+    }
+    .pinError{
+      color:#b91c1c;
+      min-height:22px;
+    }
+    .filtersCard,.card,.statCard{
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+    .statsGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin:18px 0 24px 0;
+    }
+    .statLabel{
+      font-size:14px;
+      color:#6b7280;
+      margin-bottom:8px;
+    }
+    .statValue{
+      font-size:28px;
+      font-weight:700;
+      color:#24324a;
+      line-height:1.2;
+    }
+    .statValue.big{
+      font-size:34px;
+      font-weight:800;
+    }
+    .toolbar{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      margin:12px 0 8px 0;
+    }
+    .toolbar select,.toolbar input{
+      min-width:220px;
+      padding:10px;
+      border:1px solid #d1d5db;
+      border-radius:10px;
+      background:#fff;
+    }
+    .checkRow{
+      display:flex;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .checkRow label{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .simpleTable{
+      overflow:auto;
+      margin-top:16px;
+    }
+    .simpleTable table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+      min-width:900px;
+    }
+    .simpleTable th,.simpleTable td{
+      border-bottom:1px solid #e5e7eb;
+      padding:10px;
+      text-align:left;
+      white-space:nowrap;
+    }
+    .simpleTable th{
+      background:#f8fafc;
+      position:sticky;
+      top:0;
+    }
+    .muted{
+      color:#6b7280;
+      font-size:14px;
+    }
+    .chartBox{
+      position:relative;
+      width:100%;
+      height:420px;
+      min-height:420px;
+      max-height:420px;
+      overflow:hidden;
+    }
+    .chartBox canvas{
+      position:absolute;
+      inset:0;
+      width:100% !important;
+      height:420px !important;
+      min-height:420px !important;
+      max-height:420px !important;
+      display:block !important;
+    }
+    .pill{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      background:#eef1ff;
+      color:#24324a;
+      border:1px solid #dde2ff;
+      margin-right:8px;
+      margin-top:6px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="pinOverlay" class="pinOverlay">
+  <div class="pinCard">
+    <h2>Accès Admin Patterns</h2>
+    <label for="pinInput">Code PIN</label>
+    <input type="password" id="pinInput" maxlength="4" class="pinInput">
+    <button class="primary" onclick="checkPin()">Entrer</button>
+    <p id="pinError" class="pinError"></p>
+  </div>
+</div>
+
+<div id="content" style="display:none;">
+  <header class="header">
+    <h1>Patterns par diagnostic écho</h1>
+    <p class="info">Analyse des items cochés selon le diagnostic échographique.</p>
+  </header>
+
+  <div class="container wide">
+    <div class="toolbar">
+      <button class="secondaryAction" onclick="window.location.href='admin.html'">← Retour admin</button>
+    </div>
+
+    <div class="filtersCard">
+      <h2>Filtres</h2>
+
+      <div class="toolbar">
+        <div>
+          <label for="echoTarget"><b>Diagnostic écho</b></label><br>
+          <select id="echoTarget" onchange="updateAll()">
+            <option value="Endométriose">Endométriose</option>
+            <option value="Adénomyose">Adénomyose</option>
+            <option value="Congestion pelvienne">Congestion pelvienne</option>
+            <option value="Névralgie pudendale">Névralgie pudendale</option>
+            <option value="OPK">OPK</option>
+            <option value="Normal">Normal</option>
+            <option value="Non contributif">Non contributif</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="sortMode"><b>Tri</b></label><br>
+          <select id="sortMode" onchange="updateAll()">
+            <option value="pct_desc">Pourcentage décroissant</option>
+            <option value="pct_asc">Pourcentage croissant</option>
+            <option value="label_asc">Nom A → Z</option>
+            <option value="label_desc">Nom Z → A</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="checkRow">
+        <label><input type="checkbox" class="prFilter" value="alexandre_soum" checked onchange="updateAll()"> Alexandre Soum</label>
+        <label><input type="checkbox" class="prFilter" value="praticien_2" checked onchange="updateAll()"> Dr Jean-Marc Levaillant</label>
+        <label><input type="checkbox" class="prFilter" value="praticien_3" checked onchange="updateAll()"> Anne-Laure Siraga</label>
+      </div>
+    </div>
+
+    <div class="statsGrid">
+      <div class="statCard">
+        <div class="statLabel">Dossiers avec ce diagnostic écho</div>
+        <div class="statValue big" id="statCases">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Âge moyen</div>
+        <div class="statValue big" id="statAge">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Douleur moyenne</div>
+        <div class="statValue big" id="statPain">0/10</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top item</div>
+        <div class="statValue" id="statTopItem">-</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Résumé</h2>
+      <div id="summaryPills"></div>
+    </div>
+
+    <div class="card">
+      <h2>Top items les plus fréquents</h2>
+      <p class="muted">Pourcentage de patientes ayant coché l’item parmi les dossiers avec le diagnostic écho sélectionné.</p>
+      <div class="chartBox">
+        <canvas id="patternChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Détail des items</h2>
+      <div id="patternTable" class="simpleTable"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PIN = atob("MTYxMg==");
+const PRACTITIONER_LABELS = {
+  alexandre_soum: "Alexandre Soum",
+  praticien_2: "Dr Jean-Marc Levaillant",
+  praticien_3: "Anne-Laure Siraga"
+};
+
+let rows = [];
+let charts = {};
+
+const ITEM_DEFS = [
+  { key: "topo_bas_ventre_centre", label: "Topo · bas ventre centre", test: d => includesText(d.topo, "bas ventre centre") },
+  { key: "topo_fosse_iliaque_droite", label: "Topo · fosse iliaque droite", test: d => includesText(d.topo, "droite") },
+  { key: "topo_fosse_iliaque_gauche", label: "Topo · fosse iliaque gauche", test: d => includesText(d.topo, "gauche") },
+  { key: "topo_lombaire", label: "Topo · lombaire", test: d => includesText(d.topo, "lomb") },
+  { key: "topo_perinee", label: "Topo · périnée", test: d => includesText(d.topo, "périn") },
+  { key: "topo_clitoris_vulve", label: "Topo · vulve / clitoris", test: d => includesText(d.topo, "vul") || includesText(d.topo, "clitor") },
+  { key: "topo_vessie_uretre", label: "Topo · vessie / urètre", test: d => includesText(d.topo, "vessie") || includesText(d.topo, "urètre") || includesText(d.topo, "uretre") },
+  { key: "topo_anal_rectal", label: "Topo · anal / rectal", test: d => includesText(d.topo, "anal") || includesText(d.topo, "rect") },
+
+  { key: "time_regles", label: "Quand · pendant les règles", test: d => includesText(d.time, "règle") || includesText(d.time, "regle") },
+  { key: "time_ovulation", label: "Quand · ovulation", test: d => includesText(d.time, "ovulation") },
+  { key: "time_rapports", label: "Quand · rapports", test: d => includesText(d.time, "rapport") },
+  { key: "time_selle", label: "Quand · selle / défécation", test: d => includesText(d.time, "selle") || includesText(d.time, "déféc") || includesText(d.time, "defec") },
+  { key: "time_miction", label: "Quand · miction", test: d => includesText(d.time, "miction") || includesText(d.time, "uriner") },
+  { key: "time_assise", label: "Quand · position assise", test: d => includesText(d.time, "assise") || includesText(d.time, "assis") },
+
+  { key: "digestif_ballonnements", label: "Digestif · ballonnements", test: d => includesText(d.digestif, "ballon") },
+  { key: "digestif_constipation", label: "Digestif · constipation", test: d => includesText(d.digestif, "constipation") },
+  { key: "digestif_diarrhee", label: "Digestif · diarrhée", test: d => includesText(d.digestif, "diarrh") },
+  { key: "digestif_alternance", label: "Digestif · alternance transit", test: d => includesText(d.digestif, "altern") },
+  { key: "digestif_douleur_selle", label: "Digestif · douleur à la selle", test: d => includesText(d.digestif, "selle") || includesText(d.digestif, "déféc") || includesText(d.digestif, "defec") },
+
+  { key: "endo1", label: "Profil · règles très douloureuses", test: d => !!d.endo1 },
+  { key: "endo2", label: "Profil · douleur rapports profonds", test: d => !!d.endo2 },
+  { key: "endo3", label: "Profil · douleur à la selle pendant les règles", test: d => !!d.endo3 },
+  { key: "endo4", label: "Profil · douleur à l’ovulation", test: d => !!d.endo4 },
+
+  { key: "aden1", label: "Profil · règles très abondantes", test: d => !!d.aden1 },
+  { key: "aden2", label: "Profil · caillots pendant les règles", test: d => !!d.aden2 },
+
+  { key: "cong1", label: "Profil · lourdeur pelvienne", test: d => !!d.cong1 },
+  { key: "cong2", label: "Profil · douleur après rapports", test: d => !!d.cong2 },
+
+  { key: "pud1", label: "Profil · douleur aggravée assise", test: d => !!d.pud1 },
+
+  { key: "uri1", label: "Profil · brûlures / pollakiurie", test: d => !!d.uri1 },
+
+  { key: "consultation_oui", label: "Contexte · consultation antérieure oui", test: d => truthyText(d.consultation) },
+  { key: "diag_evoque_oui", label: "Contexte · diagnostic déjà évoqué", test: d => truthyText(d.previousDiagnosis) },
+  { key: "contraception_oui", label: "Contexte · contraception", test: d => truthyText(d.contraceptionType) && !includesText([d.contraceptionType], "aucune") }
+];
+
+function checkPin(){
+  const v = document.getElementById("pinInput").value;
+  if(v === ADMIN_PIN){
+    document.getElementById("pinOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    loadRows();
+  } else {
+    document.getElementById("pinError").innerText = "Code incorrect.";
+  }
+}
+
+function selectedPractitioners(){
+  const vals = [...document.querySelectorAll(".prFilter:checked")].map(x => x.value);
+  return vals.length ? vals : Object.keys(PRACTITIONER_LABELS);
+}
+
+function filteredDocs(){
+  const selected = selectedPractitioners();
+  return rows.map(r => r.data).filter(d => selected.includes(d.practitionerId));
+}
+
+function hasEchoDiagnosis(d, diagnosis){
+  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+  return echos.includes(diagnosis);
+}
+
+function includesText(arr, needle){
+  const list = Array.isArray(arr) ? arr : [];
+  const n = String(needle || "").toLowerCase();
+  return list.some(x => String(x || "").toLowerCase().includes(n));
+}
+
+function truthyText(v){
+  return v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "-" && String(v).trim().toLowerCase() !== "non";
+}
+
+function ageFromDob(dob){
+  if(!dob) return null;
+  const b = new Date(dob);
+  if(isNaN(b)) return null;
+  const t = new Date();
+  let a = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+  return a;
+}
+
+function computePatternStats(docs){
+  const total = docs.length;
+  const rows = ITEM_DEFS.map(item => {
+    const count = docs.filter(d => item.test(d)).length;
+    const pct = total ? Math.round((count / total) * 100) : 0;
+    return {
+      key: item.key,
+      label: item.label,
+      count,
+      pct
+    };
+  });
+
+  const sortMode = document.getElementById("sortMode").value;
+  rows.sort((a,b) => {
+    switch(sortMode){
+      case "pct_asc": return a.pct - b.pct || a.label.localeCompare(b.label, "fr");
+      case "label_asc": return a.label.localeCompare(b.label, "fr");
+      case "label_desc": return b.label.localeCompare(a.label, "fr");
+      default: return b.pct - a.pct || a.label.localeCompare(b.label, "fr");
+    }
+  });
+
+  return rows;
+}
+
+function updateKpis(docs, patternStats){
+  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+  const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
+  const topItem = patternStats.length ? patternStats[0] : null;
+
+  document.getElementById("statCases").innerText = docs.length;
+  document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0) / ages.length).toFixed(1) : "0";
+  document.getElementById("statPain").innerText = painAvg + "/10";
+  document.getElementById("statTopItem").innerText = topItem ? (topItem.label + " · " + topItem.pct + "%") : "-";
+
+  const pills = patternStats.slice(0, 8).map(x =>
+    `<span class="pill">${x.label} · ${x.pct}%</span>`
+  ).join("");
+
+  document.getElementById("summaryPills").innerHTML = pills || '<span class="muted">Aucun item exploitable.</span>';
+}
+
+function renderTable(patternStats){
+  document.getElementById("patternTable").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Nombre</th>
+          <th>Pourcentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${patternStats.map(r => `
+          <tr>
+            <td>${r.label}</td>
+            <td>${r.count}</td>
+            <td>${r.pct}%</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function drawPatternChart(patternStats){
+  const top = patternStats.slice(0, 15);
+  const el = document.getElementById("patternChart");
+  if (!el) return;
+  if (charts["patternChart"]) charts["patternChart"].destroy();
+
+  charts["patternChart"] = new Chart(el, {
+    type: "bar",
+    data: {
+      labels: top.map(x => x.label),
+      datasets: [{
+        data: top.map(x => x.pct)
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: "y",
+      scales: {
+        x: {
+          min: 0,
+          max: 100,
+          title: {
+            display: true,
+            text: "Pourcentage"
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
+function updateAll(){
+  const diagnosis = document.getElementById("echoTarget").value;
+  const docs = filteredDocs().filter(d => hasEchoDiagnosis(d, diagnosis));
+  const patternStats = computePatternStats(docs);
+
+  updateKpis(docs, patternStats);
+  renderTable(patternStats);
+  drawPatternChart(patternStats);
+}
+
+function loadRows(){
+  db.collection("patients").onSnapshot(s => {
+    rows = [];
+    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    updateAll();
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") {
+    checkPin();
+  }
+});
+</script>
+</body>
+</html>
