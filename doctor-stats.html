@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stats praticien</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319329472%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=GGvV5ck6f%2BkV4AS2syFJSpYvXbJtF7%2FSGurlHGVMO0k%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319350900%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=fUIfTROW7wJiw3JvXwpQEHCrEVNi1KnLVr4kTZPhVag%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cb160171f12ac42c2938308de7fc4c975%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088680319364910%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=yL27nZAMQABhvn5BOdhPmxdtFZXVVR9SjF8IaC%2B9U3U%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708060945675%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ggFL2Con1BgmSO%2FkYhG5mWyPKFwwseXFHkKkWuAY%2BYQ%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708060985233%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Xbr%2FSNPfbaPAuLnuOgc3qETnSBpUDx0tE22AF0MnPh8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ce222a7fb763a4b9112d808de7fcb3f20%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088708061008726%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=DtEmCBJwgi%2BXjwTXfhvzllXQOzgUKkpk2lo8yGPE4RQ%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .statsGrid{
@@ -29,10 +29,21 @@
       margin-bottom:8px;
     }
     .statValue{
+      font-size:26px;
+      font-weight:700;
+      color:#24324a;
+      line-height:1.2;
+      word-break:break-word;
+    }
+    .statValue.big{
       font-size:34px;
       font-weight:800;
-      color:#24324a;
       line-height:1.1;
+    }
+    .statValue.small{
+      font-size:20px;
+      font-weight:600;
+      line-height:1.25;
     }
     .statSub{
       margin-top:8px;
@@ -67,13 +78,13 @@
     .toolbar select,.toolbar input{
       min-width:180px;
     }
-    canvas{
-      max-width:100%;
-      min-height:280px;
-    }
     .muted{
       color:#6b7280;
       font-size:14px;
+    }
+    canvas{
+      max-width:100%;
+      min-height:280px;
     }
   </style>
 </head>
@@ -91,57 +102,57 @@
     <div class="statsGrid">
       <div class="statCard">
         <div class="statLabel">Nombre d’échos</div>
-        <div class="statValue" id="statEchos">0</div>
+        <div class="statValue big" id="statEchos">0</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Âge moyen</div>
-        <div class="statValue" id="statAge">0</div>
+        <div class="statValue big" id="statAge">0</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Douleur moyenne</div>
-        <div class="statValue" id="statPain">0/10</div>
+        <div class="statValue big" id="statPain">0/10</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Digestif présent</div>
-        <div class="statValue" id="statDigestif">0</div>
+        <div class="statValue big" id="statDigestif">0</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Top temporalité</div>
-        <div class="statValue" id="statTopTime">-</div>
+        <div class="statValue small" id="statTopTime">-</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Endométriose compatible</div>
-        <div class="statValue" id="statEndo">0</div>
+        <div class="statValue big" id="statEndo">0</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Congestion compatible</div>
-        <div class="statValue" id="statCong">0</div>
+        <div class="statValue big" id="statCong">0</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Contraception la plus fréquente</div>
-        <div class="statValue" id="statContraception">-</div>
+        <div class="statValue small" id="statContraception">-</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Top digestif</div>
-        <div class="statValue" id="statTopDigestif">-</div>
+        <div class="statValue small" id="statTopDigestif">-</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Top résultat écho</div>
-        <div class="statValue" id="statTopEcho">-</div>
+        <div class="statValue small" id="statTopEcho">-</div>
       </div>
 
       <div class="statCard">
         <div class="statLabel">Concordance questionnaire / écho</div>
-        <div class="statValue" id="statConcordance">0%</div>
+        <div class="statValue big" id="statConcordance">0%</div>
         <div class="statSub" id="statConcordanceDetail">0 / 0 concordants</div>
       </div>
     </div>
@@ -174,25 +185,25 @@
       <div class="statsGrid" style="margin-top:16px;">
         <div class="statCard">
           <div class="statLabel">Sensibilité</div>
-          <div class="statValue" id="metricSensitivity">0%</div>
+          <div class="statValue big" id="metricSensitivity">0%</div>
           <div class="statSub" id="metricSensitivitySub">0 / 0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">Spécificité</div>
-          <div class="statValue" id="metricSpecificity">0%</div>
+          <div class="statValue big" id="metricSpecificity">0%</div>
           <div class="statSub" id="metricSpecificitySub">0 / 0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">VPP</div>
-          <div class="statValue" id="metricPPV">0%</div>
+          <div class="statValue big" id="metricPPV">0%</div>
           <div class="statSub" id="metricPPVSub">0 / 0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">VPN</div>
-          <div class="statValue" id="metricNPV">0%</div>
+          <div class="statValue big" id="metricNPV">0%</div>
           <div class="statSub" id="metricNPVSub">0 / 0</div>
         </div>
       </div>
@@ -200,22 +211,22 @@
       <div class="statsGrid" style="margin-top:4px;">
         <div class="statCard">
           <div class="statLabel">Vrais positifs</div>
-          <div class="statValue" id="metricTP">0</div>
+          <div class="statValue big" id="metricTP">0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">Faux positifs</div>
-          <div class="statValue" id="metricFP">0</div>
+          <div class="statValue big" id="metricFP">0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">Faux négatifs</div>
-          <div class="statValue" id="metricFN">0</div>
+          <div class="statValue big" id="metricFN">0</div>
         </div>
 
         <div class="statCard">
           <div class="statLabel">Vrais négatifs</div>
-          <div class="statValue" id="metricTN">0</div>
+          <div class="statValue big" id="metricTN">0</div>
         </div>
       </div>
     </div>
