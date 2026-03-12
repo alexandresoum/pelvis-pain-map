@@ -1,235 +1,457 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Pelvis Pain Map - Patients</title>
-
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C89eddb98681a456910d808de80244f34%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089090687334239%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=6%2FZUgJ9x5jQ375wKTLY%2F6Ea9sfEN8YxaQR6iRuLbqDQ%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C89eddb98681a456910d808de80244f34%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089090687379111%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ocnLrRdobgzTH%2BzRb6yFNPHdl2I2Wyrb6IPf5XUdIyA%3D&reserved=0"></script>
-
-<script src="firebase-config.js"></script>
-
-<style>
-
-body{
-font-family: Arial;
-background:#f5f7fb;
-margin:0;
-padding:0;
-}
-
-.container{
-width:1100px;
-margin:auto;
-padding:20px;
-}
-
-.card{
-background:white;
-border-radius:10px;
-padding:20px;
-margin-bottom:15px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-.patientHeader{
-display:flex;
-justify-content:space-between;
-cursor:pointer;
-}
-
-.patientName{
-font-weight:bold;
-font-size:18px;
-}
-
-.patientDetails{
-margin-top:15px;
-display:none;
-}
-
-.patientBox{
-background:#fafafa;
-border-radius:8px;
-padding:15px;
-margin-top:10px;
-}
-
-h3{
-margin-top:0;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard praticien – V2</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679404746%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pZtHRnsPyVg1KPg6tAmMI2QDChcKOS%2FYhwoekM27Cq0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679452030%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=qqF8EHTym%2BFHUv%2FF30C6lNefVH4vOU5eLcAedXD3GY8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fjspdf%2F2.5.1%2Fjspdf.umd.min.js&data=05%7C02%7C%7Cdd376cd25e724552bdf608de7f7b0f8c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088363679503058%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=kNy4HAl%2B6jTjfClhqtQsyRX1KLGXAewUJhOGdBovXjE%3D&reserved=0"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+    .patientList{display:flex;flex-direction:column;gap:12px}
+    .patientCard{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden;border:1px solid #eceff6}
+    .patientSummary{display:grid;grid-template-columns:44px 1.2fr .8fr .8fr 1.4fr 1.1fr;gap:14px;align-items:center;padding:16px 18px;cursor:pointer}
+    .patientSummary:hover{background:#fafbff}
+    .patientCard.open .patientSummary{background:#f7f8ff}
+    .chevron{font-size:22px;font-weight:bold;color:#6c63ff;text-align:center;user-select:none}
+    .summaryMain{font-weight:700;color:#24324a}
+    .summarySub{font-size:13px;color:#6b7280;margin-top:4px}
+    .summaryCellTitle{font-size:12px;color:#6b7280;margin-bottom:4px}
+    .summaryCellValue{font-weight:600;color:#1f2937}
+    .patientDetails{display:none;padding:0 18px 18px 18px;border-top:1px solid #e5e7eb;background:#fcfcff}
+    .patientCard.open .patientDetails{display:block}
+    .detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+    .detailBox{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+    .detailBox h3{margin:0 0 10px 0;font-size:16px;color:#24324a}
+    .detailLine{line-height:1.6;margin:5px 0;color:#374151}
+    .echo-group{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .echoItem{font-weight:normal;margin:0}
+    .commentBox{width:100%;min-height:110px;padding:10px;border:1px solid #cfd7e6;border-radius:8px;font-size:14px;font-family:Arial, Helvetica, sans-serif;resize:vertical}
+    .actionsRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;margin:4px 6px 0 0;background:#eef1ff;color:#24324a;border:1px solid #dde2ff}
+    .pill.soft{background:#f8f9fb;border-color:#eceff3;color:#4b5563}
+    .pill.good{background:#ecfdf3;border-color:#d1fadf;color:#027a48}
+    .pill.warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+    .pill.info{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+    .pill.dark{background:#f3f4f6;border-color:#d1d5db;color:#111827}
+    .emptyState{background:#fff;padding:22px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    .resultBadges{margin-top:6px}
+    .boxSectionTitle{margin:12px 0 6px 0;font-size:13px;color:#6b7280;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+    @media (max-width:1100px){
+      .patientSummary{grid-template-columns:40px 1fr;gap:10px}
+      .summaryResponsive{grid-column:2 / -1;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      .detailGrid{grid-template-columns:1fr}
+      .echo-group{grid-template-columns:1fr}
+    }
+    @media (max-width:700px){
+      .summaryResponsive{grid-template-columns:1fr}
+      .actionsRow{flex-direction:column}
+    }
+  </style>
 </head>
-
-
 <body>
+<div id="pinOverlay" class="pinOverlay">
+  <div class="pinCard">
+    <h2>Accès Dashboard praticien</h2>
+    <label for="practitionerLogin">Praticien</label>
+    <select id="practitionerLogin" class="pinInput">
+      <option value="alexandre_soum">Alexandre Soum</option>
+      <option value="praticien_2">Dr Jean-Marc Levaillant</option>
+      <option value="praticien_3">Anne-Laure Siraga</option>
+    </select>
+    <label for="pinInput">Code PIN</label>
+    <input type="password" id="pinInput" maxlength="4" class="pinInput">
+    <button class="primary" onclick="checkPin()">Entrer</button>
+    <p id="pinError" class="pinError"></p>
+  </div>
+</div>
 
-<div class="container">
+<div id="content" style="display:none;">
+  <header class="header">
+    <h1>Patientes</h1>
+    <p class="info" id="subtitle"></p>
+  </header>
 
-<h2>Patients</h2>
+  <div class="container wide">
+    <div class="toolbar toolbarTop">
+      <input type="text" id="searchInput" class="searchInput" placeholder="Rechercher..." oninput="applyFiltersAndSort()">
+      <select id="sortSelect" class="sortSelect" onchange="applyFiltersAndSort()">
+        <option value="date_desc">Trier par date ↓</option>
+        <option value="date_asc">Trier par date ↑</option>
+        <option value="pain_desc">Trier par intensité ↓</option>
+        <option value="pain_asc">Trier par intensité ↑</option>
+        <option value="nom_asc">Trier par nom A → Z</option>
+        <option value="nom_desc">Trier par nom Z → A</option>
+      </select>
+      <button class="statsBtn" onclick="openStats()">Stats</button>
+    </div>
 
-<div id="patients"></div>
-
+    <div id="patientList" class="patientList"></div>
+  </div>
 </div>
 
 <script>
+const PINS = {
+  alexandre_soum: atob("MTYxMg=="),
+  praticien_2: atob("MjIyMg=="),
+  praticien_3: atob("MzMzMw==")
+};
 
-const db = firebase.firestore()
+const LABELS = {
+  alexandre_soum: "Alexandre Soum",
+  praticien_2: "Dr Jean-Marc Levaillant",
+  praticien_3: "Anne-Laure Siraga"
+};
 
-const practitionerId = sessionStorage.getItem("ppm_currentPractitioner") || "alexandre_soum"
+const ECHOS = [
+  "Endométriose",
+  "Adénomyose",
+  "Congestion pelvienne",
+  "Névralgie pudendale",
+  "OPK",
+  "Normal",
+  "Non contributif",
+  "Autre"
+];
 
-function safeValue(v){
-return (v === undefined || v === null || v === "") ? "-" : v
+const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
+
+let currentPractitioner = null;
+let rows = [];
+let openCardId = null;
+let currentDisplayedList = [];
+
+function checkPin() {
+  const p = document.getElementById("practitionerLogin").value;
+  const pin = document.getElementById("pinInput").value;
+  if (pin === PINS[p]) {
+    currentPractitioner = p;
+    sessionStorage.setItem("ppm_currentPractitioner", p);
+    document.getElementById("pinOverlay").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    document.getElementById("subtitle").textContent = LABELS[p];
+    loadRows();
+  } else {
+    document.getElementById("pinError").textContent = "Code incorrect.";
+  }
 }
 
-function formatList(arr){
-return Array.isArray(arr) && arr.length ? arr.join(", ") : "-"
+function openStats() {
+  sessionStorage.setItem("ppm_currentPractitioner", currentPractitioner);
+  window.location.href = "doctor-stats.html";
 }
 
-function buildSymptomsSummary(row){
-
-const items=[]
-
-if(row.endo1) items.push("Règles très douloureuses")
-if(row.aden1) items.push("Règles très abondantes")
-if(row.aden2) items.push("Caillots pendant les règles")
-if(row.endo2) items.push("Douleur pendant les rapports profonds")
-if(row.endo3) items.push("Douleur à la selle pendant les règles")
-if(row.endo4) items.push("Douleur à l'ovulation")
-if(row.cong1) items.push("Sensation de lourdeur dans le bassin")
-if(row.cong2) items.push("Douleur après les rapports")
-if(row.pud1) items.push("Douleur aggravée en position assise")
-if(row.uri1) items.push("Brûlures / pollakiurie")
-
-return items.length ? items.join(", ") : "-"
+function fmtDate(d) {
+  if (!d) return "";
+  try {
+    if (d.seconds) return new Date(d.seconds * 1000).toLocaleString();
+    return new Date(d).toLocaleString();
+  } catch(e) { return ""; }
 }
 
-function buildDigestiveSummary(row){
-
-const items=[]
-
-if(Array.isArray(row.digestif)) items.push(...row.digestif)
-
-if(row.bloatingEvening || row.ballonnementsSoir==="Oui"){
-items.push("Ballonnements surtout le soir")
+function ts(d) {
+  if (!d) return 0;
+  try {
+    if (d.seconds) return d.seconds;
+    return new Date(d).getTime()/1000;
+  } catch(e) { return 0; }
 }
 
-return items.length ? items.join(", ") : "-"
+function ageFromDob(dob){
+  if(!dob) return "";
+  const b = new Date(dob);
+  if(isNaN(b)) return "";
+  const t = new Date();
+  let a = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+  return a;
 }
 
-function toggleDetails(id){
-
-const el=document.getElementById(id)
-
-if(el.style.display==="none") el.style.display="block"
-else el.style.display="none"
+function safeList(arr){
+  return (arr && arr.length) ? arr.join(", ") : "-";
 }
 
-function renderPatient(id,row){
-
-const symptoms=buildSymptomsSummary(row)
-const digestif=buildDigestiveSummary(row)
-
-const html=`
-
-<div class="card">
-
-<div class="patientHeader" onclick="toggleDetails('p${id}')">
-
-<div>
-
-<div class="patientName">
-${safeValue(row.nom)} ${safeValue(row.prenom)}
-</div>
-
-<div>
-${safeValue(row.date)}
-</div>
-
-</div>
-
-<div>
-
-<div>Âge ${safeValue(row.age)}</div>
-<div>Douleur ${safeValue(row.pain)}/10</div>
-<div><b>Hypothèse</b> ${safeValue(row.hypothesisPrimary)}</div>
-
-</div>
-
-</div>
-
-<div class="patientDetails" id="p${id}">
-
-<div class="patientBox">
-
-<h3>Questionnaire</h3>
-
-<p><b>Topo :</b> ${formatList(row.topo)}</p>
-
-<p><b>Quand :</b> ${formatList(row.time)}</p>
-
-<p><b>Symptômes associés :</b> ${symptoms}</p>
-
-<p><b>Digestif :</b> ${digestif}</p>
-
-<p><b>Cycles hors contraception :</b> ${safeValue(row.cycleRegularity)}</p>
-
-<p><b>Contraception :</b> ${safeValue(row.contraceptionType)}</p>
-
-<p><b>Consultation antérieure :</b> ${safeValue(row.consultation)}</p>
-
-<p><b>Diagnostic évoqué :</b> ${safeValue(row.previousDiagnosis)}</p>
-
-</div>
-
-
-<div class="patientBox">
-
-<h3>Résultats écho</h3>
-
-<label><input type="checkbox"> Endométriose</label><br>
-<label><input type="checkbox"> Adénomyose</label><br>
-<label><input type="checkbox"> Congestion pelvienne</label><br>
-<label><input type="checkbox"> Névralgie pudendale</label><br>
-<label><input type="checkbox"> OPK</label><br>
-<label><input type="checkbox"> Normal</label><br>
-<label><input type="checkbox"> Non contributif</label><br>
-<label><input type="checkbox"> Autre</label>
-
-</div>
-
-</div>
-
-</div>
-`
-
-return html
+function badgeClass(label) {
+  if (!label) return "soft";
+  const x = String(label).toLowerCase();
+  if (x.includes("endom") || x.includes("adén") || x.includes("aden")) return "warn";
+  if (x.includes("normal")) return "good";
+  if (x.includes("non contributif")) return "soft";
+  if (x.includes("opk")) return "info";
+  if (x.includes("congestion") || x.includes("pudendal")) return "dark";
+  if (x.includes("confirm")) return "good";
+  if (x.includes("compatible")) return "info";
+  if (x.includes("suspect")) return "warn";
+  return "soft";
 }
 
-function loadPatients(){
-
-db.collection("patients")
-.where("practitionerId","==",practitionerId)
-.onSnapshot(snapshot=>{
-
-let html=""
-
-snapshot.forEach(doc=>{
-
-html+=renderPatient(doc.id,doc.data())
-
-})
-
-document.getElementById("patients").innerHTML=html
-
-})
-
+function pillsFromList(arr){
+  if (!arr || !arr.length) return '<span class="pill soft">-</span>';
+  return arr.map(x => `<span class="pill ${badgeClass(x)}">${x}</span>`).join("");
 }
 
-loadPatients()
+function pdfData(d) {
+  return {
+    dateText: fmtDate(d.date),
+    practitionerName: d.practitionerName || "",
+    nom: d.nom || "",
+    prenom: d.prenom || "",
+    dob: d.dob || "",
+    pain: d.pain || "",
+    topo: d.topo || [],
+    time: d.time || [],
+    digestif: d.digestif || [],
+    contraceptionType: d.contraceptionType || "",
+    pillContinuous: d.pillContinuous || "",
+    consultation: d.consultation || "",
+    previousDiagnosis: d.previousDiagnosis || "",
+    lesionPrimary: d.lesionPrimary || "",
+    painTypePrimary: d.painTypePrimary || "",
+    echoPrimary: d.echoPrimary || "",
+    lesionHypotheses: d.lesionHypotheses || [],
+    painTypeHypotheses: d.painTypeHypotheses || [],
+    echoOrientations: d.echoOrientations || [],
+    endometriose: d.endometriose || "",
+    adenomyose: d.adenomyose || "",
+    pudendal: d.pudendal || "",
+    congestion: d.congestion || "",
+    diagnostic_echo: d.diagnostic_echo || [],
+    echoCertainty: d.echoCertainty || "Non renseigné",
+    doctorComment: d.doctorComment || ""
+  };
+}
 
+function buildPdf(doc, d) {
+  let y = 18;
+  const line = (t) => {
+    const s = doc.splitTextToSize(t, 170);
+    doc.text(s, 20, y);
+    y += s.length * 7 + 3;
+  };
+  doc.setFontSize(16);
+  doc.text("Pelvis Pain Map - Résultat questionnaire", 20, y);
+  y += 12;
+  doc.setFontSize(11);
+  [
+    "Date : " + d.dateText,
+    "Praticien : " + d.practitionerName,
+    "Patiente : " + d.prenom + " " + d.nom,
+    "Date de naissance : " + (d.dob || "Non renseignée"),
+    "Âge : " + (ageFromDob(d.dob) || "Non renseigné"),
+    "Intensité : " + d.pain + "/10",
+    "Localisation : " + safeList(d.topo),
+    "Quand : " + safeList(d.time),
+    "Digestif : " + safeList(d.digestif),
+    "Contraception : " + (d.contraceptionType || "-") + (d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""),
+    "Consultation antérieure : " + (d.consultation || "-"),
+    "Diagnostic évoqué : " + (d.previousDiagnosis || "-"),
+    "Hypothèse lésionnelle principale : " + (d.lesionPrimary || "-"),
+    "Type de douleur dominant : " + (d.painTypePrimary || "-"),
+    "Orientation échographique principale : " + (d.echoPrimary || "-"),
+    "Résultats écho : " + safeList(d.diagnostic_echo),
+    "Certitude : " + (d.echoCertainty || "Non renseigné"),
+    "Commentaire praticien : " + (d.doctorComment || "")
+  ].forEach(line);
+}
+
+function generateDoctorPDF(payload) {
+  const d = JSON.parse(decodeURIComponent(payload));
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  buildPdf(doc, d);
+  doc.save("pelvis_pain_map_" + (d.prenom || "") + "_" + (d.nom || "patiente") + ".pdf");
+}
+
+function selectedEcho(id) {
+  return [...document.querySelectorAll('.echo-group[data-id="' + id + '"] input:checked')].map(e => e.value);
+}
+
+async function updateEcho(id) {
+  await db.collection("patients").doc(id).update({ diagnostic_echo: selectedEcho(id) });
+}
+
+async function updateCert(id, value) {
+  await db.collection("patients").doc(id).update({ echoCertainty: value });
+}
+
+async function updateComment(id, value) {
+  await db.collection("patients").doc(id).update({ doctorComment: value });
+}
+
+async function delRow(id, name) {
+  if (!confirm("Supprimer cette fiche : " + name + " ?")) return;
+  await db.collection("patients").doc(id).delete();
+}
+
+function echoBox(id, sel) {
+  const cur = Array.isArray(sel) ? sel : [];
+  return `<div class="echo-group" data-id="${id}">
+    ${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onclick="event.stopPropagation()" onchange="updateEcho('${id}')"> ${o}</label>`).join("")}
+  </div>`;
+}
+
+function certSel(id, sel) {
+  return `<select class="miniSelect" onclick="event.stopPropagation()" onchange="updateCert('${id}', this.value)">
+    ${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}
+  </select>`;
+}
+
+function commentBox(id, value) {
+  return `<textarea class="commentBox" placeholder="Commentaire praticien..." onclick="event.stopPropagation()" onchange="updateComment('${id}', this.value)">${value || ""}</textarea>`;
+}
+
+function getCurrentDisplayedList() {
+  return currentDisplayedList;
+}
+
+function toggleCard(id){
+  if (openCardId === id) {
+    openCardId = null;
+  } else {
+    openCardId = id;
+  }
+  renderList(getCurrentDisplayedList());
+}
+
+function renderList(list) {
+  const container = document.getElementById("patientList");
+
+  if (!list.length) {
+    container.innerHTML = '<div class="emptyState">Aucun résultat.</div>';
+    return;
+  }
+
+  container.innerHTML = list.map(r => {
+    const d = r.data;
+    const age = ageFromDob(d.dob);
+    const p = encodeURIComponent(JSON.stringify(pdfData(d)));
+    const isOpen = openCardId === r.id;
+
+    return `
+      <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
+        <div class="patientSummary" onclick="toggleCard('${r.id}')">
+          <div class="chevron" id="chev-${r.id}">${isOpen ? "▾" : "▸"}</div>
+
+          <div>
+            <div class="summaryMain">${d.nom || ""} ${d.prenom || ""}</div>
+            <div class="summarySub">${fmtDate(d.date)}</div>
+          </div>
+
+          <div class="summaryResponsive">
+            <div>
+              <div class="summaryCellTitle">Âge</div>
+              <div class="summaryCellValue">${age || "-"}</div>
+            </div>
+
+            <div>
+              <div class="summaryCellTitle">Douleur</div>
+              <div class="summaryCellValue">${d.pain ? d.pain + "/10" : "-"}</div>
+            </div>
+
+            <div>
+              <div class="summaryCellTitle">Hypothèse</div>
+              <div class="summaryCellValue">${d.lesionPrimary || "-"}</div>
+            </div>
+
+            <div>
+              <div class="summaryCellTitle">Résultat écho</div>
+              <div class="summaryCellValue resultBadges">${pillsFromList(d.diagnostic_echo)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="patientDetails">
+          <div class="detailGrid">
+            <div class="detailBox">
+              <h3>Questionnaire</h3>
+              <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
+              <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
+              <div class="detailLine"><b>Digestif :</b> ${safeList(d.digestif)}</div>
+              <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
+              <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
+              <div class="detailLine"><b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}</div>
+            </div>
+
+            <div class="detailBox">
+              <h3>Hypothèses et profils</h3>
+              <div class="detailLine"><b>Hypothèse principale :</b> ${d.lesionPrimary || "-"}</div>
+              <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
+              <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
+              <div class="boxSectionTitle">Profils</div>
+              <div>
+                <span class="pill ${badgeClass(d.endometriose)}">Endo ${d.endometriose || "-"}</span>
+                <span class="pill ${badgeClass(d.adenomyose)}">Adéno ${d.adenomyose || "-"}</span>
+                <span class="pill ${badgeClass(d.pudendal)}">Pudendal ${d.pudendal || "-"}</span>
+                <span class="pill ${badgeClass(d.congestion)}">Congestion ${d.congestion || "-"}</span>
+              </div>
+            </div>
+
+            <div class="detailBox">
+              <h3>Résultats écho</h3>
+              ${echoBox(r.id, d.diagnostic_echo)}
+              <div class="boxSectionTitle">Déjà cochés</div>
+              <div>${pillsFromList(d.diagnostic_echo)}</div>
+
+              <div style="margin-top:12px;">
+                <label><b>Certitude</b></label>
+                ${certSel(r.id, d.echoCertainty)}
+              </div>
+            </div>
+
+            <div class="detailBox">
+              <h3>Commentaire praticien</h3>
+              ${commentBox(r.id, d.doctorComment)}
+              <div class="actionsRow">
+                <button class="miniBtn" onclick='event.stopPropagation(); generateDoctorPDF("${p}")'>PDF</button>
+                <button class="dangerBtn" onclick='event.stopPropagation(); delRow("${r.id}", "${(d.prenom || "") + " " + (d.nom || "")}")'>Supprimer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function applyFiltersAndSort() {
+  const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  const sort = document.getElementById("sortSelect").value;
+  let list = [...rows];
+
+  if (q) {
+    list = list.filter(r => JSON.stringify(r.data).toLowerCase().includes(q));
+  }
+
+  list.sort((a,b) => {
+    const da = a.data, db = b.data;
+    switch (sort) {
+      case "date_asc": return ts(da.date) - ts(db.date);
+      case "pain_desc": return Number(db.pain || 0) - Number(da.pain || 0);
+      case "pain_asc": return Number(da.pain || 0) - Number(db.pain || 0);
+      case "nom_asc": return String(da.nom || "").localeCompare(String(db.nom || ""), "fr");
+      case "nom_desc": return String(db.nom || "").localeCompare(String(da.nom || ""), "fr");
+      default: return ts(db.date) - ts(da.date);
+    }
+  });
+
+  currentDisplayedList = list;
+  renderList(list);
+}
+
+function loadRows() {
+  db.collection("patients").where("practitionerId", "==", currentPractitioner).onSnapshot(s => {
+    rows = [];
+    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    applyFiltersAndSort();
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
+});
 </script>
-
 </body>
 </html>
