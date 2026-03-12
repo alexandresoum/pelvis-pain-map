@@ -282,7 +282,12 @@ body{
 </div>
 
 <script>
-const practitionerId = sessionStorage.getItem("ppm_currentPractitioner") || "alexandre_soum";
+const params = new URLSearchParams(window.location.search);
+const practitionerFromUrl = params.get("doc");
+const practitionerId =
+  practitionerFromUrl ||
+  sessionStorage.getItem("ppm_currentPractitioner") ||
+  "alexandre_soum";
 
 const ECHOS = [
   "Endométriose",
