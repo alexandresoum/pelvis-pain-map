@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345429868%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=P%2Bgh3ZKIasj3gqew6rL1sspJpnE58L4i7nGPGhaQPjE%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345474656%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=bsBe%2FFh7AJBXA4w4iXsp8wuiH8Uj8cAgKEdjwF%2BrPr4%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ce832c03c6c79489eaf1f08de80812690%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089489345500325%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=wuUndvLMxLmNDewINoBKsADoNNfiNz25gNCrc7xnXlY%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877404743%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=aThYvXqRMw%2FrZ87GZrFP%2FiIgnAFrVPT7jq12UY4yNZo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877459333%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=B%2Bvemas3XBYoyKeTuKYGHWDAI%2BUoECI%2FMJqFCx2lIRA%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877481964%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=hVZklllSxzAZMBeGEinObLQQFj9JBrFlhXrsfz0ALP4%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -136,9 +136,22 @@
     .simpleTable th{
       background:#f8fafc;
     }
-    canvas{
-      max-width:100%;
-      min-height:320px;
+    .chartBox{
+      position:relative;
+      width:100%;
+      height:320px !important;
+      min-height:320px !important;
+      max-height:320px !important;
+      overflow:hidden;
+    }
+    .chartBox canvas{
+      position:absolute;
+      inset:0;
+      width:100% !important;
+      height:320px !important;
+      min-height:320px !important;
+      max-height:320px !important;
+      display:block !important;
     }
   </style>
 </head>
@@ -276,16 +289,19 @@
           <div class="statValue big" id="metricSensitivityAdmin">0%</div>
           <div class="statSub" id="metricSensitivitySubAdmin">0 / 0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">Spécificité</div>
           <div class="statValue big" id="metricSpecificityAdmin">0%</div>
           <div class="statSub" id="metricSpecificitySubAdmin">0 / 0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">VPP</div>
           <div class="statValue big" id="metricPPVAdmin">0%</div>
           <div class="statSub" id="metricPPVSubAdmin">0 / 0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">VPN</div>
           <div class="statValue big" id="metricNPVAdmin">0%</div>
@@ -298,14 +314,17 @@
           <div class="statLabel">Vrais positifs</div>
           <div class="statValue big" id="metricTPAdmin">0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">Faux positifs</div>
           <div class="statValue big" id="metricFPAdmin">0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">Faux négatifs</div>
           <div class="statValue big" id="metricFNAdmin">0</div>
         </div>
+
         <div class="statCard">
           <div class="statLabel">Vrais négatifs</div>
           <div class="statValue big" id="metricTNAdmin">0</div>
@@ -350,7 +369,42 @@
       </div>
 
       <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-      <canvas id="rocChart"></canvas>
+        <canvas id="rocChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Calibration du score</h2>
+      <p class="muted">Comparaison probabilité prédite vs fréquence réelle (diagnostic écho).</p>
+
+      <div class="toolbar">
+        <div>
+          <label for="calibPathology"><b>Pathologie calibration</b></label><br>
+          <select id="calibPathology" onchange="updateAll()">
+            <option value="Endométriose">Endométriose</option>
+            <option value="Adénomyose">Adénomyose</option>
+            <option value="Congestion pelvienne">Congestion pelvienne</option>
+            <option value="Névralgie pudendale">Névralgie pudendale</option>
+            <option value="OPK">OPK</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="statsGrid" style="margin-top:16px;">
+        <div class="statCard">
+          <div class="statLabel">Dossiers exploitables</div>
+          <div class="statValue big" id="calibrationN">0</div>
+        </div>
+
+        <div class="statCard">
+          <div class="statLabel">Lecture</div>
+          <div class="statValue small" id="calibrationInterpretation">-</div>
+        </div>
+      </div>
+
+      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
+        <canvas id="calibrationChart"></canvas>
+      </div>
     </div>
 
     <div class="card">
@@ -368,8 +422,9 @@
         </div>
       </div>
 
-        <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-      <canvas id="learningCurveChart"></canvas>
+      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
+        <canvas id="learningCurveChart"></canvas>
+      </div>
     </div>
 
     <div class="card">
@@ -418,8 +473,9 @@
       <h2 id="analysisTitle" style="margin-top:18px;">Analyse</h2>
 
       <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-      <canvas id="customChart"></canvas>
-           </div>
+        <canvas id="customChart"></canvas>
+      </div>
+
       <div id="customTableWrap" class="simpleTable" style="display:none;"></div>
     </div>
   </div>
@@ -692,8 +748,7 @@ function buildRocData(docs, pathology){
     return { threshold, tpr, fpr };
   });
 
-  const byFpr = rawPoints
-    .sort((a,b) => a.fpr - b.fpr || a.tpr - b.tpr);
+  const byFpr = rawPoints.sort((a,b) => a.fpr - b.fpr || a.tpr - b.tpr);
 
   const uniquePoints = [];
   byFpr.forEach(p => {
@@ -726,6 +781,59 @@ function buildRocData(docs, pathology){
     n: usable.length,
     interprete
   };
+}
+
+function buildCalibrationData(docs, pathology){
+  const usable = docs.filter(d => {
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echos.some(x => x && x !== "Non contributif");
+  });
+
+  const bins = [
+    { min: 0, max: 20, label: "0-20%" },
+    { min: 20, max: 40, label: "20-40%" },
+    { min: 40, max: 60, label: "40-60%" },
+    { min: 60, max: 80, label: "60-80%" },
+    { min: 80, max: 101, label: "80-100%" }
+  ];
+
+  const acc = bins.map(b => ({
+    label: b.label,
+    mid: b.max === 101 ? 90 : (b.min + b.max) / 2,
+    n: 0,
+    pos: 0
+  }));
+
+  usable.forEach(d => {
+    const score = getPathologyPct(d, pathology);
+    const positive = getEchoPositive(d, pathology);
+
+    const idx = bins.findIndex(b => score >= b.min && score < b.max);
+    if (idx === -1) return;
+
+    acc[idx].n++;
+    if (positive) acc[idx].pos++;
+  });
+
+  const points = acc
+    .filter(x => x.n > 0)
+    .map(x => ({
+      x: x.mid,
+      y: (x.pos / x.n) * 100
+    }));
+
+  return {
+    n: usable.length,
+    points
+  };
+}
+
+function getCalibrationInterpretation(points){
+  if (!points.length) return "Non calculable";
+  const meanAbsError = points.reduce((s,p) => s + Math.abs(p.y - p.x), 0) / points.length;
+  if (meanAbsError <= 10) return "Bonne calibration";
+  if (meanAbsError <= 20) return "Calibration acceptable";
+  return "Calibration à améliorer";
 }
 
 function evalExactCase(d){
@@ -943,6 +1051,50 @@ function drawRocCurve(points){
   });
 }
 
+function drawCalibration(points){
+  const el = document.getElementById("calibrationChart");
+  if (!el) return;
+  if (charts["calibrationChart"]) charts["calibrationChart"].destroy();
+
+  charts["calibrationChart"] = new Chart(el, {
+    type: "scatter",
+    data: {
+      datasets: [
+        {
+          label: "Calibration",
+          data: points,
+          showLine: true,
+          tension: 0.2
+        },
+        {
+          label: "Parfait",
+          data: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          showLine: true,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 100,
+          title: { display: true, text: "Probabilité prédite (%)" }
+        },
+        y: {
+          min: 0,
+          max: 100,
+          title: { display: true, text: "Fréquence réelle (%)" }
+        }
+      }
+    }
+  });
+}
+
 function updateRoc(docs){
   const pathology = document.getElementById("rocPathology").value;
   const roc = buildRocData(docs, pathology);
@@ -952,6 +1104,16 @@ function updateRoc(docs){
   document.getElementById("rocAucInterpretation").innerText = roc.interprete;
 
   drawRocCurve(roc.points);
+}
+
+function updateCalibration(docs){
+  const pathology = document.getElementById("calibPathology").value;
+  const calib = buildCalibrationData(docs, pathology);
+
+  document.getElementById("calibrationN").innerText = calib.n;
+  document.getElementById("calibrationInterpretation").innerText = getCalibrationInterpretation(calib.points);
+
+  drawCalibration(calib.points);
 }
 
 function updateLearningCurve(docs){
@@ -1114,6 +1276,7 @@ function updateAll(){
   const docs = filteredDocs();
   updateKpis(docs);
   updateRoc(docs);
+  updateCalibration(docs);
   updateLearningCurve(docs);
   refreshFilterValues();
   runCustomAnalysis();
