@@ -311,10 +311,10 @@ function computeConcordance(docs){
   let concordant = 0;
 
   docs.forEach(d => {
-    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+
     const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
 
-    if (!hypo || !echos.length) return;
+    if (!echos.length) return;
 
     const validEchos = echos.filter(x =>
       x &&
@@ -326,11 +326,40 @@ function computeConcordance(docs){
     if (!validEchos.length) return;
 
     total++;
-    if (validEchos.includes(hypo)) concordant++;
+
+    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+    const pct = Number(d.hypothesisPrimaryPct || 0);
+
+    let concordantCase = false;
+
+    // concordance hypothèse principale
+    if (validEchos.includes(hypo)) {
+      concordantCase = true;
+    }
+
+    // concordance profil compatible >70%
+    if (!concordantCase && pct >= 70) {
+      const profiles = [
+        { name:"Endométriose", score:Number(d.endometriosePct || 0) },
+        { name:"Adénomyose", score:Number(d.adenomyosePct || 0) },
+        { name:"Congestion pelvienne", score:Number(d.congestionPct || 0) },
+        { name:"Névralgie pudendale", score:Number(d.pudendalPct || 0) },
+        { name:"OPK", score:Number(d.opkPct || 0) }
+      ];
+
+      profiles.forEach(p=>{
+        if(p.score >= 70 && validEchos.includes(p.name)){
+          concordantCase = true;
+        }
+      });
+    }
+
+    if (concordantCase) concordant++;
   });
 
   const discordant = total - concordant;
   const rate = total ? Math.round((concordant / total) * 100) : 0;
+
   return { total, concordant, discordant, rate };
 }
 
