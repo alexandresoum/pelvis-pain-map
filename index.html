@@ -5,17 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C7de612488bb14d568e7a08de7fbd8e24%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088649257969241%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=k%2FDyqwOef9BI%2B4eYE9mRRx3%2Bp3yA4dWVg5wXMpoLP%2Fs%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C7de612488bb14d568e7a08de7fbd8e24%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639088649258008179%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=bLUrogWPqmo0sA2U1%2FnRAfa4jJdHKmVElod4y5%2Futkk%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C3e49588d7af0460bc14208de8036fa2d%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089170770284619%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1ox4%2FUEHhkrPnFz5131dkXG%2FDLos09wq%2FmfqlgAO1KQ%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C3e49588d7af0460bc14208de8036fa2d%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089170770320570%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=w5rgx84p88as5asAwK%2BXQ6jZ5%2F35dbTbJ0i3UDjFO7o%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
-    .conditionalBlock{
-      margin-top:12px;
-      padding:12px;
-      border:1px solid #e5e7eb;
-      border-radius:10px;
-      background:#fafbff;
-    }
+    .conditionalBlock{margin-top:12px;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbff}
   </style>
 </head>
 <body>
@@ -29,25 +23,15 @@
 <div class="container">
   <div class="card">
     <h2>Praticien</h2>
-    <p><b>Praticien sélectionné :</b> <span id="practitionerDisplay">Non reconnu</span></p>
-  
+    <p><b>Consultation avec :</b> <span id="practitionerDisplay">Non reconnu</span></p>
   </div>
 
   <div class="card">
     <h2>Identification</h2>
     <div class="grid2">
-      <div>
-        <label for="nom">Nom</label>
-        <input type="text" id="nom">
-      </div>
-      <div>
-        <label for="prenom">Prénom</label>
-        <input type="text" id="prenom">
-      </div>
-      <div>
-        <label for="dob">Date de naissance</label>
-        <input type="date" id="dob">
-      </div>
+      <div><label for="nom">Nom</label><input type="text" id="nom"></div>
+      <div><label for="prenom">Prénom</label><input type="text" id="prenom"></div>
+      <div><label for="dob">Date de naissance</label><input type="date" id="dob"></div>
     </div>
   </div>
 
@@ -168,7 +152,7 @@
       <label><input type="radio" name="cycleRegularity" value="Irréguliers"> Irréguliers</label>
       <label><input type="radio" name="cycleRegularity" value="Non applicable"> Non applicable</label>
     </div>
-   
+    <p class="muted">Cette information aide à faire émerger l’hypothèse OPK.</p>
   </div>
 
   <div class="card">
@@ -193,7 +177,7 @@
   </div>
 
   <div class="card">
-    <h2>10. Depuis combien de temps avez-vous mal ?</h2>
+    <h2>10. Depuis combien de temps ?</h2>
     <div class="choices columns2">
       <label><input type="radio" name="duration" value="Moins de 1 mois"> Moins de 1 mois</label>
       <label><input type="radio" name="duration" value="1 à 6 mois"> 1 à 6 mois</label>
@@ -210,6 +194,15 @@ const PRACTITIONERS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
   praticien_3: "Anne-Laure Siraga"
+};
+
+const PROFILE_MAX = {
+  "Endométriose": 11,
+  "Adénomyose": 8,
+  "Névralgie pudendale": 6,
+  "Congestion pelvienne": 11,
+  "OPK": 3,
+  "Hypersensibilisation centrale": 5
 };
 
 let selectedPractitionerId = "";
@@ -267,24 +260,29 @@ function computePhenotype(typeArr) {
   return "nociceptif";
 }
 
-function levelFromScore(score) {
-  return score >= 4 ? "élevé" : score >= 2 ? "possible" : "faible";
-}
-
 function addScore(obj, key, points) {
   obj[key] = (obj[key] || 0) + points;
 }
 
-function buildAlignedHypotheses(data) {
+function percentFromScore(score, max){
+  if (!max || max <= 0) return 0;
+  return Math.round((score / max) * 100);
+}
+
+function levelFromPercent(pct){
+  if (pct >= 67) return "élevé";
+  if (pct >= 34) return "modéré";
+  return "faible";
+}
+
+function buildProfileScores(data){
   const scores = {
     "Endométriose": 0,
     "Adénomyose": 0,
     "Névralgie pudendale": 0,
     "Congestion pelvienne": 0,
     "OPK": 0,
-    "Hypersensibilisation centrale": 0,
-    "Normal": 0,
-    "Autre": 0
+    "Hypersensibilisation centrale": 0
   };
 
   if (data.endo1) addScore(scores, "Endométriose", 1);
@@ -295,6 +293,7 @@ function buildAlignedHypotheses(data) {
   if (data.time.includes("Douleur à l'ovulation")) addScore(scores, "Endométriose", 1);
   if (data.digestif.includes("Douleur à la défécation")) addScore(scores, "Endométriose", 2);
   if (data.topo.includes("Douleur profonde dans le bassin")) addScore(scores, "Endométriose", 1);
+  if (data.uri1) addScore(scores, "Endométriose", 1);
 
   if (data.aden1) addScore(scores, "Adénomyose", 2);
   if (data.aden2) addScore(scores, "Adénomyose", 2);
@@ -320,21 +319,40 @@ function buildAlignedHypotheses(data) {
   if (data.bloatingEvening) addScore(scores, "Congestion pelvienne", 2);
   if (data.time.includes("Douleur à l'ovulation")) addScore(scores, "Congestion pelvienne", 1);
 
-  if (data.cycleRegularity === "Irréguliers") addScore(scores, "OPK", 3);
+  if (data.cycleRegularity === "Irréguliers") addScore(scores, "OPK", 2);
+  if (data.previousDiagnosis === "OPK") addScore(scores, "OPK", 1);
 
   if (data.time.includes("Sans raison particulière")) addScore(scores, "Hypersensibilisation centrale", 2);
   if (data.duration === "Plus de 6 mois" || data.duration === "Plus de 1 an") addScore(scores, "Hypersensibilisation centrale", 2);
   if (data.type.includes("neuro") && data.type.includes("nociceptive")) addScore(scores, "Hypersensibilisation centrale", 1);
 
-  const ranked = Object.entries(scores)
-    .sort((a, b) => b[1] - a[1])
-    .filter(x => x[1] > 0);
+  return scores;
+}
 
-  const primary = ranked.length ? ranked[0][0] : "Autre";
+function buildProfileResults(data){
+  const rawScores = buildProfileScores(data);
+
+  const results = Object.keys(rawScores).map(label => {
+    const raw = rawScores[label];
+    const max = PROFILE_MAX[label] || 1;
+    const pct = percentFromScore(raw, max);
+    const level = levelFromPercent(pct);
+    return { label, raw, max, pct, level };
+  });
+
+  results.sort((a, b) => {
+    if (b.pct !== a.pct) return b.pct - a.pct;
+    return b.raw - a.raw;
+  });
+
+  const primary = results[0] && results[0].pct > 0 ? results[0].label : "Autre";
+  const primaryPct = results[0] && results[0].pct > 0 ? results[0].pct : 0;
 
   return {
     primary,
-    ranked: ranked.map(([label, score]) => ({ label, score }))
+    primaryPct,
+    results,
+    byLabel: Object.fromEntries(results.map(r => [r.label, r]))
   };
 }
 
@@ -342,7 +360,7 @@ function showThankYouScreen(practitionerName) {
   document.body.innerHTML = `
     <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6fb;padding:20px;font-family:Arial, Helvetica, sans-serif;">
       <div style="max-width:700px;width:100%;background:white;padding:40px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);text-align:center;">
-        <div style="font-size:54px;margin-bottom:10px;">✅</div>
+        <div style="font-size:54px; margin-bottom:10px;">✅</div>
         <h1 style="margin-top:0;color:#24324a;">Merci</h1>
         <p style="font-size:18px;color:#374151;line-height:1.6;">Merci pour votre participation à ce questionnaire.</p>
         <p style="font-size:18px;color:#374151;line-height:1.6;">Vos réponses ont bien été transmises à :</p>
@@ -410,68 +428,32 @@ async function submitForm() {
     bloatingEvening: document.getElementById("bloatingEvening").checked
   };
 
-  let endo = 0;
-  let aden = 0;
-  let pud = 0;
-  let cong = 0;
-  let opk = 0;
-
-  if (flags.endo1) { endo += 1; aden += 1; }
-  if (flags.endo2) endo += 2;
-  if (flags.endo3) endo += 2;
-  if (flags.endo4) endo += 1;
-
-  if (flags.aden1) aden += 2;
-  if (flags.aden2) aden += 2;
-  if (digestif.includes("Ballonnements")) aden += 1;
-
-  if (flags.pud1) pud += 2;
-
-  if (flags.cong1) cong += 2;
-  if (flags.cong2) cong += 2;
-  if (flags.bloatingEvening) cong += 2;
-
-  if (flags.uri1) endo += 1;
-
-  if (time.includes("Pendant les règles")) { endo += 1; aden += 1; }
-  if (time.includes("Après les rapports sexuels")) cong += 2;
-  if (time.includes("Pendant les rapports sexuels")) cong += 1;
-  if (time.includes("Douleur à l'ovulation")) { endo += 1; cong += 1; }
-  if (time.includes("En restant debout longtemps")) cong += 2;
-
-  if (topo.includes("Douleur profonde dans le bassin")) endo += 1;
-  if (topo.includes("Bas du ventre (centre)")) aden += 1;
-
-  if (
-    topo.includes("Périnée") ||
-    topo.includes("Vulve") ||
-    topo.includes("Cuisse droite") ||
-    topo.includes("Cuisse gauche")
-  ) pud += 1;
-
-  if (digestif.includes("Douleur à la défécation")) endo += 2;
-  if (type.includes("neuro")) pud += 1;
-  if (type.includes("nociceptive")) cong += 1;
-  if (cycleRegularity === "Irréguliers") opk += 3;
-
-  const aligned = buildAlignedHypotheses({
+  const profileData = {
     topo,
     time,
     type,
     digestif,
     duration,
+    consultation,
+    previousDiagnosis,
     cycleRegularity,
     ...flags
-  });
+  };
+
+  const profileResults = buildProfileResults(profileData);
+  const byLabel = profileResults.byLabel;
 
   const payload = {
     date: new Date(),
+    doc: practitionerId,
     practitionerId,
     practitionerName,
+
     nom,
     prenom,
     dob,
     pain,
+
     topo,
     time,
     type,
@@ -483,22 +465,59 @@ async function submitForm() {
     pillContinuous,
     cycleRegularity,
     phenotype: computePhenotype(type),
+
     ballonnementsSoir: flags.bloatingEvening ? "Oui" : "Non",
-    endometriose: levelFromScore(endo),
-    adenomyose: levelFromScore(aden),
-    pudendal: levelFromScore(pud),
-    congestion: levelFromScore(cong),
-    opk: levelFromScore(opk),
-    hypothesisPrimary: aligned.primary,
-    hypothesisRanked: aligned.ranked,
-    lesionPrimary: aligned.primary,
+
+    endo1: flags.endo1,
+    aden1: flags.aden1,
+    aden2: flags.aden2,
+    endo2: flags.endo2,
+    endo3: flags.endo3,
+    endo4: flags.endo4,
+    cong1: flags.cong1,
+    cong2: flags.cong2,
+    pud1: flags.pud1,
+    uri1: flags.uri1,
+    bloatingEvening: flags.bloatingEvening,
+
+    endometriose: byLabel["Endométriose"].level,
+    endometriose_pct: byLabel["Endométriose"].pct,
+    endometriose_score: byLabel["Endométriose"].raw,
+
+    adenomyose: byLabel["Adénomyose"].level,
+    adenomyose_pct: byLabel["Adénomyose"].pct,
+    adenomyose_score: byLabel["Adénomyose"].raw,
+
+    pudendal: byLabel["Névralgie pudendale"].level,
+    pudendal_pct: byLabel["Névralgie pudendale"].pct,
+    pudendal_score: byLabel["Névralgie pudendale"].raw,
+
+    congestion: byLabel["Congestion pelvienne"].level,
+    congestion_pct: byLabel["Congestion pelvienne"].pct,
+    congestion_score: byLabel["Congestion pelvienne"].raw,
+
+    opk: byLabel["OPK"].level,
+    opk_pct: byLabel["OPK"].pct,
+    opk_score: byLabel["OPK"].raw,
+
+    hypersensibilisation: byLabel["Hypersensibilisation centrale"].level,
+    hypersensibilisation_pct: byLabel["Hypersensibilisation centrale"].pct,
+    hypersensibilisation_score: byLabel["Hypersensibilisation centrale"].raw,
+
+    hypothesisPrimary: profileResults.primary,
+    hypothesisPrimaryPct: profileResults.primaryPct,
+    hypothesisRanked: profileResults.results,
+
+    lesionPrimary: profileResults.primary,
     painTypePrimary: computePhenotype(type),
-    echoPrimary: aligned.primary,
-    lesionHypotheses: aligned.ranked,
-    painTypeHypotheses: [{ label: computePhenotype(type), score: 1 }],
-    echoOrientations: aligned.ranked,
+    echoPrimary: profileResults.primary,
+    lesionHypotheses: profileResults.results,
+    painTypeHypotheses: [{label: computePhenotype(type), score: 1}],
+    echoOrientations: profileResults.results,
+
     diagnostic_echo: [],
-    echoCertainty: "Non renseigné"
+    echoCertainty: "Non renseigné",
+    echoComment: ""
   };
 
   try {
