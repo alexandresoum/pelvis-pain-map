@@ -446,10 +446,9 @@ function computeConcordance(docs){
   let concordant = 0;
 
   docs.forEach(d => {
-    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
     const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
 
-    if (!hypo || !echos.length) return;
+    if (!echos.length) return;
 
     const validEchos = echos.filter(x =>
       x &&
@@ -461,11 +460,37 @@ function computeConcordance(docs){
     if (!validEchos.length) return;
 
     total++;
-    if (validEchos.includes(hypo)) concordant++;
+
+    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+
+    let concordantCase = false;
+
+    // 1) concordance directe sur l’hypothèse principale
+    if (hypo && validEchos.includes(hypo)) {
+      concordantCase = true;
+    }
+
+    // 2) sinon concordance si au moins un profil >= 70% correspond à l’écho
+    if (!concordantCase) {
+      const strongProfiles = [
+        { name: "Endométriose", pct: Number(d.endometriose_pct || 0) },
+        { name: "Adénomyose", pct: Number(d.adenomyose_pct || 0) },
+        { name: "Congestion pelvienne", pct: Number(d.congestion_pct || 0) },
+        { name: "Névralgie pudendale", pct: Number(d.pudendal_pct || 0) },
+        { name: "OPK", pct: Number(d.opk_pct || 0) }
+      ];
+
+      if (strongProfiles.some(p => p.pct >= 70 && validEchos.includes(p.name))) {
+        concordantCase = true;
+      }
+    }
+
+    if (concordantCase) concordant++;
   });
 
   const discordant = total - concordant;
   const rate = total ? Math.round((concordant / total) * 100) : 0;
+
   return { total, concordant, discordant, rate };
 }
 
