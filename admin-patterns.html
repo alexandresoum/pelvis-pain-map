@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Patterns - Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C2f8d6ca3e6ff4b78868b08de80f9c020%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090007330205483%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=CxHvqsYB%2FvoEiLx%2BjtwC4toH9HiphBTwt0%2Ba5oj6t9s%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C2f8d6ca3e6ff4b78868b08de80f9c020%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090007330229020%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=mU8CndAfVTMvA3RCRBdj7L8i1HL9x51N4c0wJ535dWw%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C2f8d6ca3e6ff4b78868b08de80f9c020%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090007330245613%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=zI1c9OsbyPA8%2BxruOEo%2FI0N46X0Ve0Sxqh31XieAm%2Bk%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372410997%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rhtJkDj2ninReBAWxNe0LZ1QSon93XdOKhS5cmoX644%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372434045%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8MUFuapsBbXK8duLmaaagftDyNtUhK7xUyKUvcz6sB0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372447495%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=g6n7suxdPxic%2BPLHqJl56qgoWZtdX%2BdAZuZO0XDo5D8%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -100,7 +100,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:14px;
-      min-width:1450px;
+      min-width:1500px;
     }
     .simpleTable th,.simpleTable td{
       border-bottom:1px solid #e5e7eb;
@@ -315,9 +315,9 @@ const MAIN_DIAGNOSES = [
 
 const ITEM_DEFS = [
   { key: "topo_bas_ventre_centre", label: "Topo · bas ventre centre", test: d => includesText(d.topo, "bas du ventre (centre)") },
-  { key: "topo_fosse_iliaque_droite", label: "Topo · fosse iliaque droite", test: d => includesText(d.topo, "côté droit") },
-  { key: "topo_fosse_iliaque_gauche", label: "Topo · fosse iliaque gauche", test: d => includesText(d.topo, "côté gauche") },
-  { key: "topo_bassin_profond", label: "Topo · bassin profond", test: d => includesText(d.topo, "profonde dans le bassin") },
+  { key: "topo_fosse_iliaque_droite", label: "Topo · fosse iliaque droite", test: d => includesText(d.topo, "côté droit du bas du ventre") },
+  { key: "topo_fosse_iliaque_gauche", label: "Topo · fosse iliaque gauche", test: d => includesText(d.topo, "côté gauche du bas du ventre") },
+  { key: "topo_bassin_profond", label: "Topo · bassin profond", test: d => includesText(d.topo, "douleur profonde dans le bassin") },
   { key: "topo_lombaire", label: "Topo · lombaire / sacrum", test: d => includesText(d.topo, "bas du dos") || includesText(d.topo, "sacrum") },
   { key: "topo_perinee", label: "Topo · périnée", test: d => includesText(d.topo, "périnée") },
   { key: "topo_vulve", label: "Topo · vulve", test: d => includesText(d.topo, "vulve") },
@@ -338,22 +338,22 @@ const ITEM_DEFS = [
   { key: "type_nociceptive", label: "Type · nociceptif", test: d => Array.isArray(d.type) && d.type.includes("nociceptive") },
   { key: "type_neuro", label: "Type · neuropathique", test: d => Array.isArray(d.type) && d.type.includes("neuro") },
 
-  { key: "digestif_ballonnements_soir", label: "Digestif · ballonnements le soir", test: d => !!d.bloatingEvening || includesText(d.digestif, "ballonnements le soir") },
+  { key: "digestif_ballonnements_soir", label: "Digestif · ballonnements le soir", test: d => !!d.bloatingEvening || includesText(d.digestif, "ballonnements surtout le soir") },
   { key: "digestif_constipation", label: "Digestif · constipation", test: d => includesText(d.digestif, "constipation") },
   { key: "digestif_diarrhee", label: "Digestif · diarrhée", test: d => includesText(d.digestif, "diarrhée") || includesText(d.digestif, "diarrhee") },
   { key: "digestif_alternance", label: "Digestif · alternance transit", test: d => includesText(d.digestif, "alternance") },
   { key: "digestif_douleur_selle", label: "Digestif · douleur à la défécation", test: d => includesText(d.digestif, "défécation") || includesText(d.digestif, "defecation") || includesText(d.digestif, "selle") },
 
   { key: "endo1", label: "Profil · règles très douloureuses", test: d => !!d.endo1 },
-  { key: "endo2", label: "Profil · douleur rapports profonds", test: d => !!d.endo2 },
-  { key: "endo3", label: "Profil · douleur à la selle pendant les règles", test: d => !!d.endo3 },
+  { key: "endo2", label: "Profil · dyspareunie profonde", test: d => !!d.endo2 },
+  { key: "endo3", label: "Profil · dyschésie menstruelle", test: d => !!d.endo3 },
   { key: "endo4", label: "Profil · irradiation dos / cuisses", test: d => !!d.endo4 },
 
-  { key: "aden1", label: "Profil · règles très abondantes", test: d => !!d.aden1 },
+  { key: "aden1", label: "Profil · ménorragies", test: d => !!d.aden1 },
   { key: "aden2", label: "Profil · caillots pendant les règles", test: d => !!d.aden2 },
 
-  { key: "cong1", label: "Profil · lourdeur pelvienne le soir", test: d => !!d.cong1 },
-  { key: "cong2", label: "Profil · douleur après rapports", test: d => !!d.cong2 },
+  { key: "cong1", label: "Profil · pesanteur pelvienne le soir", test: d => !!d.cong1 },
+  { key: "cong2", label: "Profil · dyspareunie tardive / douleur après rapports", test: d => !!d.cong2 },
 
   { key: "pud1", label: "Profil · douleur aggravée assise", test: d => !!d.pud1 },
   { key: "pud2", label: "Profil · douleur soulagée debout", test: d => !!d.pud2 },
@@ -361,7 +361,7 @@ const ITEM_DEFS = [
 
   { key: "uri1", label: "Profil · brûlures / pollakiurie", test: d => !!d.uri1 },
 
-  { key: "opk1", label: "Profil · acné hormonale persistante", test: d => !!d.opk1 },
+  { key: "opk1", label: "Profil · acné / hyperandrogénie", test: d => !!d.opk1 },
   { key: "opk2", label: "Profil · pilosité excessive", test: d => !!d.opk2 },
   { key: "cycle_irregulier", label: "Contexte · cycles irréguliers", test: d => String(d.cycleRegularity || "") === "Irréguliers" },
 
