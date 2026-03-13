@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C50a39d5ce18d40e811a508de80e93d12%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089936387156020%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=KoABrXfDPPNArRfMvZZTm2zCZ%2BFpYIlfmOG3oWkRk3E%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C50a39d5ce18d40e811a508de80e93d12%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089936387182087%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pU2MWOzPAuzOiVJsDTIYnePSWHSCK7EKblul21%2BMH5Q%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C4922dc25e3d04b9a6fc708de80f84924%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090001025166915%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=nBDAzcmyoPHSlzsA6NiYnjEmgb3AMICorLBh%2Fi92SKo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C4922dc25e3d04b9a6fc708de80f84924%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090001025194065%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=ohKQiNPtzYdryT5HohVVNqnHUPE0MfUfXadcn1ZLWsw%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .conditionalBlock{margin-top:12px;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbff}
@@ -91,28 +91,28 @@
       <label><input type="checkbox" id="aden1"> Règles très abondantes</label>
       <label><input type="checkbox" id="aden2"> Caillots pendant les règles</label>
       <label><input type="checkbox" id="endo2"> Douleur pendant les rapports profonds</label>
-      <label><input type="checkbox" id="endo3"> Douleur à la selle pendant les règles</label>
-      <label><input type="checkbox" id="endo4"> Douleur à l'ovulation</label>
-      <label><input type="checkbox" id="cong1"> Sensation de lourdeur dans le bassin</label>
       <label><input type="checkbox" id="cong2"> Douleur après les rapports</label>
+      <label><input type="checkbox" id="endo3"> Douleur à la selle pendant les règles</label>
+      <label><input type="checkbox" id="endo4"> Douleur irradiant dans le bas du dos ou les cuisses</label>
+      <label><input type="checkbox" id="cong1"> Sensation de lourdeur dans le bassin, surtout le soir</label>
       <label><input type="checkbox" id="pud1"> Douleur aggravée en position assise</label>
+      <label><input type="checkbox" id="pud2"> Douleur soulagée en position debout</label>
+      <label><input type="checkbox" id="pud3"> Pas de douleur la nuit</label>
       <label><input type="checkbox" id="uri1"> Brûlures / pollakiurie / dysurie</label>
+      <label><input type="checkbox" id="opk1"> Acné hormonale persistante</label>
+      <label><input type="checkbox" id="opk2"> Pilosité excessive</label>
     </div>
   </div>
 
   <div class="card">
     <h2>6. Signes digestifs associés</h2>
     <div class="choices columns2">
-      <label><input type="checkbox" class="digestif" value="Ballonnements" id="digestifBallonnements" onchange="toggleDigestiveSubOptions()"> Ballonnements</label>
+      <label><input type="checkbox" class="digestif" value="Ballonnements le soir" id="bloatingEvening"> Ballonnements surtout le soir</label>
       <label><input type="checkbox" class="digestif" value="Diarrhée"> Diarrhée</label>
       <label><input type="checkbox" class="digestif" value="Constipation"> Constipation</label>
       <label><input type="checkbox" class="digestif" value="Alternance diarrhée / constipation"> Alternance diarrhée / constipation</label>
       <label><input type="checkbox" class="digestif" value="Douleur à la défécation"> Douleur à la défécation</label>
       <label><input type="checkbox" class="digestif" value="Aucun signe digestif"> Aucun signe digestif</label>
-    </div>
-
-    <div id="digestiveSubOptions" class="conditionalBlock" style="display:none;">
-      <label><input type="checkbox" id="bloatingEvening"> Ballonnements surtout le soir</label>
     </div>
   </div>
 
@@ -197,11 +197,11 @@ const PRACTITIONERS = {
 };
 
 const PROFILE_MAX = {
-  "Endométriose": 11,
-  "Adénomyose": 8,
-  "Névralgie pudendale": 6,
-  "Congestion pelvienne": 11,
-  "OPK": 3,
+  "Endométriose": 9,
+  "Adénomyose": 7,
+  "Névralgie pudendale": 8,
+  "Congestion pelvienne": 10,
+  "OPK": 4,
   "Hypersensibilisation centrale": 5
 };
 
@@ -235,12 +235,6 @@ function autoSelectCycleNA() {
       if (na) na.checked = true;
     }
   }
-}
-
-function toggleDigestiveSubOptions() {
-  const checked = document.getElementById("digestifBallonnements").checked;
-  document.getElementById("digestiveSubOptions").style.display = checked ? "block" : "none";
-  if (!checked) document.getElementById("bloatingEvening").checked = false;
 }
 
 function checkedValues(selector) {
@@ -285,43 +279,50 @@ function buildProfileScores(data){
     "Hypersensibilisation centrale": 0
   };
 
-  if (data.endo1) addScore(scores, "Endométriose", 1);
+  // Endométriose profonde
+  if (data.endo1) addScore(scores, "Endométriose", 2);
   if (data.endo2) addScore(scores, "Endométriose", 2);
   if (data.endo3) addScore(scores, "Endométriose", 2);
   if (data.endo4) addScore(scores, "Endométriose", 1);
   if (data.time.includes("Pendant les règles")) addScore(scores, "Endométriose", 1);
-  if (data.time.includes("Douleur à l'ovulation")) addScore(scores, "Endométriose", 1);
-  if (data.digestif.includes("Douleur à la défécation")) addScore(scores, "Endométriose", 2);
   if (data.topo.includes("Douleur profonde dans le bassin")) addScore(scores, "Endométriose", 1);
-  if (data.uri1) addScore(scores, "Endométriose", 1);
 
+  // Adénomyose
   if (data.aden1) addScore(scores, "Adénomyose", 2);
   if (data.aden2) addScore(scores, "Adénomyose", 2);
   if (data.endo1) addScore(scores, "Adénomyose", 1);
-  if (data.digestif.includes("Ballonnements")) addScore(scores, "Adénomyose", 1);
   if (data.time.includes("Pendant les règles")) addScore(scores, "Adénomyose", 1);
   if (data.topo.includes("Bas du ventre (centre)")) addScore(scores, "Adénomyose", 1);
 
+  // Pudendal
   if (data.pud1) addScore(scores, "Névralgie pudendale", 2);
-  if (data.time.includes("En position assise")) addScore(scores, "Névralgie pudendale", 2);
+  if (data.pud2) addScore(scores, "Névralgie pudendale", 2);
+  if (data.pud3) addScore(scores, "Névralgie pudendale", 1);
+  if (data.time.includes("En position assise")) addScore(scores, "Névralgie pudendale", 1);
   if (data.type.includes("neuro")) addScore(scores, "Névralgie pudendale", 1);
   if (
     data.topo.includes("Périnée") ||
     data.topo.includes("Vulve") ||
+    data.topo.includes("Vagin") ||
     data.topo.includes("Cuisse droite") ||
     data.topo.includes("Cuisse gauche")
   ) addScore(scores, "Névralgie pudendale", 1);
 
+  // Congestion
   if (data.cong1) addScore(scores, "Congestion pelvienne", 2);
   if (data.cong2) addScore(scores, "Congestion pelvienne", 2);
-  if (data.time.includes("Après les rapports sexuels")) addScore(scores, "Congestion pelvienne", 2);
+  if (data.time.includes("Après les rapports sexuels")) addScore(scores, "Congestion pelvienne", 1);
   if (data.time.includes("En restant debout longtemps")) addScore(scores, "Congestion pelvienne", 2);
-  if (data.bloatingEvening) addScore(scores, "Congestion pelvienne", 2);
   if (data.time.includes("Douleur à l'ovulation")) addScore(scores, "Congestion pelvienne", 1);
+  if (data.bloatingEvening) addScore(scores, "Congestion pelvienne", 2);
 
+  // OPK
   if (data.cycleRegularity === "Irréguliers") addScore(scores, "OPK", 2);
+  if (data.opk1) addScore(scores, "OPK", 1);
+  if (data.opk2) addScore(scores, "OPK", 1);
   if (data.previousDiagnosis === "OPK") addScore(scores, "OPK", 1);
 
+  // Hypersensibilisation centrale (secondaire uniquement)
   if (data.time.includes("Sans raison particulière")) addScore(scores, "Hypersensibilisation centrale", 2);
   if (data.duration === "Plus de 6 mois" || data.duration === "Plus de 1 an") addScore(scores, "Hypersensibilisation centrale", 2);
   if (data.type.includes("neuro") && data.type.includes("nociceptive")) addScore(scores, "Hypersensibilisation centrale", 1);
@@ -437,7 +438,11 @@ async function submitForm() {
     cong1: document.getElementById("cong1").checked,
     cong2: document.getElementById("cong2").checked,
     pud1: document.getElementById("pud1").checked,
+    pud2: document.getElementById("pud2").checked,
+    pud3: document.getElementById("pud3").checked,
     uri1: document.getElementById("uri1").checked,
+    opk1: document.getElementById("opk1").checked,
+    opk2: document.getElementById("opk2").checked,
     bloatingEvening: document.getElementById("bloatingEvening").checked
   };
 
@@ -490,7 +495,11 @@ async function submitForm() {
     cong1: flags.cong1,
     cong2: flags.cong2,
     pud1: flags.pud1,
+    pud2: flags.pud2,
+    pud3: flags.pud3,
     uri1: flags.uri1,
+    opk1: flags.opk1,
+    opk2: flags.opk2,
     bloatingEvening: flags.bloatingEvening,
 
     endometriose: byLabel["Endométriose"].level,
