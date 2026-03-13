@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Patterns - Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677935983%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=FDgJVF%2BMNj9om2oX2KGZ5wINwsDaBiG2QWIkoIgZxK0%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677965190%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Z5NtBD1zbFYRoKJbjjhbQ%2F9ntVFaLQvcHrsNL7mKfII%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677979898%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=R1R6y%2FdnGhJemOQkKEMprMCz1oaDj6Bwx7p3Wzs67rA%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132932674750%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=fsIPNXuxnoAvqAy2%2F4PpH9L7KbD2uPO2%2BI63qZUGhKM%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933050137%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rdBuUkzOFrYBXsuoFISgCD8xt55Uib3qTPnKYCFSgGE%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933074965%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=F5EUKEDWMQutNq21179QKDkcwUAVNHhR%2FSPgfcFtx04%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -378,6 +378,42 @@
       </div>
     </div>
 
+    <div class="sectionGrid">
+      <div class="card">
+        <h2>AUC ROC du score questionnaire</h2>
+        <p class="muted">Performance du score questionnaire continu de la pathologie sélectionnée, comparé au diagnostic échographique.</p>
+
+        <div class="statsGrid" style="margin-top:12px;">
+          <div class="statCard">
+            <div class="statLabel">AUC ROC</div>
+            <div class="statValue big" id="rocAucValue">0.00</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Dossiers exploitables</div>
+            <div class="statValue big" id="rocN">0</div>
+          </div>
+
+          <div class="statCard">
+            <div class="statLabel">Interprétation</div>
+            <div class="statValue small" id="rocInterpretation">-</div>
+          </div>
+        </div>
+
+        <div class="chartBox small">
+          <canvas id="rocChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Distribution du score</h2>
+        <p class="muted">Comparaison des scores questionnaire entre dossiers écho positifs et négatifs.</p>
+        <div class="chartBox small">
+          <canvas id="distributionChart"></canvas>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <h2>Items trompeurs / banals</h2>
       <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
@@ -694,6 +730,99 @@ function computePatternStats(pathologyDocs, allDocs){
   });
 
   return rowsStat;
+}
+
+function getPathologyPct(d, pathology){
+  const map = {
+    "Endométriose": Number(d.endometriose_pct || 0),
+    "Adénomyose": Number(d.adenomyose_pct || 0),
+    "Congestion pelvienne": Number(d.congestion_pct || 0),
+    "Névralgie pudendale": Number(d.pudendal_pct || 0),
+    "OPK": Number(d.opk_pct || 0)
+  };
+  return map[pathology] || 0;
+}
+
+function buildRocData(allDocs, pathology){
+  const usable = allDocs
+    .filter(d => {
+      const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+      return echos.some(x => x && x !== "Non contributif");
+    })
+    .map(d => ({
+      score: getPathologyPct(d, pathology),
+      positive: hasEchoDiagnosis(d, pathology)
+    }));
+
+  const positives = usable.filter(x => x.positive).length;
+  const negatives = usable.filter(x => !x.positive).length;
+
+  if (!usable.length || positives === 0 || negatives === 0) {
+    return {
+      auc: 0,
+      points: [],
+      n: usable.length,
+      interpretation: "Non calculable",
+      positiveScores: [],
+      negativeScores: []
+    };
+  }
+
+  const thresholds = [];
+  for (let t = 101; t >= -1; t--) thresholds.push(t);
+
+  const rawPoints = thresholds.map(threshold => {
+    let TP = 0, FP = 0, FN = 0, TN = 0;
+
+    usable.forEach(item => {
+      const predictedPositive = item.score >= threshold;
+      if (predictedPositive && item.positive) TP++;
+      else if (predictedPositive && !item.positive) FP++;
+      else if (!predictedPositive && item.positive) FN++;
+      else TN++;
+    });
+
+    const tpr = (TP + FN) ? TP / (TP + FN) : 0;
+    const fpr = (FP + TN) ? FP / (FP + TN) : 0;
+
+    return { threshold, tpr, fpr };
+  });
+
+  const byFpr = rawPoints.sort((a,b) => a.fpr - b.fpr || a.tpr - b.tpr);
+
+  const uniquePoints = [];
+  byFpr.forEach(p => {
+    const last = uniquePoints[uniquePoints.length - 1];
+    if (!last || last.fpr !== p.fpr || last.tpr !== p.tpr) {
+      uniquePoints.push(p);
+    }
+  });
+
+  let auc = 0;
+  for (let i = 1; i < uniquePoints.length; i++) {
+    const x1 = uniquePoints[i - 1].fpr;
+    const x2 = uniquePoints[i].fpr;
+    const y1 = uniquePoints[i - 1].tpr;
+    const y2 = uniquePoints[i].tpr;
+    auc += (x2 - x1) * ((y1 + y2) / 2);
+  }
+
+  let interpretation = "Faible";
+  if (auc >= 0.9) interpretation = "Excellent";
+  else if (auc >= 0.8) interpretation = "Bon";
+  else if (auc >= 0.7) interpretation = "Correct";
+  else if (auc >= 0.6) interpretation = "Modeste";
+  else if (auc >= 0.5) interpretation = "Faible";
+  else interpretation = "Sous le hasard";
+
+  return {
+    auc,
+    points: uniquePoints,
+    n: usable.length,
+    interpretation,
+    positiveScores: usable.filter(x => x.positive).map(x => x.score),
+    negativeScores: usable.filter(x => !x.positive).map(x => x.score)
+  };
 }
 
 function updateKpis(docs, patternStats){
@@ -1019,6 +1148,125 @@ function drawTimelineChart(pathologyDocs){
   });
 }
 
+function drawRocChart(roc){
+  const el = document.getElementById("rocChart");
+  if (!el) return;
+  if (charts["rocChart"]) charts["rocChart"].destroy();
+
+  const points = roc.points.length ? roc.points : [{fpr:0,tpr:0},{fpr:1,tpr:1}];
+
+  charts["rocChart"] = new Chart(el, {
+    type: "line",
+    data: {
+      datasets: [
+        {
+          label: "Courbe ROC",
+          data: points.map(p => ({ x: p.fpr, y: p.tpr })),
+          fill: false,
+          tension: 0.15
+        },
+        {
+          label: "Hasard",
+          data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      parsing: false,
+      scales: {
+        x: {
+          type: "linear",
+          min: 0,
+          max: 1,
+          title: { display: true, text: "1 - Spécificité (FPR)" }
+        },
+        y: {
+          min: 0,
+          max: 1,
+          title: { display: true, text: "Sensibilité (TPR)" }
+        }
+      }
+    }
+  });
+}
+
+function buildHistogram(scores){
+  const bins = [
+    { label: "0-20", min: 0, max: 20 },
+    { label: "20-40", min: 20, max: 40 },
+    { label: "40-60", min: 40, max: 60 },
+    { label: "60-80", min: 60, max: 80 },
+    { label: "80-100", min: 80, max: 101 }
+  ];
+
+  return bins.map(bin => scores.filter(v => v >= bin.min && v < bin.max).length);
+}
+
+function drawDistributionChart(roc){
+  const el = document.getElementById("distributionChart");
+  if (!el) return;
+  if (charts["distributionChart"]) charts["distributionChart"].destroy();
+
+  const labels = ["0-20", "20-40", "40-60", "60-80", "80-100"];
+  const pos = buildHistogram(roc.positiveScores || []);
+  const neg = buildHistogram(roc.negativeScores || []);
+
+  charts["distributionChart"] = new Chart(el, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Écho positif",
+          data: pos
+        },
+        {
+          label: "Écho négatif",
+          data: neg
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: "Score questionnaire (%)" }
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: "Nombre de dossiers" }
+        }
+      }
+    }
+  });
+}
+
+function updateRocSection(allDocs, diagnosis){
+  const allowed = ["Endométriose", "Adénomyose", "Congestion pelvienne", "Névralgie pudendale", "OPK"];
+
+  if (!allowed.includes(diagnosis)) {
+    document.getElementById("rocAucValue").innerText = "0.00";
+    document.getElementById("rocN").innerText = "0";
+    document.getElementById("rocInterpretation").innerText = "Non calculable";
+    drawRocChart({ points: [] });
+    drawDistributionChart({ positiveScores: [], negativeScores: [] });
+    return;
+  }
+
+  const roc = buildRocData(allDocs, diagnosis);
+  document.getElementById("rocAucValue").innerText = roc.auc.toFixed(2);
+  document.getElementById("rocN").innerText = roc.n;
+  document.getElementById("rocInterpretation").innerText = roc.interpretation;
+
+  drawRocChart(roc);
+  drawDistributionChart(roc);
+}
+
 function updateAll(){
   const diagnosis = document.getElementById("echoTarget").value;
   const allDocs = filteredDocs();
@@ -1033,6 +1281,7 @@ function updateAll(){
   drawRatioChart(patternStats);
   drawWeightChart(patternStats);
   drawTimelineChart(docs);
+  updateRocSection(allDocs, diagnosis);
 }
 
 function loadRows(){
