@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877404743%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=aThYvXqRMw%2FrZ87GZrFP%2FiIgnAFrVPT7jq12UY4yNZo%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877459333%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=B%2Bvemas3XBYoyKeTuKYGHWDAI%2BUoECI%2FMJqFCx2lIRA%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C6cb4da9cd7f74b5217e308de808a96ba%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089529877481964%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=hVZklllSxzAZMBeGEinObLQQFj9JBrFlhXrsfz0ALP4%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721022214%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=vbVW13k8rc52LNBlyQd%2BcDZ9q%2BYrfkkMjUK2P%2Fsi7TE%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721043921%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=TL2wCtN%2FkbAvAwIOwcqWyCYy5pMOddxOlCFeGvG2Jek%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721057426%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=zWwks%2FiXUQGxBIxxDVUu7Pahr9ZGOCRTQueux5Pwlvs%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -104,12 +104,6 @@
       gap:8px;
       align-items:center;
     }
-    .chartGrid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-      gap:18px;
-      margin-top:18px;
-    }
     .card h2,.filtersCard h2{
       margin-top:0;
       color:#24324a;
@@ -171,12 +165,13 @@
     <h1>Admin Pelvis Pain Map</h1>
     <p class="info">Vue globale multi-praticiens</p>
   </header>
+
   <div style="margin:10px 0 20px 0;">
-  <button onclick="window.location.href='admin-patterns.html'"
-  style="padding:10px 16px;border-radius:10px;border:1px solid #ddd;background:#f5f7ff;cursor:pointer;">
-  Analyse des patterns patients
-  </button>
-</div>
+    <button onclick="window.location.href='admin-patterns.html'"
+      style="padding:10px 16px;border-radius:10px;border:1px solid #ddd;background:#f5f7ff;cursor:pointer;">
+      Analyse des patterns patients
+    </button>
+  </div>
 
   <div class="container wide">
     <div class="filtersCard">
@@ -190,78 +185,20 @@
     </div>
 
     <div class="statsGrid">
-      <div class="statCard">
-        <div class="statLabel">Nombre d’échos</div>
-        <div class="statValue big" id="statEchos">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Âge moyen</div>
-        <div class="statValue big" id="statAge">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Douleur moyenne</div>
-        <div class="statValue big" id="statPain">0/10</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Digestif présent</div>
-        <div class="statValue big" id="statDigestif">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top temporalité</div>
-        <div class="statValue small" id="statTopTime">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Endométriose compatible</div>
-        <div class="statValue big" id="statEndo">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Congestion compatible</div>
-        <div class="statValue big" id="statCong">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">OPK compatible</div>
-        <div class="statValue big" id="statOpk">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Contraception la plus fréquente</div>
-        <div class="statValue small" id="statContraception">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top digestif</div>
-        <div class="statValue small" id="statTopDigestif">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top résultat écho</div>
-        <div class="statValue small" id="statTopEcho">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Exact match</div>
-        <div class="statValue big" id="statExactMatch">0%</div>
-        <div class="statSub" id="statExactMatchDetail">0 / 0 concordants</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top-2 match</div>
-        <div class="statValue big" id="statTop2Match">0%</div>
-        <div class="statSub" id="statTop2MatchDetail">0 / 0 concordants</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Compatible &gt; 70%</div>
-        <div class="statValue big" id="statCompatible70">0%</div>
-        <div class="statSub" id="statCompatible70Detail">0 / 0 concordants</div>
-      </div>
+      <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
+      <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue big" id="statAge">0</div></div>
+      <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue big" id="statPain">0/10</div></div>
+      <div class="statCard"><div class="statLabel">Digestif présent</div><div class="statValue big" id="statDigestif">0</div></div>
+      <div class="statCard"><div class="statLabel">Top temporalité</div><div class="statValue small" id="statTopTime">-</div></div>
+      <div class="statCard"><div class="statLabel">Endométriose compatible</div><div class="statValue big" id="statEndo">0</div></div>
+      <div class="statCard"><div class="statLabel">Congestion compatible</div><div class="statValue big" id="statCong">0</div></div>
+      <div class="statCard"><div class="statLabel">OPK compatible</div><div class="statValue big" id="statOpk">0</div></div>
+      <div class="statCard"><div class="statLabel">Contraception la plus fréquente</div><div class="statValue small" id="statContraception">-</div></div>
+      <div class="statCard"><div class="statLabel">Top digestif</div><div class="statValue small" id="statTopDigestif">-</div></div>
+      <div class="statCard"><div class="statLabel">Top résultat écho</div><div class="statValue small" id="statTopEcho">-</div></div>
+      <div class="statCard"><div class="statLabel">Exact match</div><div class="statValue big" id="statExactMatch">0%</div><div class="statSub" id="statExactMatchDetail">0 / 0 concordants</div></div>
+      <div class="statCard"><div class="statLabel">Top-2 match</div><div class="statValue big" id="statTop2Match">0%</div><div class="statSub" id="statTop2MatchDetail">0 / 0 concordants</div></div>
+      <div class="statCard"><div class="statLabel">Compatible &gt; 70%</div><div class="statValue big" id="statCompatible70">0%</div><div class="statSub" id="statCompatible70Detail">0 / 0 concordants</div></div>
     </div>
 
     <div class="card">
@@ -290,51 +227,17 @@
       </div>
 
       <div class="statsGrid" style="margin-top:16px;">
-        <div class="statCard">
-          <div class="statLabel">Sensibilité</div>
-          <div class="statValue big" id="metricSensitivityAdmin">0%</div>
-          <div class="statSub" id="metricSensitivitySubAdmin">0 / 0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Spécificité</div>
-          <div class="statValue big" id="metricSpecificityAdmin">0%</div>
-          <div class="statSub" id="metricSpecificitySubAdmin">0 / 0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">VPP</div>
-          <div class="statValue big" id="metricPPVAdmin">0%</div>
-          <div class="statSub" id="metricPPVSubAdmin">0 / 0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">VPN</div>
-          <div class="statValue big" id="metricNPVAdmin">0%</div>
-          <div class="statSub" id="metricNPVSubAdmin">0 / 0</div>
-        </div>
+        <div class="statCard"><div class="statLabel">Sensibilité</div><div class="statValue big" id="metricSensitivityAdmin">0%</div><div class="statSub" id="metricSensitivitySubAdmin">0 / 0</div></div>
+        <div class="statCard"><div class="statLabel">Spécificité</div><div class="statValue big" id="metricSpecificityAdmin">0%</div><div class="statSub" id="metricSpecificitySubAdmin">0 / 0</div></div>
+        <div class="statCard"><div class="statLabel">VPP</div><div class="statValue big" id="metricPPVAdmin">0%</div><div class="statSub" id="metricPPVSubAdmin">0 / 0</div></div>
+        <div class="statCard"><div class="statLabel">VPN</div><div class="statValue big" id="metricNPVAdmin">0%</div><div class="statSub" id="metricNPVSubAdmin">0 / 0</div></div>
       </div>
 
       <div class="statsGrid" style="margin-top:4px;">
-        <div class="statCard">
-          <div class="statLabel">Vrais positifs</div>
-          <div class="statValue big" id="metricTPAdmin">0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Faux positifs</div>
-          <div class="statValue big" id="metricFPAdmin">0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Faux négatifs</div>
-          <div class="statValue big" id="metricFNAdmin">0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Vrais négatifs</div>
-          <div class="statValue big" id="metricTNAdmin">0</div>
-        </div>
+        <div class="statCard"><div class="statLabel">Vrais positifs</div><div class="statValue big" id="metricTPAdmin">0</div></div>
+        <div class="statCard"><div class="statLabel">Faux positifs</div><div class="statValue big" id="metricFPAdmin">0</div></div>
+        <div class="statCard"><div class="statLabel">Faux négatifs</div><div class="statValue big" id="metricFNAdmin">0</div></div>
+        <div class="statCard"><div class="statLabel">Vrais négatifs</div><div class="statValue big" id="metricTNAdmin">0</div></div>
       </div>
     </div>
 
@@ -347,7 +250,6 @@
     <div class="card">
       <h2>Discrimination continue (AUC ROC)</h2>
       <p class="muted">Le score continu correspond au pourcentage questionnaire de la pathologie sélectionnée. La référence est le diagnostic écho.</p>
-
       <div class="toolbar">
         <div>
           <label for="rocPathology"><b>Pathologie ROC</b></label><br>
@@ -362,27 +264,16 @@
       </div>
 
       <div class="statsGrid" style="margin-top:16px;">
-        <div class="statCard">
-          <div class="statLabel">AUC ROC</div>
-          <div class="statValue big" id="rocAucValue">0.00</div>
-          <div class="statSub" id="rocAucDetail">0 dossiers exploitables</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Interprétation</div>
-          <div class="statValue small" id="rocAucInterpretation">-</div>
-        </div>
+        <div class="statCard"><div class="statLabel">AUC ROC</div><div class="statValue big" id="rocAucValue">0.00</div><div class="statSub" id="rocAucDetail">0 dossiers exploitables</div></div>
+        <div class="statCard"><div class="statLabel">Interprétation</div><div class="statValue small" id="rocAucInterpretation">-</div></div>
       </div>
 
-      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-        <canvas id="rocChart"></canvas>
-      </div>
+      <div class="chartBox"><canvas id="rocChart"></canvas></div>
     </div>
 
     <div class="card">
       <h2>Calibration du score</h2>
       <p class="muted">Comparaison probabilité prédite vs fréquence réelle (diagnostic écho).</p>
-
       <div class="toolbar">
         <div>
           <label for="calibPathology"><b>Pathologie calibration</b></label><br>
@@ -397,26 +288,16 @@
       </div>
 
       <div class="statsGrid" style="margin-top:16px;">
-        <div class="statCard">
-          <div class="statLabel">Dossiers exploitables</div>
-          <div class="statValue big" id="calibrationN">0</div>
-        </div>
-
-        <div class="statCard">
-          <div class="statLabel">Lecture</div>
-          <div class="statValue small" id="calibrationInterpretation">-</div>
-        </div>
+        <div class="statCard"><div class="statLabel">Dossiers exploitables</div><div class="statValue big" id="calibrationN">0</div></div>
+        <div class="statCard"><div class="statLabel">Lecture</div><div class="statValue small" id="calibrationInterpretation">-</div></div>
       </div>
 
-      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-        <canvas id="calibrationChart"></canvas>
-      </div>
+      <div class="chartBox"><canvas id="calibrationChart"></canvas></div>
     </div>
 
     <div class="card">
       <h2>Courbe d’apprentissage</h2>
       <p class="muted">Évolution cumulative de la performance du score au fil des dossiers.</p>
-
       <div class="toolbar">
         <div>
           <label for="learningMetric"><b>Métrique</b></label><br>
@@ -428,9 +309,7 @@
         </div>
       </div>
 
-      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-        <canvas id="learningCurveChart"></canvas>
-      </div>
+      <div class="chartBox"><canvas id="learningCurveChart"></canvas></div>
     </div>
 
     <div class="card">
@@ -441,27 +320,22 @@
           <label for="mainVariable"><b>Variable principale</b></label><br>
           <select id="mainVariable"></select>
         </div>
-
         <div>
           <label for="filter1"><b>Filtre 1</b></label><br>
           <select id="filter1" onchange="refreshFilterValues()"></select>
         </div>
-
         <div>
           <label for="filter1Value"><b>Valeur filtre 1</b></label><br>
           <select id="filter1Value"></select>
         </div>
-
         <div>
           <label for="filter2"><b>Filtre 2</b></label><br>
           <select id="filter2" onchange="refreshFilterValues()"></select>
         </div>
-
         <div>
           <label for="filter2Value"><b>Valeur filtre 2</b></label><br>
           <select id="filter2Value"></select>
         </div>
-
         <div>
           <label for="chartType"><b>Type de graphique</b></label><br>
           <select id="chartType">
@@ -470,18 +344,13 @@
             <option value="doughnut">Anneau</option>
           </select>
         </div>
-
         <div>
           <button class="primary" onclick="runCustomAnalysis()">Analyser</button>
         </div>
       </div>
 
       <h2 id="analysisTitle" style="margin-top:18px;">Analyse</h2>
-
-      <div class="chartBox" style="height:320px;max-height:320px;min-height:320px;">
-        <canvas id="customChart"></canvas>
-      </div>
-
+      <div class="chartBox"><canvas id="customChart"></canvas></div>
       <div id="customTableWrap" class="simpleTable" style="display:none;"></div>
     </div>
   </div>
@@ -509,11 +378,13 @@ const VARIABLE_DEFS = {
   hypothesisPrimary: { label:"Hypothèse principale", extractor:d => [d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "Non renseigné"] },
   hypothesisPrimaryPct: { label:"Poids hypothèse principale", extractor:d => [d.hypothesisPrimaryPct !== undefined && d.hypothesisPrimaryPct !== null && d.hypothesisPrimaryPct !== "" ? String(d.hypothesisPrimaryPct) + "%" : "Non renseigné"] },
   diagnostic_echo: { label:"Diagnostic écho", extractor:d => Array.isArray(d.diagnostic_echo) && d.diagnostic_echo.length ? d.diagnostic_echo : ["Non renseigné"] },
+
   endometriose: { label:"Score endométriose", extractor:d => [normalizeLevel(d.endometriose) || "Non renseigné"] },
   adenomyose: { label:"Score adénomyose", extractor:d => [normalizeLevel(d.adenomyose) || "Non renseigné"] },
   congestion: { label:"Score congestion", extractor:d => [normalizeLevel(d.congestion) || "Non renseigné"] },
   pudendal: { label:"Score pudendal", extractor:d => [normalizeLevel(d.pudendal) || "Non renseigné"] },
   opk: { label:"Score OPK", extractor:d => [normalizeLevel(d.opk) || "Non renseigné"] },
+
   consultation: { label:"Consultation antérieure", extractor:d => [d.consultation || "Non renseigné"] },
   previousDiagnosis: { label:"Diagnostic évoqué", extractor:d => [d.previousDiagnosis || "Non renseigné"] },
   contraceptionType: { label:"Contraception", extractor:d => [d.contraceptionType || "Non renseignée"] },
@@ -521,7 +392,27 @@ const VARIABLE_DEFS = {
   digestif: { label:"Digestif", extractor:d => Array.isArray(d.digestif) && d.digestif.length ? d.digestif : ["Non renseigné"] },
   topo: { label:"Localisation", extractor:d => Array.isArray(d.topo) && d.topo.length ? d.topo : ["Non renseigné"] },
   time: { label:"Temporalité", extractor:d => Array.isArray(d.time) && d.time.length ? d.time : ["Non renseigné"] },
-  phenotype: { label:"Phénotype", extractor:d => [d.phenotype || d.painTypePrimary || "Non renseigné"] }
+  phenotype: { label:"Phénotype", extractor:d => [d.phenotype || d.painTypePrimary || "Non renseigné"] },
+
+  endo1: { label:"Item · règles très douloureuses", extractor:d => [d.endo1 ? "Oui" : "Non"] },
+  endo2: { label:"Item · dyspareunie profonde", extractor:d => [d.endo2 ? "Oui" : "Non"] },
+  endo3: { label:"Item · dyschésie menstruelle", extractor:d => [d.endo3 ? "Oui" : "Non"] },
+  endo4: { label:"Item · irradiation dos/cuisses", extractor:d => [d.endo4 ? "Oui" : "Non"] },
+
+  aden1: { label:"Item · ménorragies", extractor:d => [d.aden1 ? "Oui" : "Non"] },
+  aden2: { label:"Item · caillots", extractor:d => [d.aden2 ? "Oui" : "Non"] },
+
+  cong1: { label:"Item · pesanteur/le soir", extractor:d => [d.cong1 ? "Oui" : "Non"] },
+  cong2: { label:"Item · dyspareunie tardive", extractor:d => [d.cong2 ? "Oui" : "Non"] },
+
+  pud1: { label:"Item · douleur assise", extractor:d => [d.pud1 ? "Oui" : "Non"] },
+  pud2: { label:"Item · soulagée debout", extractor:d => [d.pud2 ? "Oui" : "Non"] },
+  pud3: { label:"Item · pas la nuit", extractor:d => [d.pud3 ? "Oui" : "Non"] },
+
+  opk1: { label:"Item · acné / hyperandrogénie", extractor:d => [d.opk1 ? "Oui" : "Non"] },
+  opk2: { label:"Item · pilosité excessive", extractor:d => [d.opk2 ? "Oui" : "Non"] },
+
+  bloatingEvening: { label:"Item · ballonnements surtout le soir", extractor:d => [d.bloatingEvening ? "Oui" : "Non"] }
 };
 
 function checkPin(){
@@ -609,9 +500,7 @@ function computeExactMatch(docs){
   docs.forEach(d => {
     const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
     const validEchos = getValidEchos(d);
-
     if (!hypo || !validEchos.length) return;
-
     total++;
     if (validEchos.includes(hypo)) concordant++;
   });
@@ -781,12 +670,7 @@ function buildRocData(docs, pathology){
   else if (auc >= 0.5) interprete = "Faible";
   else interprete = "Sous le hasard";
 
-  return {
-    auc,
-    points: uniquePoints,
-    n: usable.length,
-    interprete
-  };
+  return { auc, points: uniquePoints, n: usable.length, interprete };
 }
 
 function buildCalibrationData(docs, pathology){
@@ -813,25 +697,18 @@ function buildCalibrationData(docs, pathology){
   usable.forEach(d => {
     const score = getPathologyPct(d, pathology);
     const positive = getEchoPositive(d, pathology);
-
     const idx = bins.findIndex(b => score >= b.min && score < b.max);
     if (idx === -1) return;
-
     acc[idx].n++;
     if (positive) acc[idx].pos++;
   });
 
-  const points = acc
-    .filter(x => x.n > 0)
-    .map(x => ({
-      x: x.mid,
-      y: (x.pos / x.n) * 100
-    }));
+  const points = acc.filter(x => x.n > 0).map(x => ({
+    x: x.mid,
+    y: (x.pos / x.n) * 100
+  }));
 
-  return {
-    n: usable.length,
-    points
-  };
+  return { n: usable.length, points };
 }
 
 function getCalibrationInterpretation(points){
@@ -886,7 +763,6 @@ function buildLearningCurve(docs, mode){
 
   const labels = [];
   const values = [];
-
   let validCount = 0;
   let successCount = 0;
 
@@ -931,8 +807,8 @@ function updateAdminMetrics(docs){
 function renderByPractitionerTable(docs){
   const pathology = document.getElementById("metricPathologyAdmin").value;
   const thresholdMode = document.getElementById("metricThresholdAdmin").value;
-
   const selected = selectedPractitioners();
+
   const rowsHtml = selected.map(prId => {
     const docsPr = docs.filter(d => d.practitionerId === prId);
     const m = computeDiagnosticMetrics(docsPr, pathology, thresholdMode);
@@ -1001,12 +877,8 @@ function draw(id, type, labels, data){
     options:{
       responsive:true,
       maintainAspectRatio:false,
-      scales: type === "line" ? {
-        y: { min: 0, max: 100 }
-      } : {},
-      plugins:{
-        legend:{ display:type === "pie" || type === "doughnut" }
-      }
+      scales: type === "line" ? { y: { min: 0, max: 100 } } : {},
+      plugins:{ legend:{ display:type === "pie" || type === "doughnut" } }
     }
   });
 }
@@ -1041,17 +913,8 @@ function drawRocCurve(points){
       maintainAspectRatio: false,
       parsing: false,
       scales: {
-        x: {
-          type: "linear",
-          min: 0,
-          max: 1,
-          title: { display: true, text: "1 - Spécificité (FPR)" }
-        },
-        y: {
-          min: 0,
-          max: 1,
-          title: { display: true, text: "Sensibilité (TPR)" }
-        }
+        x: { type: "linear", min: 0, max: 1, title: { display: true, text: "1 - Spécificité (FPR)" } },
+        y: { min: 0, max: 1, title: { display: true, text: "Sensibilité (TPR)" } }
       }
     }
   });
@@ -1085,17 +948,8 @@ function drawCalibration(points){
       maintainAspectRatio: false,
       parsing: false,
       scales: {
-        x: {
-          type: "linear",
-          min: 0,
-          max: 100,
-          title: { display: true, text: "Probabilité prédite (%)" }
-        },
-        y: {
-          min: 0,
-          max: 100,
-          title: { display: true, text: "Fréquence réelle (%)" }
-        }
+        x: { type: "linear", min: 0, max: 100, title: { display: true, text: "Probabilité prédite (%)" } },
+        y: { min: 0, max: 100, title: { display: true, text: "Fréquence réelle (%)" } }
       }
     }
   });
@@ -1104,21 +958,17 @@ function drawCalibration(points){
 function updateRoc(docs){
   const pathology = document.getElementById("rocPathology").value;
   const roc = buildRocData(docs, pathology);
-
   document.getElementById("rocAucValue").innerText = roc.auc.toFixed(2);
   document.getElementById("rocAucDetail").innerText = roc.n + " dossiers exploitables";
   document.getElementById("rocAucInterpretation").innerText = roc.interprete;
-
   drawRocCurve(roc.points);
 }
 
 function updateCalibration(docs){
   const pathology = document.getElementById("calibPathology").value;
   const calib = buildCalibrationData(docs, pathology);
-
   document.getElementById("calibrationN").innerText = calib.n;
   document.getElementById("calibrationInterpretation").innerText = getCalibrationInterpretation(calib.points);
-
   drawCalibration(calib.points);
 }
 
@@ -1136,18 +986,22 @@ function updateKpis(docs){
   const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
   const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
+
   const endoCompat = docs.filter(d => {
     const x = normalizeLevel(d.endometriose);
     return x === "modéré" || x === "élevé";
   }).length;
+
   const congCompat = docs.filter(d => {
     const x = normalizeLevel(d.congestion);
     return x === "modéré" || x === "élevé";
   }).length;
+
   const opkCompat = docs.filter(d => {
     const x = normalizeLevel(d.opk);
     return x === "modéré" || x === "élevé";
   }).length;
+
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
   const compatible70 = computeCompatible70(docs);
@@ -1202,7 +1056,6 @@ function initVariableSelectors(){
 
   filter1.innerHTML = filterOptions;
   filter2.innerHTML = filterOptions;
-
   refreshFilterValues();
 }
 
