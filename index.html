@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C3e49588d7af0460bc14208de8036fa2d%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089170770284619%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1ox4%2FUEHhkrPnFz5131dkXG%2FDLos09wq%2FmfqlgAO1KQ%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C3e49588d7af0460bc14208de8036fa2d%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089170770320570%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=w5rgx84p88as5asAwK%2BXQ6jZ5%2F35dbTbJ0i3UDjFO7o%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C50a39d5ce18d40e811a508de80e93d12%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089936387156020%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=KoABrXfDPPNArRfMvZZTm2zCZ%2BFpYIlfmOG3oWkRk3E%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C50a39d5ce18d40e811a508de80e93d12%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089936387182087%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pU2MWOzPAuzOiVJsDTIYnePSWHSCK7EKblul21%2BMH5Q%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .conditionalBlock{margin-top:12px;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fafbff}
@@ -345,13 +345,26 @@ function buildProfileResults(data){
     return b.raw - a.raw;
   });
 
-  const primary = results[0] && results[0].pct > 0 ? results[0].label : "Autre";
-  const primaryPct = results[0] && results[0].pct > 0 ? results[0].pct : 0;
+  const echoEligibleResults = results
+    .filter(r => r.label !== "Hypersensibilisation centrale")
+    .sort((a, b) => {
+      if (b.pct !== a.pct) return b.pct - a.pct;
+      return b.raw - a.raw;
+    });
+
+  const primary = echoEligibleResults[0] && echoEligibleResults[0].pct > 0
+    ? echoEligibleResults[0].label
+    : "Autre";
+
+  const primaryPct = echoEligibleResults[0] && echoEligibleResults[0].pct > 0
+    ? echoEligibleResults[0].pct
+    : 0;
 
   return {
     primary,
     primaryPct,
     results,
+    echoEligibleResults,
     byLabel: Object.fromEntries(results.map(r => [r.label, r]))
   };
 }
@@ -511,9 +524,9 @@ async function submitForm() {
     lesionPrimary: profileResults.primary,
     painTypePrimary: computePhenotype(type),
     echoPrimary: profileResults.primary,
-    lesionHypotheses: profileResults.results,
+    lesionHypotheses: profileResults.echoEligibleResults,
     painTypeHypotheses: [{label: computePhenotype(type), score: 1}],
-    echoOrientations: profileResults.results,
+    echoOrientations: profileResults.echoEligibleResults,
 
     diagnostic_echo: [],
     echoCertainty: "Non renseigné",
