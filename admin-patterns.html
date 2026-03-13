@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Patterns - Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375424375%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=usyWXIyXb02BLPbabggk62RqmQ82rsA61WFIVvqAdWo%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375450585%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=AKRGBiHE3%2BUKZWf1kQLvsv8NUJs2AFxt0%2FWZoks2LFs%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C5eb64c96d7544128c89108de808f5ccc%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089550375463856%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8rKSQRZNtIeZ%2B4LAd5OxlUKF8VVRKYYWXQGGRtNs%2BI0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C57dcbf1cefe0423f4b5408de80d8078a%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089862483499435%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=2Ppf3xVCEQgft8bfAYykiNkMdapVJ37r1CBGGTAkEiA%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C57dcbf1cefe0423f4b5408de80d8078a%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089862483546528%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=OOPbfPOy2HsJXp9y0AWAtELz6U1oMK4eNrnM%2Bk5ixFA%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C57dcbf1cefe0423f4b5408de80d8078a%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089862483569597%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=VemPjYcq%2BfTahT7F4%2FhT0whbIc6swNuw7aQe9fsQheA%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -100,7 +100,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:14px;
-      min-width:1200px;
+      min-width:1450px;
     }
     .simpleTable th,.simpleTable td{
       border-bottom:1px solid #e5e7eb;
@@ -160,6 +160,11 @@
       border-color:#eceff3;
       color:#4b5563;
     }
+    .pill.dark{
+      background:#f3f4f6;
+      border-color:#d1d5db;
+      color:#111827;
+    }
     .interpretBox{
       line-height:1.7;
       color:#374151;
@@ -210,6 +215,7 @@
         <div>
           <label for="sortMode"><b>Tri</b></label><br>
           <select id="sortMode" onchange="updateAll()">
+            <option value="weight_desc">Poids suggéré décroissant</option>
             <option value="ratio_desc">Ratio décroissant</option>
             <option value="pct_desc">Pourcentage pathologie décroissant</option>
             <option value="pct_asc">Pourcentage pathologie croissant</option>
@@ -271,6 +277,14 @@
     </div>
 
     <div class="card">
+      <h2>Poids suggérés pour le score</h2>
+      <p class="muted">Poids automatique de 0 à 3 selon la spécificité, la banalité globale et la robustesse de l’item.</p>
+      <div class="chartBox">
+        <canvas id="weightChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Détail des items</h2>
       <div id="patternTable" class="simpleTable"></div>
     </div>
@@ -287,6 +301,17 @@ const PRACTITIONER_LABELS = {
 
 let rows = [];
 let charts = {};
+
+const MAIN_DIAGNOSES = [
+  "Endométriose",
+  "Adénomyose",
+  "Congestion pelvienne",
+  "Névralgie pudendale",
+  "OPK",
+  "Normal",
+  "Non contributif",
+  "Autre"
+];
 
 const ITEM_DEFS = [
   { key: "topo_bas_ventre_centre", label: "Topo · bas ventre centre", test: d => includesText(d.topo, "bas ventre centre") },
@@ -378,9 +403,55 @@ function ageFromDob(dob){
   return a;
 }
 
-function getDiscriminantLevel(ratio, pctPathology){
+function getDiagnosticsTouchedForItem(item, allDocs){
+  return MAIN_DIAGNOSES.map(diag => {
+    const docsDiag = allDocs.filter(d => hasEchoDiagnosis(d, diag));
+    if (!docsDiag.length) return null;
+    const pct = (docsDiag.filter(d => item.test(d)).length / docsDiag.length) * 100;
+    return pct >= 20 ? diag : null;
+  }).filter(Boolean).length;
+}
+
+function computeSuggestedWeight(pctPathology, pctOthers, pctGlobal, diagnosesTouched, countPathology){
+  const ratio = pctOthers === 0 ? Infinity : pctPathology / pctOthers;
+
+  if (countPathology < 2) return 0;
+  if (pctPathology < 10) return 0;
+  if (pctOthers > 50) return 0;
+  if (pctGlobal > 60) return 0;
+  if (diagnosesTouched >= 5) return 0;
+
+  if (ratio < 1.2) return 0;
+  if (ratio < 2) return 1;
+  if (ratio < 4) {
+    if (diagnosesTouched >= 4) return 1;
+    return 2;
+  }
+
+  if (diagnosesTouched >= 4) return 2;
+  return 3;
+}
+
+function getWeightLabel(weight){
+  switch(weight){
+    case 3: return "fortement suggéré";
+    case 2: return "utile";
+    case 1: return "faible appoint";
+    default: return "à ne pas pondérer";
+  }
+}
+
+function getWeightBadgeClass(weight){
+  if (weight === 3) return "good";
+  if (weight === 2) return "warn";
+  if (weight === 1) return "dark";
+  return "soft";
+}
+
+function getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched){
   if (pctPathology < 15) return "signal faible";
   if (ratio === null) return "non calculable";
+  if (pctGlobal > 60 || diagnosesTouched >= 5) return "très fréquent / peu spécifique";
   if (ratio >= 5) return "très discriminant";
   if (ratio >= 3) return "bon discriminant";
   if (ratio >= 2) return "discriminant modéré";
@@ -388,10 +459,11 @@ function getDiscriminantLevel(ratio, pctPathology){
   return "peu utile";
 }
 
-function getDiscriminantBadgeClass(ratio, pctPathology){
-  const level = getDiscriminantLevel(ratio, pctPathology);
+function getDiscriminantBadgeClass(ratio, pctPathology, pctGlobal, diagnosesTouched){
+  const level = getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched);
   if (level === "très discriminant" || level === "bon discriminant") return "good";
   if (level === "discriminant modéré" || level === "faiblement discriminant") return "warn";
+  if (level === "très fréquent / peu spécifique") return "dark";
   return "soft";
 }
 
@@ -399,15 +471,26 @@ function computePatternStats(pathologyDocs, allDocs){
   const totalPathology = pathologyDocs.length;
   const otherDocs = allDocs.filter(d => !pathologyDocs.includes(d));
   const totalOthers = otherDocs.length;
+  const totalGlobal = allDocs.length;
 
   const rows = ITEM_DEFS.map(item => {
     const countPathology = pathologyDocs.filter(d => item.test(d)).length;
     const countOthers = otherDocs.filter(d => item.test(d)).length;
+    const countGlobal = allDocs.filter(d => item.test(d)).length;
 
     const pctPathology = totalPathology ? (countPathology / totalPathology) * 100 : 0;
     const pctOthers = totalOthers ? (countOthers / totalOthers) * 100 : 0;
+    const pctGlobal = totalGlobal ? (countGlobal / totalGlobal) * 100 : 0;
 
     const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
+    const diagnosesTouched = getDiagnosticsTouchedForItem(item, allDocs);
+    const suggestedWeight = computeSuggestedWeight(
+      pctPathology,
+      pctOthers,
+      pctGlobal,
+      diagnosesTouched,
+      countPathology
+    );
 
     return {
       key: item.key,
@@ -416,14 +499,21 @@ function computePatternStats(pathologyDocs, allDocs){
       pctPathology,
       countOthers,
       pctOthers,
+      countGlobal,
+      pctGlobal,
       ratio,
-      level: getDiscriminantLevel(ratio, pctPathology)
+      diagnosesTouched,
+      suggestedWeight,
+      weightLabel: getWeightLabel(suggestedWeight),
+      level: getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched)
     };
   });
 
   const sortMode = document.getElementById("sortMode").value;
   rows.sort((a,b) => {
     switch(sortMode){
+      case "ratio_desc":
+        return (b.ratio || 0) - (a.ratio || 0) || b.pctPathology - a.pctPathology;
       case "pct_desc":
         return b.pctPathology - a.pctPathology || ((b.ratio || 0) - (a.ratio || 0));
       case "pct_asc":
@@ -433,7 +523,9 @@ function computePatternStats(pathologyDocs, allDocs){
       case "label_desc":
         return b.label.localeCompare(a.label, "fr");
       default:
-        return (b.ratio || 0) - (a.ratio || 0) || b.pctPathology - a.pctPathology;
+        return b.suggestedWeight - a.suggestedWeight ||
+               (b.ratio || 0) - (a.ratio || 0) ||
+               b.pctPathology - a.pctPathology;
     }
   });
 
@@ -443,13 +535,13 @@ function computePatternStats(pathologyDocs, allDocs){
 function updateKpis(docs, patternStats){
   const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
   const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
-  const topItem = patternStats.find(x => x.ratio !== null && x.pctPathology >= 15) || patternStats[0] || null;
+  const topItem = patternStats.find(x => x.suggestedWeight >= 2) || patternStats.find(x => x.ratio !== null && x.pctPathology >= 15) || patternStats[0] || null;
 
   document.getElementById("statCases").innerText = docs.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statTopItem").innerText = topItem
-    ? `${topItem.label} · ratio ${topItem.ratio && topItem.ratio !== 999 ? topItem.ratio.toFixed(2) : "∞"}`
+    ? `${topItem.label} · poids ${topItem.suggestedWeight}/3`
     : "-";
 
   const pills = patternStats
@@ -457,24 +549,28 @@ function updateKpis(docs, patternStats){
     .slice(0, 8)
     .map(x => {
       const ratioText = x.ratio === 999 ? "∞" : (x.ratio ? x.ratio.toFixed(2) : "-");
-      return `<span class="pill ${getDiscriminantBadgeClass(x.ratio, x.pctPathology)}">${x.label} · ${x.pctPathology.toFixed(0)}% · ratio ${ratioText}</span>`;
+      return `<span class="pill ${getWeightBadgeClass(x.suggestedWeight)}">${x.label} · ${x.pctPathology.toFixed(0)}% · ratio ${ratioText} · poids ${x.suggestedWeight}</span>`;
     }).join("");
 
   document.getElementById("summaryPills").innerHTML = pills || '<span class="muted">Aucun item exploitable.</span>';
 
-  const strong = patternStats.filter(x => x.ratio !== null && x.ratio >= 3 && x.pctPathology >= 20).slice(0, 3);
-  const moderate = patternStats.filter(x => x.ratio !== null && x.ratio >= 2 && x.ratio < 3 && x.pctPathology >= 20).slice(0, 3);
-  const frequentNotSpecific = patternStats.filter(x => x.pctPathology >= 40 && x.ratio !== null && x.ratio < 1.5).slice(0, 3);
+  const strong = patternStats.filter(x => x.suggestedWeight === 3).slice(0, 4);
+  const useful = patternStats.filter(x => x.suggestedWeight === 2).slice(0, 4);
+  const weak = patternStats.filter(x => x.suggestedWeight === 1).slice(0, 4);
+  const banal = patternStats.filter(x => x.suggestedWeight === 0 && x.pctGlobal >= 30).slice(0, 4);
 
   let text = "";
   if (strong.length) {
-    text += `<p><b>Items les plus utiles pour le score :</b> ${strong.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+    text += `<p><b>Items fortement suggérés pour le score (poids 3) :</b> ${strong.map(x => `${x.label} (${x.ratio === 999 ? "ratio ∞" : "ratio " + x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
   }
-  if (moderate.length) {
-    text += `<p><b>Items intéressants mais moins spécifiques :</b> ${moderate.map(x => `${x.label} (ratio ${x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+  if (useful.length) {
+    text += `<p><b>Items utiles (poids 2) :</b> ${useful.map(x => `${x.label} (${x.ratio === 999 ? "ratio ∞" : "ratio " + x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
   }
-  if (frequentNotSpecific.length) {
-    text += `<p><b>Items fréquents mais peu discriminants :</b> ${frequentNotSpecific.map(x => `${x.label} (${x.pctPathology.toFixed(0)}% dans la pathologie, ratio ${x.ratio.toFixed(2)})`).join(" ; ")}. Ils décrivent bien les patientes, mais ne doivent pas être surpondérés.</p>`;
+  if (weak.length) {
+    text += `<p><b>Items d’appoint (poids 1) :</b> ${weak.map(x => `${x.label}`).join(" ; ")}. Ils peuvent aider, mais ne doivent pas dominer le score.</p>`;
+  }
+  if (banal.length) {
+    text += `<p><b>Items à ne pas surpondérer (poids 0) :</b> ${banal.map(x => `${x.label} (${x.pctGlobal.toFixed(0)}% global, ${x.diagnosesTouched} diagnostics concernés)`).join(" ; ")}. Ils sont trop fréquents ou trop diffus pour être vraiment discriminants.</p>`;
   }
   if (!text) {
     text = `<p>Pas encore assez de signal stable. Il faut plus de dossiers ou des items plus spécifiques pour affiner les pondérations du score.</p>`;
@@ -493,8 +589,12 @@ function renderTable(patternStats){
           <th>% pathologie</th>
           <th>Nb autres</th>
           <th>% autres</th>
+          <th>% global</th>
+          <th>Diagnostics concernés</th>
           <th>Ratio discriminant</th>
-          <th>Interprétation</th>
+          <th>Poids suggéré</th>
+          <th>Interprétation score</th>
+          <th>Lecture clinique</th>
         </tr>
       </thead>
       <tbody>
@@ -505,8 +605,12 @@ function renderTable(patternStats){
             <td>${r.pctPathology.toFixed(1)}%</td>
             <td>${r.countOthers}</td>
             <td>${r.pctOthers.toFixed(1)}%</td>
+            <td>${r.pctGlobal.toFixed(1)}%</td>
+            <td>${r.diagnosesTouched}</td>
             <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
-            <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology)}">${r.level}</span></td>
+            <td><span class="pill ${getWeightBadgeClass(r.suggestedWeight)}">${r.suggestedWeight}/3</span></td>
+            <td>${r.weightLabel}</td>
+            <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology, r.pctGlobal, r.diagnosesTouched)}">${r.level}</span></td>
           </tr>
         `).join("")}
       </tbody>
@@ -592,6 +696,46 @@ function drawRatioChart(patternStats){
   });
 }
 
+function drawWeightChart(patternStats){
+  const top = [...patternStats]
+    .sort((a,b) => b.suggestedWeight - a.suggestedWeight || (b.ratio || 0) - (a.ratio || 0))
+    .slice(0, 15);
+
+  const el = document.getElementById("weightChart");
+  if (!el) return;
+  if (charts["weightChart"]) charts["weightChart"].destroy();
+
+  charts["weightChart"] = new Chart(el, {
+    type: "bar",
+    data: {
+      labels: top.map(x => x.label),
+      datasets: [{
+        label: "Poids suggéré",
+        data: top.map(x => x.suggestedWeight)
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: "y",
+      scales: {
+        x: {
+          min: 0,
+          max: 3,
+          ticks: { stepSize: 1 },
+          title: {
+            display: true,
+            text: "Poids suggéré (0 à 3)"
+          }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+
 function updateAll(){
   const diagnosis = document.getElementById("echoTarget").value;
   const allDocs = filteredDocs();
@@ -602,6 +746,7 @@ function updateAll(){
   renderTable(patternStats);
   drawPatternChart(patternStats);
   drawRatioChart(patternStats);
+  drawWeightChart(patternStats);
 }
 
 function loadRows(){
