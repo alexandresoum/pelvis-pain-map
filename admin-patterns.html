@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Patterns - Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372410997%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rhtJkDj2ninReBAWxNe0LZ1QSon93XdOKhS5cmoX644%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372434045%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8MUFuapsBbXK8duLmaaagftDyNtUhK7xUyKUvcz6sB0%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C33f2b17157ce4a68838408de8100fb64%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090038372447495%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=g6n7suxdPxic%2BPLHqJl56qgoWZtdX%2BdAZuZO0XDo5D8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677935983%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=FDgJVF%2BMNj9om2oX2KGZ5wINwsDaBiG2QWIkoIgZxK0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677965190%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Z5NtBD1zbFYRoKJbjjhbQ%2F9ntVFaLQvcHrsNL7mKfII%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cc80f11cf84704821e5fe08de810cb220%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090088677979898%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=R1R6y%2FdnGhJemOQkKEMprMCz1oaDj6Bwx7p3Wzs67rA%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .pinOverlay{
@@ -62,10 +62,16 @@
       font-weight:700;
       color:#24324a;
       line-height:1.2;
+      word-break:break-word;
     }
     .statValue.big{
       font-size:34px;
       font-weight:800;
+    }
+    .statValue.small{
+      font-size:18px;
+      font-weight:600;
+      line-height:1.35;
     }
     .toolbar{
       display:flex;
@@ -100,7 +106,7 @@
       width:100%;
       border-collapse:collapse;
       font-size:14px;
-      min-width:1500px;
+      min-width:1800px;
     }
     .simpleTable th,.simpleTable td{
       border-bottom:1px solid #e5e7eb;
@@ -112,6 +118,7 @@
       background:#f8fafc;
       position:sticky;
       top:0;
+      z-index:2;
     }
     .muted{
       color:#6b7280;
@@ -125,13 +132,16 @@
       max-height:420px;
       overflow:hidden;
     }
+    .chartBox.small{
+      height:320px;
+      min-height:320px;
+      max-height:320px;
+    }
     .chartBox canvas{
       position:absolute;
       inset:0;
       width:100% !important;
-      height:420px !important;
-      min-height:420px !important;
-      max-height:420px !important;
+      height:100% !important;
       display:block !important;
     }
     .pill{
@@ -168,6 +178,48 @@
     .interpretBox{
       line-height:1.7;
       color:#374151;
+    }
+    .sectionGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    .heatmapWrap{
+      overflow:auto;
+      margin-top:16px;
+    }
+    .heatmapTable{
+      border-collapse:collapse;
+      width:100%;
+      min-width:1200px;
+      font-size:13px;
+    }
+    .heatmapTable th,.heatmapTable td{
+      border:1px solid #e5e7eb;
+      padding:8px;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .heatmapTable th:first-child,
+    .heatmapTable td:first-child{
+      text-align:left;
+      position:sticky;
+      left:0;
+      background:#fff;
+      z-index:1;
+    }
+    .heat0{background:#ffffff;}
+    .heat1{background:#eff6ff;}
+    .heat2{background:#dbeafe;}
+    .heat3{background:#bfdbfe;}
+    .heat4{background:#93c5fd;}
+    .heat5{background:#60a5fa;color:#fff;}
+    .heat6{background:#2563eb;color:#fff;}
+    @media (max-width: 1100px){
+      .sectionGrid{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
@@ -216,11 +268,21 @@
           <label for="sortMode"><b>Tri</b></label><br>
           <select id="sortMode" onchange="updateAll()">
             <option value="weight_desc">Poids suggéré décroissant</option>
+            <option value="robust_desc">Robustesse décroissante</option>
             <option value="ratio_desc">Ratio décroissant</option>
             <option value="pct_desc">Pourcentage pathologie décroissant</option>
             <option value="pct_asc">Pourcentage pathologie croissant</option>
             <option value="label_asc">Nom A → Z</option>
             <option value="label_desc">Nom Z → A</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="timelineTopN"><b>Timeline</b></label><br>
+          <select id="timelineTopN" onchange="updateAll()">
+            <option value="3">Top 3 items</option>
+            <option value="5" selected>Top 5 items</option>
+            <option value="8">Top 8 items</option>
           </select>
         </div>
       </div>
@@ -250,7 +312,27 @@
 
       <div class="statCard">
         <div class="statLabel">Top item discriminant</div>
-        <div class="statValue" id="statTopItem">-</div>
+        <div class="statValue small" id="statTopItem">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Items poids 3</div>
+        <div class="statValue big" id="statWeight3">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Items trompeurs</div>
+        <div class="statValue big" id="statMisleading">0</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Robustesse moyenne</div>
+        <div class="statValue small" id="statRobustness">-</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Signal global</div>
+        <div class="statValue small" id="statSignal">-</div>
       </div>
     </div>
 
@@ -260,28 +342,52 @@
       <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
     </div>
 
-    <div class="card">
-      <h2>Top items les plus fréquents</h2>
-      <p class="muted">Pourcentage de patientes ayant coché l’item parmi les dossiers avec le diagnostic écho sélectionné.</p>
-      <div class="chartBox">
-        <canvas id="patternChart"></canvas>
+    <div class="sectionGrid">
+      <div class="card">
+        <h2>Top items les plus fréquents</h2>
+        <p class="muted">Pourcentage de patientes ayant coché l’item parmi les dossiers avec le diagnostic écho sélectionné.</p>
+        <div class="chartBox">
+          <canvas id="patternChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Top ratios discriminants</h2>
+        <p class="muted">Le ratio compare la fréquence dans la pathologie à la fréquence chez les autres patientes.</p>
+        <div class="chartBox">
+          <canvas id="ratioChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="sectionGrid">
+      <div class="card">
+        <h2>Poids suggérés pour le score</h2>
+        <p class="muted">Poids automatique de 0 à 3 selon la spécificité, la banalité globale, la robustesse et la diffusion inter-diagnostics.</p>
+        <div class="chartBox">
+          <canvas id="weightChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Évolution du signal</h2>
+        <p class="muted">Évolution du ratio moyen des meilleurs items au fil du recrutement.</p>
+        <div class="chartBox">
+          <canvas id="timelineChart"></canvas>
+        </div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Top ratios discriminants</h2>
-      <p class="muted">Le ratio compare la fréquence dans la pathologie à la fréquence chez les autres patientes.</p>
-      <div class="chartBox">
-        <canvas id="ratioChart"></canvas>
-      </div>
+      <h2>Items trompeurs / banals</h2>
+      <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
+      <div id="misleadingTable" class="simpleTable"></div>
     </div>
 
     <div class="card">
-      <h2>Poids suggérés pour le score</h2>
-      <p class="muted">Poids automatique de 0 à 3 selon la spécificité, la banalité globale et la robustesse de l’item.</p>
-      <div class="chartBox">
-        <canvas id="weightChart"></canvas>
-      </div>
+      <h2>Heatmap multi-diagnostics</h2>
+      <p class="muted">Vue transversale des items dans tous les diagnostics. Très utile pour voir ce qui est réellement discriminant.</p>
+      <div id="heatmapWrap" class="heatmapWrap"></div>
     </div>
 
     <div class="card">
@@ -417,6 +523,13 @@ function ageFromDob(dob){
   return a;
 }
 
+function docTimestamp(d){
+  if (!d.date) return 0;
+  if (d.date.seconds) return d.date.seconds * 1000;
+  const t = new Date(d.date).getTime();
+  return isNaN(t) ? 0 : t;
+}
+
 function getDiagnosticsTouchedForItem(item, allDocs){
   return MAIN_DIAGNOSES.map(diag => {
     const docsDiag = allDocs.filter(d => hasEchoDiagnosis(d, diag));
@@ -426,24 +539,22 @@ function getDiagnosticsTouchedForItem(item, allDocs){
   }).filter(Boolean).length;
 }
 
-function computeSuggestedWeight(pctPathology, pctOthers, pctGlobal, diagnosesTouched, countPathology){
-  const ratio = pctOthers === 0 ? Infinity : pctPathology / pctOthers;
-
+function computeSuggestedWeight(pctPathology, pctOthers, pctGlobal, diagnosesTouched, countPathology, ratio, robustness){
   if (countPathology < 2) return 0;
   if (pctPathology < 10) return 0;
   if (pctOthers > 50) return 0;
   if (pctGlobal > 60) return 0;
   if (diagnosesTouched >= 5) return 0;
+  if (robustness < 20) return 0;
 
   if (ratio < 1.2) return 0;
-  if (ratio < 2) return 1;
+  if (ratio < 2) return robustness >= 45 ? 1 : 0;
   if (ratio < 4) {
     if (diagnosesTouched >= 4) return 1;
-    return 2;
+    return robustness >= 55 ? 2 : 1;
   }
-
   if (diagnosesTouched >= 4) return 2;
-  return 3;
+  return robustness >= 60 ? 3 : 2;
 }
 
 function getWeightLabel(weight){
@@ -481,6 +592,34 @@ function getDiscriminantBadgeClass(ratio, pctPathology, pctGlobal, diagnosesTouc
   return "soft";
 }
 
+function getRobustnessLabel(score){
+  if (score >= 75) return "très robuste";
+  if (score >= 55) return "robuste";
+  if (score >= 35) return "intermédiaire";
+  return "fragile";
+}
+
+function getSignalLabel(patternStats){
+  const w3 = patternStats.filter(x => x.suggestedWeight === 3).length;
+  const w2 = patternStats.filter(x => x.suggestedWeight === 2).length;
+  if (w3 >= 3) return "signal très fort";
+  if (w3 >= 1 || w2 >= 4) return "signal fort";
+  if (w2 >= 2) return "signal utile";
+  if (w2 >= 1) return "signal émergent";
+  return "signal faible";
+}
+
+function computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched){
+  const ratio = pctOthers === 0 ? 6 : (pctPathology / pctOthers);
+  const clippedRatio = Math.min(ratio || 0, 6);
+  const score =
+    (Math.min(countPathology, 12) * 4) +
+    (Math.min(pctPathology, 80) * 0.35) +
+    (clippedRatio * 10) -
+    (diagnosesTouched * 5);
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
 function computePatternStats(pathologyDocs, allDocs){
   const totalPathology = pathologyDocs.length;
   const otherDocs = allDocs.filter(d => !pathologyDocs.includes(d));
@@ -498,13 +637,18 @@ function computePatternStats(pathologyDocs, allDocs){
 
     const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
     const diagnosesTouched = getDiagnosticsTouchedForItem(item, allDocs);
+    const robustness = computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched);
     const suggestedWeight = computeSuggestedWeight(
       pctPathology,
       pctOthers,
       pctGlobal,
       diagnosesTouched,
-      countPathology
+      countPathology,
+      ratio === 999 ? 6 : (ratio || 0),
+      robustness
     );
+
+    const misleading = pctGlobal >= 30 && ((ratio || 0) < 1.5);
 
     return {
       key: item.key,
@@ -517,15 +661,20 @@ function computePatternStats(pathologyDocs, allDocs){
       pctGlobal,
       ratio,
       diagnosesTouched,
+      robustness,
+      robustnessLabel: getRobustnessLabel(robustness),
       suggestedWeight,
       weightLabel: getWeightLabel(suggestedWeight),
-      level: getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched)
+      level: getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched),
+      misleading
     };
   });
 
   const sortMode = document.getElementById("sortMode").value;
   rowsStat.sort((a,b) => {
     switch(sortMode){
+      case "robust_desc":
+        return b.robustness - a.robustness || b.suggestedWeight - a.suggestedWeight || (b.ratio || 0) - (a.ratio || 0);
       case "ratio_desc":
         return (b.ratio || 0) - (a.ratio || 0) || b.pctPathology - a.pctPathology;
       case "pct_desc":
@@ -538,6 +687,7 @@ function computePatternStats(pathologyDocs, allDocs){
         return b.label.localeCompare(a.label, "fr");
       default:
         return b.suggestedWeight - a.suggestedWeight ||
+               b.robustness - a.robustness ||
                (b.ratio || 0) - (a.ratio || 0) ||
                b.pctPathology - a.pctPathology;
     }
@@ -550,13 +700,18 @@ function updateKpis(docs, patternStats){
   const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
   const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
   const topItem = patternStats.find(x => x.suggestedWeight >= 2) || patternStats.find(x => x.ratio !== null && x.pctPathology >= 15) || patternStats[0] || null;
+  const weight3Count = patternStats.filter(x => x.suggestedWeight === 3).length;
+  const misleadingCount = patternStats.filter(x => x.misleading).length;
+  const meanRobustness = patternStats.length ? Math.round(patternStats.reduce((s,x)=>s+x.robustness,0) / patternStats.length) : 0;
 
   document.getElementById("statCases").innerText = docs.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
-  document.getElementById("statTopItem").innerText = topItem
-    ? `${topItem.label} · poids ${topItem.suggestedWeight}/3`
-    : "-";
+  document.getElementById("statTopItem").innerText = topItem ? `${topItem.label} · poids ${topItem.suggestedWeight}/3` : "-";
+  document.getElementById("statWeight3").innerText = weight3Count;
+  document.getElementById("statMisleading").innerText = misleadingCount;
+  document.getElementById("statRobustness").innerText = `${meanRobustness}/100 · ${getRobustnessLabel(meanRobustness)}`;
+  document.getElementById("statSignal").innerText = getSignalLabel(patternStats);
 
   const pills = patternStats
     .filter(x => x.pctPathology >= 15)
@@ -575,10 +730,10 @@ function updateKpis(docs, patternStats){
 
   let text = "";
   if (strong.length) {
-    text += `<p><b>Items fortement suggérés pour le score (poids 3) :</b> ${strong.map(x => `${x.label} (${x.ratio === 999 ? "ratio ∞" : "ratio " + x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+    text += `<p><b>Items fortement suggérés pour le score (poids 3) :</b> ${strong.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)}, robustesse ${x.robustness}/100)`).join(" ; ")}.</p>`;
   }
   if (useful.length) {
-    text += `<p><b>Items utiles (poids 2) :</b> ${useful.map(x => `${x.label} (${x.ratio === 999 ? "ratio ∞" : "ratio " + x.ratio.toFixed(2)})`).join(" ; ")}.</p>`;
+    text += `<p><b>Items utiles (poids 2) :</b> ${useful.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)}, robustesse ${x.robustness}/100)`).join(" ; ")}.</p>`;
   }
   if (weak.length) {
     text += `<p><b>Items d’appoint (poids 1) :</b> ${weak.map(x => `${x.label}`).join(" ; ")}. Ils peuvent aider, mais ne doivent pas dominer le score.</p>`;
@@ -606,6 +761,7 @@ function renderTable(patternStats){
           <th>% global</th>
           <th>Diagnostics concernés</th>
           <th>Ratio discriminant</th>
+          <th>Robustesse</th>
           <th>Poids suggéré</th>
           <th>Interprétation score</th>
           <th>Lecture clinique</th>
@@ -622,6 +778,7 @@ function renderTable(patternStats){
             <td>${r.pctGlobal.toFixed(1)}%</td>
             <td>${r.diagnosesTouched}</td>
             <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
+            <td><span class="pill ${r.robustness >= 55 ? 'good' : r.robustness >= 35 ? 'warn' : 'soft'}">${r.robustness}/100</span></td>
             <td><span class="pill ${getWeightBadgeClass(r.suggestedWeight)}">${r.suggestedWeight}/3</span></td>
             <td>${r.weightLabel}</td>
             <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology, r.pctGlobal, r.diagnosesTouched)}">${r.level}</span></td>
@@ -632,22 +789,126 @@ function renderTable(patternStats){
   `;
 }
 
-function drawPatternChart(patternStats){
-  const top = [...patternStats]
-    .sort((a,b) => b.pctPathology - a.pctPathology)
+function renderMisleadingTable(patternStats){
+  const bad = patternStats
+    .filter(x => x.misleading || (x.suggestedWeight === 0 && x.pctGlobal >= 25))
+    .sort((a,b) => b.pctGlobal - a.pctGlobal || (a.ratio || 0) - (b.ratio || 0))
     .slice(0, 15);
 
-  const el = document.getElementById("patternChart");
-  if (!el) return;
-  if (charts["patternChart"]) charts["patternChart"].destroy();
+  document.getElementById("misleadingTable").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>% pathologie</th>
+          <th>% autres</th>
+          <th>% global</th>
+          <th>Ratio</th>
+          <th>Pourquoi il trompe</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${bad.map(r => `
+          <tr>
+            <td>${r.label}</td>
+            <td>${r.pctPathology.toFixed(1)}%</td>
+            <td>${r.pctOthers.toFixed(1)}%</td>
+            <td>${r.pctGlobal.toFixed(1)}%</td>
+            <td>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</td>
+            <td>${r.pctGlobal >= 30 ? "trop fréquent globalement" : "pas assez spécifique"}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
 
-  charts["patternChart"] = new Chart(el, {
+function getHeatClass(pct){
+  if (pct >= 80) return "heat6";
+  if (pct >= 65) return "heat5";
+  if (pct >= 50) return "heat4";
+  if (pct >= 35) return "heat3";
+  if (pct >= 20) return "heat2";
+  if (pct >= 10) return "heat1";
+  return "heat0";
+}
+
+function renderHeatmap(allDocs, selectedDiagnosis){
+  const rowsHeat = ITEM_DEFS.map(item => {
+    const vals = {};
+    MAIN_DIAGNOSES.forEach(diag => {
+      const docsDiag = allDocs.filter(d => hasEchoDiagnosis(d, diag));
+      const pct = docsDiag.length ? (docsDiag.filter(d => item.test(d)).length / docsDiag.length) * 100 : 0;
+      vals[diag] = pct;
+    });
+    const maxOther = Math.max(...MAIN_DIAGNOSES.filter(d => d !== selectedDiagnosis).map(d => vals[d] || 0));
+    return {
+      label: item.label,
+      vals,
+      delta: (vals[selectedDiagnosis] || 0) - maxOther
+    };
+  }).sort((a,b) => b.delta - a.delta).slice(0, 20);
+
+  document.getElementById("heatmapWrap").innerHTML = `
+    <table class="heatmapTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          ${MAIN_DIAGNOSES.map(d => `<th>${d}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHeat.map(row => `
+          <tr>
+            <td>${row.label}</td>
+            ${MAIN_DIAGNOSES.map(diag => {
+              const pct = row.vals[diag] || 0;
+              return `<td class="${getHeatClass(pct)}">${pct.toFixed(0)}%</td>`;
+            }).join("")}
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function buildTimelineData(pathologyDocs){
+  const sorted = [...pathologyDocs].sort((a,b) => docTimestamp(a) - docTimestamp(b));
+  if (!sorted.length) return { labels: [], values: [] };
+
+  const topN = Number(document.getElementById("timelineTopN").value || 5);
+  const labels = [];
+  const values = [];
+
+  for(let i = 3; i <= sorted.length; i++){
+    const subset = sorted.slice(0, i);
+    const subsetStats = computePatternStats(subset, subset)
+      .filter(x => x.pctPathology >= 10)
+      .slice(0, topN);
+
+    const meanRatio = subsetStats.length
+      ? subsetStats.reduce((s,x) => s + (x.ratio === 999 ? 6 : (x.ratio || 0)), 0) / subsetStats.length
+      : 0;
+
+    labels.push(String(i));
+    values.push(Number(meanRatio.toFixed(2)));
+  }
+
+  return { labels, values };
+}
+
+function drawHorizontalBar(chartId, labels, data, max, title){
+  const el = document.getElementById(chartId);
+  if (!el) return;
+  if (charts[chartId]) charts[chartId].destroy();
+
+  charts[chartId] = new Chart(el, {
     type: "bar",
     data: {
-      labels: top.map(x => x.label),
+      labels,
       datasets: [{
-        label: "% pathologie",
-        data: top.map(x => Number(x.pctPathology.toFixed(1)))
+        label: title,
+        data
       }]
     },
     options: {
@@ -657,10 +918,10 @@ function drawPatternChart(patternStats){
       scales: {
         x: {
           min: 0,
-          max: 100,
+          max: max,
           title: {
             display: true,
-            text: "Pourcentage pathologie"
+            text: title
           }
         }
       },
@@ -669,6 +930,20 @@ function drawPatternChart(patternStats){
       }
     }
   });
+}
+
+function drawPatternChart(patternStats){
+  const top = [...patternStats]
+    .sort((a,b) => b.pctPathology - a.pctPathology)
+    .slice(0, 15);
+
+  drawHorizontalBar(
+    "patternChart",
+    top.map(x => x.label),
+    top.map(x => Number(x.pctPathology.toFixed(1))),
+    100,
+    "Pourcentage pathologie"
+  );
 }
 
 function drawRatioChart(patternStats){
@@ -677,69 +952,63 @@ function drawRatioChart(patternStats){
     .sort((a,b) => (b.ratio || 0) - (a.ratio || 0))
     .slice(0, 15);
 
-  const el = document.getElementById("ratioChart");
-  if (!el) return;
-  if (charts["ratioChart"]) charts["ratioChart"].destroy();
+  const maxVal = Math.max(6, ...top.map(x => x.ratio === 999 ? 10 : Number(x.ratio || 0)));
 
-  charts["ratioChart"] = new Chart(el, {
-    type: "bar",
-    data: {
-      labels: top.map(x => x.label),
-      datasets: [{
-        label: "Ratio discriminant",
-        data: top.map(x => x.ratio === 999 ? 10 : Number(x.ratio.toFixed(2)))
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: "y",
-      scales: {
-        x: {
-          min: 0,
-          title: {
-            display: true,
-            text: "Ratio discriminant"
-          }
-        }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
+  drawHorizontalBar(
+    "ratioChart",
+    top.map(x => x.label),
+    top.map(x => x.ratio === 999 ? 10 : Number(x.ratio.toFixed(2))),
+    maxVal,
+    "Ratio discriminant"
+  );
 }
 
 function drawWeightChart(patternStats){
   const top = [...patternStats]
-    .sort((a,b) => b.suggestedWeight - a.suggestedWeight || (b.ratio || 0) - (a.ratio || 0))
+    .sort((a,b) => b.suggestedWeight - a.suggestedWeight || b.robustness - a.robustness || (b.ratio || 0) - (a.ratio || 0))
     .slice(0, 15);
 
-  const el = document.getElementById("weightChart");
-  if (!el) return;
-  if (charts["weightChart"]) charts["weightChart"].destroy();
+  drawHorizontalBar(
+    "weightChart",
+    top.map(x => x.label),
+    top.map(x => x.suggestedWeight),
+    3,
+    "Poids suggéré"
+  );
+}
 
-  charts["weightChart"] = new Chart(el, {
-    type: "bar",
+function drawTimelineChart(pathologyDocs){
+  const timeline = buildTimelineData(pathologyDocs);
+  const el = document.getElementById("timelineChart");
+  if (!el) return;
+  if (charts["timelineChart"]) charts["timelineChart"].destroy();
+
+  charts["timelineChart"] = new Chart(el, {
+    type: "line",
     data: {
-      labels: top.map(x => x.label),
+      labels: timeline.labels,
       datasets: [{
-        label: "Poids suggéré",
-        data: top.map(x => x.suggestedWeight)
+        label: "Ratio moyen cumulé",
+        data: timeline.values,
+        fill: false,
+        tension: 0.25
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: "y",
       scales: {
-        x: {
+        y: {
           min: 0,
-          max: 3,
-          ticks: { stepSize: 1 },
           title: {
             display: true,
-            text: "Poids suggéré (0 à 3)"
+            text: "Ratio moyen des meilleurs items"
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Nombre cumulé de dossiers"
           }
         }
       },
@@ -758,9 +1027,12 @@ function updateAll(){
 
   updateKpis(docs, patternStats);
   renderTable(patternStats);
+  renderMisleadingTable(patternStats);
+  renderHeatmap(allDocs, diagnosis);
   drawPatternChart(patternStats);
   drawRatioChart(patternStats);
   drawWeightChart(patternStats);
+  drawTimelineChart(docs);
 }
 
 function loadRows(){
