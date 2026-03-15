@@ -1158,6 +1158,21 @@ document.addEventListener("keydown", e => {
     checkPin();
   }
 });
+  function showAIStatus(){
+
+  const model = pelvisLoadModelFromLocalStorage();
+
+  if(!model){
+    document.getElementById("aiInfo").innerHTML =
+      "Aucun modèle IA entraîné";
+    return;
+  }
+
+  document.getElementById("aiInfo").innerHTML =
+    "Version : " + model.version +
+    "<br>Cas analysés : " + model.totalN +
+    "<br>Dernier entraînement : " + model.trainedAt;
+}
 </script>
 </body>
 </html>
