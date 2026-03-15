@@ -460,6 +460,13 @@ async function submitForm() {
 
   const profileResults = buildProfileResults(profileData);
   const byLabel = profileResults.byLabel;
+  const expertPercentMap = {
+  "Endométriose": byLabel["Endométriose"].pct,
+  "Adénomyose": byLabel["Adénomyose"].pct,
+  "Congestion pelvienne": byLabel["Congestion pelvienne"].pct,
+  "Névralgie pudendale": byLabel["Névralgie pudendale"].pct,
+  "OPK": byLabel["OPK"].pct
+};
 
   const payload = {
     date: new Date(),
