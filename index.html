@@ -556,21 +556,21 @@ async function submitForm() {
 aiModelTrainedAt: aiModel?.trainedAt || "",
 aiTrainingN: aiModel?.totalN || 0,
 
-ai_endometriose_pct: pelvisFromPercent(aiAnalysis.aiProbas["Endométriose"]),
-ai_adenomyose_pct: pelvisFromPercent(aiAnalysis.aiProbas["Adénomyose"]),
-ai_congestion_pct: pelvisFromPercent(aiAnalysis.aiProbas["Congestion pelvienne"]),
-ai_pudendal_pct: pelvisFromPercent(aiAnalysis.aiProbas["Névralgie pudendale"]),
-ai_opk_pct: pelvisFromPercent(aiAnalysis.aiProbas["OPK"]),
+ai_endometriose_pct: pelvisFormatPercent(aiAnalysis.aiProbas["Endométriose"]),
+ai_adenomyose_pct: pelvisFormatPercent(aiAnalysis.aiProbas["Adénomyose"]),
+ai_congestion_pct: pelvisFormatPercent(aiAnalysis.aiProbas["Congestion pelvienne"]),
+ai_pudendal_pct: pelvisFormatPercent(aiAnalysis.aiProbas["Névralgie pudendale"]),
+ai_opk_pct: pelvisFormatPercent(aiAnalysis.aiProbas["OPK"]),
 
-final_endometriose_pct: pelvisFromPercent(aiAnalysis.finalProbas["Endométriose"]),
-final_adenomyose_pct: pelvisFromPercent(aiAnalysis.finalProbas["Adénomyose"]),
-final_congestion_pct: pelvisFromPercent(aiAnalysis.finalProbas["Congestion pelvienne"]),
-final_pudendal_pct: pelvisFromPercent(aiAnalysis.finalProbas["Névralgie pudendale"]),
-final_opk_pct: pelvisFromPercent(aiAnalysis.finalProbas["OPK"]),
+final_endometriose_pct: pelvisFormatPercent(aiAnalysis.finalProbas["Endométriose"]),
+final_adenomyose_pct: pelvisFormatPercent(aiAnalysis.finalProbas["Adénomyose"]),
+final_congestion_pct: pelvisFormatPercent(aiAnalysis.finalProbas["Congestion pelvienne"]),
+final_pudendal_pct: pelvisFormatPercent(aiAnalysis.finalProbas["Névralgie pudendale"]),
+final_opk_pct: pelvisFormatPercent(aiAnalysis.finalProbas["OPK"]),
 
 finalRanking: aiAnalysis.ranking,
 finalHypothesisPrimary: aiAnalysis.ranking[0]?.diagnosis || "",
-finalHypothesisPrimaryPct: pelvisFromPercent(aiAnalysis.ranking[0]?.prob || 0),
+finalHypothesisPrimaryPct: pelvisFormatPercent(aiAnalysis.ranking[0]?.prob || 0),
   };
 
   try {
