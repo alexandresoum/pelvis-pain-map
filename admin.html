@@ -1146,6 +1146,9 @@ function loadRows(){
   db.collection("patients").onSnapshot(s => {
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    const allPatientRecords = rows.map(r => r.data);
+const aiModel = pelvisTrainAndSaveModel(allPatientRecords);
+console.log("Modèle IA V2 entraîné :", aiModel);
     updateAll();
   });
 }
