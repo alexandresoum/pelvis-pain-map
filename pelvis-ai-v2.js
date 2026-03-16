@@ -18,7 +18,8 @@ const PELVIS_AI_DIAGNOSES = [
   "Adénomyose",
   "Congestion pelvienne",
   "Névralgie pudendale",
-  "OPK"
+  "OPK",
+  "Fibrome"
 ];
 
 function pelvisNormalizeDiagnosisLabel(label) {
@@ -29,6 +30,7 @@ function pelvisNormalizeDiagnosisLabel(label) {
   if (v === "congestion pelvienne") return "Congestion pelvienne";
   if (v === "névralgie pudendale" || v === "nevralgie pudendale") return "Névralgie pudendale";
   if (v === "opk") return "OPK";
+  if (v === "fibrome" || v === "fibromes") return "Fibrome";
 
   return "";
 }
@@ -85,6 +87,8 @@ function pelvisExtractFeatures(data) {
     aden1: !!data.aden1,
     aden2: !!data.aden2,
 
+    fib1: !!data.fib1,
+
     cong1: !!data.cong1,
     cong2: !!data.cong2,
 
@@ -100,7 +104,10 @@ function pelvisExtractFeatures(data) {
 
     consultation_oui: String(data.consultation || "") === "Oui",
     previous_diag_present: !!String(data.previousDiagnosis || "").trim(),
-    contraception_present: !!String(data.contraceptionType || "").trim() &&
+    previous_diag_fibrome: String(data.previousDiagnosis || "").trim() === "Fibrome",
+
+    contraception_present:
+      !!String(data.contraceptionType || "").trim() &&
       !String(data.contraceptionType || "").toLowerCase().includes("pas de contraception"),
 
     pain_ge_7: Number(data.pain || 0) >= 7,
@@ -237,11 +244,12 @@ function pelvisSoftmax(scoreMap) {
 function pelvisPredictFromModel(patientData, model) {
   if (!model || !model.weights || !model.priors) {
     return {
-      Endométriose: 0.2,
-      Adénomyose: 0.2,
-      "Congestion pelvienne": 0.2,
-      "Névralgie pudendale": 0.2,
-      OPK: 0.2
+      Endométriose: 1 / 6,
+      Adénomyose: 1 / 6,
+      "Congestion pelvienne": 1 / 6,
+      "Névralgie pudendale": 1 / 6,
+      OPK: 1 / 6,
+      Fibrome: 1 / 6
     };
   }
 
@@ -267,18 +275,20 @@ function pelvisExpertPercentsToProbas(expertPercents) {
     Adénomyose: Number(expertPercents?.["Adénomyose"] || 0),
     "Congestion pelvienne": Number(expertPercents?.["Congestion pelvienne"] || 0),
     "Névralgie pudendale": Number(expertPercents?.["Névralgie pudendale"] || 0),
-    OPK: Number(expertPercents?.["OPK"] || 0)
+    OPK: Number(expertPercents?.["OPK"] || 0),
+    Fibrome: Number(expertPercents?.["Fibrome"] || 0)
   };
 
   const sum = Object.values(map).reduce((a, b) => a + b, 0);
 
   if (sum <= 0) {
     return {
-      Endométriose: 0.2,
-      Adénomyose: 0.2,
-      "Congestion pelvienne": 0.2,
-      "Névralgie pudendale": 0.2,
-      OPK: 0.2
+      Endométriose: 1 / 6,
+      Adénomyose: 1 / 6,
+      "Congestion pelvienne": 1 / 6,
+      "Névralgie pudendale": 1 / 6,
+      OPK: 1 / 6,
+      Fibrome: 1 / 6
     };
   }
 
@@ -318,7 +328,8 @@ function pelvisBuildExpertMapFromPatientRecord(data) {
     "Adénomyose": Number(data.adenomyose_pct || 0),
     "Congestion pelvienne": Number(data.congestion_pct || 0),
     "Névralgie pudendale": Number(data.pudendal_pct || 0),
-    "OPK": Number(data.opk_pct || 0)
+    "OPK": Number(data.opk_pct || 0),
+    "Fibrome": Number(data.fibrome_pct || 0)
   };
 }
 
