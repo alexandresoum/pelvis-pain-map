@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Stats praticien</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209804580%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Z1WkVm3bOD8CYaFZLgN%2FNzVfFW6MiGeymsDOvmtZndw%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209857484%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=EeKmKBn7vQIBl35peV%2B6%2FHFn1YKYxSJGwgbWLZbL4oo%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cae0df8de72f740a695b008de80780a33%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639089450209883798%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=HEO%2FIikFlKa8cBPAx8lKUM6VL3aMo4ur6Ys0IbKCMCU%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ccffe7c75ff4b42444ffc08de83627c6e%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092656170233457%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=WPlwiBOr04peoXzhIV%2FQFm5pXzugKFHQ9%2F0LmBHTlf8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ccffe7c75ff4b42444ffc08de83627c6e%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092656170297503%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=pdHL7nW0r%2Bluo%2FIR5nZu0Kqtcb5eFN9GEPhm3jfSQ3g%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ccffe7c75ff4b42444ffc08de83627c6e%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092656170324855%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=vQxB%2F1XAFr9LAWNnZyVZ1sEQ6NJbCtN1F5LtOP1ZLmQ%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <style>
     .statsGrid{
@@ -141,6 +141,11 @@
       </div>
 
       <div class="statCard">
+        <div class="statLabel">Fibrome compatible</div>
+        <div class="statValue big" id="statFibrome">0</div>
+      </div>
+
+      <div class="statCard">
         <div class="statLabel">Contraception la plus fréquente</div>
         <div class="statValue small" id="statContraception">-</div>
       </div>
@@ -187,6 +192,7 @@
             <option value="Congestion pelvienne">Congestion pelvienne</option>
             <option value="Névralgie pudendale">Névralgie pudendale</option>
             <option value="OPK">OPK</option>
+            <option value="Fibrome">Fibrome</option>
           </select>
         </div>
 
@@ -334,7 +340,8 @@ function getProfileList(d){
     { name: "Adénomyose", pct: Number(d.adenomyose_pct || 0) },
     { name: "Congestion pelvienne", pct: Number(d.congestion_pct || 0) },
     { name: "Névralgie pudendale", pct: Number(d.pudendal_pct || 0) },
-    { name: "OPK", pct: Number(d.opk_pct || 0) }
+    { name: "OPK", pct: Number(d.opk_pct || 0) },
+    { name: "Fibrome", pct: Number(d.fibrome_pct || 0) }
   ].sort((a,b) => b.pct - a.pct);
 }
 
@@ -410,7 +417,8 @@ function getQuestionnairePositive(d, pathology, thresholdMode){
     "Adénomyose": normalizeLevel(d.adenomyose || ""),
     "Congestion pelvienne": normalizeLevel(d.congestion || ""),
     "Névralgie pudendale": normalizeLevel(d.pudendal || ""),
-    "OPK": normalizeLevel(d.opk || "")
+    "OPK": normalizeLevel(d.opk || ""),
+    "Fibrome": normalizeLevel(d.fibrome || "")
   };
 
   const level = map[pathology] || "";
@@ -504,30 +512,39 @@ function updateHeader(){
 }
 
 function updateStats(){
-  const docs = rows.map(r=>r.data);
+  const docs = rows.map(r => r.data);
 
-  const ages = docs.map(d=>ageFromDob(d.dob)).filter(v=>v!==null);
-  const topo = countValues(docs.flatMap(d=>d.topo || []));
-  const times = countValues(docs.flatMap(d=>d.time || []));
+  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+  const topo = countValues(docs.flatMap(d => d.topo || []));
+  const times = countValues(docs.flatMap(d => d.time || []));
   const digestif = countValues(
-    docs.flatMap(d=>(d.digestif || []).filter(x => x !== "Aucun signe digestif"))
+    docs.flatMap(d => (d.digestif || []).filter(x => x !== "Aucun signe digestif"))
   );
-  const echos = countValues(docs.flatMap(d=>d.diagnostic_echo || []));
-  const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
+  const echos = countValues(docs.flatMap(d => d.diagnostic_echo || []));
+  const contraception = countValues(docs.map(d => d.contraceptionType || "Non renseignée"));
   const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
+
   const endoCompat = docs.filter(d => {
     const x = normalizeLevel(d.endometriose);
     return x === "modéré" || x === "élevé";
   }).length;
+
   const congCompat = docs.filter(d => {
     const x = normalizeLevel(d.congestion);
     return x === "modéré" || x === "élevé";
   }).length;
+
   const opkCompat = docs.filter(d => {
     const x = normalizeLevel(d.opk);
     return x === "modéré" || x === "élevé";
   }).length;
+
+  const fibromeCompat = docs.filter(d => {
+    const x = normalizeLevel(d.fibrome);
+    return x === "modéré" || x === "élevé";
+  }).length;
+
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
   const compatible70 = computeCompatible70(docs);
@@ -540,6 +557,7 @@ function updateStats(){
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
   document.getElementById("statOpk").innerText = opkCompat;
+  document.getElementById("statFibrome").innerText = fibromeCompat;
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
