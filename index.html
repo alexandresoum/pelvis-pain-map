@@ -221,9 +221,13 @@ function getPractitionerFromUrl() {
 }
 
 function initPractitioner() {
+
   selectedPractitionerId = getPractitionerFromUrl();
-  document.getElementById("practitionerDisplay").textContent =
-    selectedPractitionerId ? PRACTITIONERS[selectedPractitionerId] : "Lien QR non reconnu";
+
+  const name = PRACTITIONERS[selectedPractitionerId] || "Non reconnu";
+
+  document.getElementById("practitionerDisplay").textContent = name;
+
 }
 
 function togglePillOptions() {
