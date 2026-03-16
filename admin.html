@@ -216,12 +216,14 @@
       <div class="statCard"><div class="statLabel">Endométriose compatible</div><div class="statValue big" id="statEndo">0</div></div>
       <div class="statCard"><div class="statLabel">Congestion compatible</div><div class="statValue big" id="statCong">0</div></div>
       <div class="statCard"><div class="statLabel">OPK compatible</div><div class="statValue big" id="statOpk">0</div></div>
+      <div class="statCard"><div class="statLabel">Fibrome compatible</div><div class="statValue big" id="statFibrome">0</div></div>
       <div class="statCard"><div class="statLabel">Contraception la plus fréquente</div><div class="statValue small" id="statContraception">-</div></div>
       <div class="statCard"><div class="statLabel">Top digestif</div><div class="statValue small" id="statTopDigestif">-</div></div>
       <div class="statCard"><div class="statLabel">Top résultat écho</div><div class="statValue small" id="statTopEcho">-</div></div>
       <div class="statCard"><div class="statLabel">Exact match</div><div class="statValue big" id="statExactMatch">0%</div><div class="statSub" id="statExactMatchDetail">0 / 0 concordants</div></div>
       <div class="statCard"><div class="statLabel">Top-2 match</div><div class="statValue big" id="statTop2Match">0%</div><div class="statSub" id="statTop2MatchDetail">0 / 0 concordants</div></div>
       <div class="statCard"><div class="statLabel">Compatible &gt; 70%</div><div class="statValue big" id="statCompatible70">0%</div><div class="statSub" id="statCompatible70Detail">0 / 0 concordants</div></div>
+      
     </div>
 
     <div class="card">
@@ -411,6 +413,8 @@ const VARIABLE_DEFS = {
   congestion: { label:"Score congestion", extractor:d => [normalizeLevel(d.congestion) || "Non renseigné"] },
   pudendal: { label:"Score pudendal", extractor:d => [normalizeLevel(d.pudendal) || "Non renseigné"] },
   opk: { label:"Score OPK", extractor:d => [normalizeLevel(d.opk) || "Non renseigné"] },
+  fibrome: { label:"Score fibrome", extractor:d => [normalizeLevel(d.fibrome) || "Non renseigné"] },
+  
 
   consultation: { label:"Consultation antérieure", extractor:d => [d.consultation || "Non renseigné"] },
   previousDiagnosis: { label:"Diagnostic évoqué", extractor:d => [d.previousDiagnosis || "Non renseigné"] },
@@ -440,6 +444,9 @@ const VARIABLE_DEFS = {
   opk2: { label:"Item · pilosité excessive", extractor:d => [d.opk2 ? "Oui" : "Non"] },
 
   bloatingEvening: { label:"Item · ballonnements surtout le soir", extractor:d => [d.bloatingEvening ? "Oui" : "Non"] }
+
+  fib1: { label:"Item · ménorragies (fibrome)", extractor:d => [d.fib1 ? "Oui" : "Non"] },
+fib2: { label:"Item · sensation de masse pelvienne", extractor:d => [d.fib2 ? "Oui" : "Non"] }
 };
 
 function checkPin(){
@@ -607,11 +614,12 @@ function computeCompatible70(docs){
 function getQuestionnairePositive(d, pathology, thresholdMode){
   const map = {
     "Endométriose": normalizeLevel(d.endometriose || ""),
-    "Adénomyose": normalizeLevel(d.adenomyose || ""),
-    "Congestion pelvienne": normalizeLevel(d.congestion || ""),
-    "Névralgie pudendale": normalizeLevel(d.pudendal || ""),
-    "OPK": normalizeLevel(d.opk || "")
-  };
+  "Adénomyose": normalizeLevel(d.adenomyose || ""),
+  "Congestion pelvienne": normalizeLevel(d.congestion || ""),
+  "Névralgie pudendale": normalizeLevel(d.pudendal || ""),
+  "OPK": normalizeLevel(d.opk || ""),
+  "Fibrome": normalizeLevel(d.fibrome || "")
+};
   const level = map[pathology] || "";
   if (thresholdMode === "eleve") return level === "élevé";
   return level === "modéré" || level === "élevé";
@@ -1049,6 +1057,13 @@ function updateKpis(docs){
     return x === "modéré" || x === "élevé";
   }).length;
 
+  const fibromeCompat = docs.filter(d => {
+  const x = normalizeLevel(d.fibrome);
+  return x === "modéré" || x === "élevé";
+}).length;
+
+  
+
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
   const compatible70 = computeCompatible70(docs);
@@ -1061,6 +1076,7 @@ function updateKpis(docs){
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
   document.getElementById("statOpk").innerText = opkCompat;
+  document.getElementById("statFibrome").innerText = fibromeCompat;
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
