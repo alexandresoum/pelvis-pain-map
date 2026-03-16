@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721022214%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=vbVW13k8rc52LNBlyQd%2BcDZ9q%2BYrfkkMjUK2P%2Fsi7TE%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721043921%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=TL2wCtN%2FkbAvAwIOwcqWyCYy5pMOddxOlCFeGvG2Jek%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C8a2f55bd92b3474db16008de80ffaaa7%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090032721057426%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=zWwks%2FiXUQGxBIxxDVUu7Pahr9ZGOCRTQueux5Pwlvs%3D&reserved=0"></script>
+
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Ca521fa0eb2934d51822708de82f78c61%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092196875512214%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=KPkf8Hg2qCMYyAO4B8B6P%2Fqod56cBBp8MDzLH6my5Ms%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Ca521fa0eb2934d51822708de82f78c61%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092196875545366%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Xe8I6I8MtwYxzjasxWf6TDv4baCIQtl1IVGTMj4DRXo%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Ca521fa0eb2934d51822708de82f78c61%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092196875584581%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=VdEagrgC1D5Hrqt4830FpeWmLcaK2RLyIEeNAI8CInc%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <script src="pelvis-ai-v2.js"></script>
+
   <style>
     .pinOverlay{
       position:fixed;
@@ -148,9 +150,17 @@
       max-height:320px !important;
       display:block !important;
     }
+    .aiButton{
+      padding:8px 14px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      background:#eef2ff;
+      cursor:pointer;
+    }
   </style>
 </head>
 <body>
+
 <div id="pinOverlay" class="pinOverlay">
   <div class="pinCard">
     <h2>Accès Admin</h2>
@@ -168,13 +178,25 @@
   </header>
 
   <div style="margin:10px 0 20px 0;">
-    <button onclick="window.location.href='admin-patterns.html'"
-      style="padding:10px 16px;border-radius:10px;border:1px solid #ddd;background:#f5f7ff;cursor:pointer;">
+    <button
+      onclick="window.location.href='admin-patterns.html'"
+      style="padding:10px 16px;border-radius:10px;border:1px solid #ddd;background:#f5f7ff;cursor:pointer;"
+    >
       Analyse des patterns patients
     </button>
   </div>
 
   <div class="container wide">
+
+    <div class="card">
+      <h2>IA Pelvis Pain Map</h2>
+      <p class="muted">Apprentissage automatique basé sur les dossiers patients.</p>
+      <div id="aiInfo" class="statValue small">Chargement du modèle...</div>
+      <div style="margin-top:10px;">
+        <button class="aiButton" onclick="retrainAI()">Réentraîner le modèle IA</button>
+      </div>
+    </div>
+
     <div class="filtersCard">
       <h2>Praticiens inclus</h2>
       <p class="muted">Sélectionne un, plusieurs, ou tous les praticiens.</p>
@@ -354,6 +376,7 @@
       <div class="chartBox"><canvas id="customChart"></canvas></div>
       <div id="customTableWrap" class="simpleTable" style="display:none;"></div>
     </div>
+
   </div>
 </div>
 
@@ -863,7 +886,7 @@ function renderByPractitionerTable(docs){
 function draw(id, type, labels, data){
   const el = document.getElementById(id);
   if (!el) return;
-  if(charts[id]) charts[id].destroy();
+  if (charts[id]) charts[id].destroy();
 
   charts[id] = new Chart(el, {
     type,
@@ -980,12 +1003,12 @@ function updateLearningCurve(docs){
 }
 
 function updateKpis(docs){
-  const ages = docs.map(d=>ageFromDob(d.dob)).filter(v=>v!==null);
-  const times = countValues(docs.flatMap(d=>d.time || []));
-  const digestif = countValues(docs.flatMap(d=>(d.digestif || []).filter(x => x !== "Aucun signe digestif")));
-  const echos = countValues(docs.flatMap(d=>d.diagnostic_echo || []));
-  const contraception = countValues(docs.map(d=>d.contraceptionType || "Non renseignée"));
-  const painAvg = docs.length ? (docs.reduce((s,d)=>s + Number(d.pain || 0),0) / docs.length).toFixed(1) : "0";
+  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+  const times = countValues(docs.flatMap(d => d.time || []));
+  const digestif = countValues(docs.flatMap(d => (d.digestif || []).filter(x => x !== "Aucun signe digestif")));
+  const echos = countValues(docs.flatMap(d => d.diagnostic_echo || []));
+  const contraception = countValues(docs.map(d => d.contraceptionType || "Non renseignée"));
+  const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
 
   const endoCompat = docs.filter(d => {
@@ -1008,7 +1031,7 @@ function updateKpis(docs){
   const compatible70 = computeCompatible70(docs);
 
   document.getElementById("statEchos").innerText = docs.length;
-  document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
+  document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b) => a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statDigestif").innerText = digestifPresent;
   document.getElementById("statTopTime").innerText = topLabel(times);
@@ -1142,13 +1165,59 @@ function updateAll(){
   runCustomAnalysis();
 }
 
+function showAIStatus(){
+  const el = document.getElementById("aiInfo");
+  if (!el) return;
+
+  let model = null;
+  try{
+    model = pelvisLoadModelFromLocalStorage();
+  }catch(e){
+    console.warn("Impossible de charger le modèle IA :", e);
+  }
+
+  if(!model){
+    el.innerHTML = "Aucun modèle IA entraîné";
+    return;
+  }
+
+  el.innerHTML =
+    "<b>Version :</b> " + (model.version || "-") +
+    "<br><b>Cas analysés :</b> " + (model.totalN || 0) +
+    "<br><b>Dernier entraînement :</b> " + (model.trainedAt || "-");
+}
+
+function retrainAI(){
+  try{
+    const docs = rows.map(r => r.data);
+    if(!docs.length){
+      alert("Aucun dossier disponible");
+      return;
+    }
+
+    const model = pelvisTrainAndSaveModel(docs);
+    console.log("IA réentraînée :", model);
+    showAIStatus();
+    alert("Modèle IA réentraîné");
+  }catch(e){
+    console.error(e);
+    alert("Erreur lors du réentraînement IA");
+  }
+}
+
 function loadRows(){
   db.collection("patients").onSnapshot(s => {
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
-    const allPatientRecords = rows.map(r => r.data);
-const aiModel = pelvisTrainAndSaveModel(allPatientRecords);
-console.log("Modèle IA V2 entraîné :", aiModel);
+
+    try{
+      const allPatientRecords = rows.map(r => r.data);
+      const aiModel = pelvisTrainAndSaveModel(allPatientRecords);
+      console.log("Modèle IA V2 entraîné :", aiModel);
+    }catch(e){
+      console.warn("IA non entraînée :", e);
+    }
+
     updateAll();
     showAIStatus();
   });
@@ -1159,21 +1228,7 @@ document.addEventListener("keydown", e => {
     checkPin();
   }
 });
-  function showAIStatus(){
-
-  const model = pelvisLoadModelFromLocalStorage();
-
-  if(!model){
-    document.getElementById("aiInfo").innerHTML =
-      "Aucun modèle IA entraîné";
-    return;
-  }
-
-  document.getElementById("aiInfo").innerHTML =
-    "Version : " + model.version +
-    "<br>Cas analysés : " + model.totalN +
-    "<br>Dernier entraînement : " + model.trainedAt;
-}
 </script>
+
 </body>
 </html>
