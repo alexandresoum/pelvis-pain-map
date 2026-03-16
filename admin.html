@@ -237,6 +237,7 @@
             <option value="Congestion pelvienne">Congestion pelvienne</option>
             <option value="Névralgie pudendale">Névralgie pudendale</option>
             <option value="OPK">OPK</option>
+            <option value="Fibrome">Fibrome</option>
           </select>
         </div>
 
@@ -282,6 +283,7 @@
             <option value="Congestion pelvienne">Congestion pelvienne</option>
             <option value="Névralgie pudendale">Névralgie pudendale</option>
             <option value="OPK">OPK</option>
+            <option value="Fibrome">Fibrome</option>
           </select>
         </div>
       </div>
@@ -306,6 +308,7 @@
             <option value="Congestion pelvienne">Congestion pelvienne</option>
             <option value="Névralgie pudendale">Névralgie pudendale</option>
             <option value="OPK">OPK</option>
+            <option value="Fibrome">Fibrome</option>
           </select>
         </div>
       </div>
@@ -497,24 +500,44 @@ function getValidEchos(d){
 }
 
 function getProfileList(d){
-  return [
-    { name: "Endométriose", pct: Number(d.endometriose_pct || 0) },
-    { name: "Adénomyose", pct: Number(d.adenomyose_pct || 0) },
-    { name: "Congestion pelvienne", pct: Number(d.congestion_pct || 0) },
-    { name: "Névralgie pudendale", pct: Number(d.pudendal_pct || 0) },
-    { name: "OPK", pct: Number(d.opk_pct || 0) }
-  ].sort((a,b) => b.pct - a.pct);
+
+return [
+
+{ name:"Endométriose", pct:Number(d.endometriose_pct||0) },
+
+{ name:"Adénomyose", pct:Number(d.adenomyose_pct||0) },
+
+{ name:"Congestion pelvienne", pct:Number(d.congestion_pct||0) },
+
+{ name:"Névralgie pudendale", pct:Number(d.pudendal_pct||0) },
+
+{ name:"OPK", pct:Number(d.opk_pct||0) },
+
+{ name:"Fibrome", pct:Number(d.fibrome_pct||0) }
+
+].sort((a,b)=>b.pct-a.pct)
+
+}
+function getPathologyPct(d, pathology){
+
+const map={
+
+"Endométriose":Number(d.endometriose_pct||0),
+
+"Adénomyose":Number(d.adenomyose_pct||0),
+
+"Congestion pelvienne":Number(d.congestion_pct||0),
+
+"Névralgie pudendale":Number(d.pudendal_pct||0),
+
+"OPK":Number(d.opk_pct||0),
+
+"Fibrome":Number(d.fibrome_pct||0)
+
 }
 
-function getPathologyPct(d, pathology){
-  const map = {
-    "Endométriose": Number(d.endometriose_pct || 0),
-    "Adénomyose": Number(d.adenomyose_pct || 0),
-    "Congestion pelvienne": Number(d.congestion_pct || 0),
-    "Névralgie pudendale": Number(d.pudendal_pct || 0),
-    "OPK": Number(d.opk_pct || 0)
-  };
-  return map[pathology] || 0;
+return map[pathology]||0
+
 }
 
 function computeExactMatch(docs){
