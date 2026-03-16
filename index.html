@@ -303,8 +303,8 @@ function buildProfileScores(data) {
   if (data.topo.includes("Bas du ventre (centre)")) addScore(scores, "Adénomyose", 1);
 
   if (data.fib1) addScore(scores, "Fibrome", 3);
-  if (data.aden1) addScore(scores, "Fibrome", 2);
-  if (data.aden2) addScore(scores, "Fibrome", 1);
+  if (data.menorragie) addScore(scores, "Fibrome", 2);
+  if (data.massPelvienne) addScore(scores, "Fibrome", 1);
   if (data.previousDiagnosis === "Fibrome") addScore(scores, "Fibrome", 1);
 
   if (data.pud1) addScore(scores, "Névralgie pudendale", 2);
