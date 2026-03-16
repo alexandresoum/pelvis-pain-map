@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C59d863a18b494219353c08de82f1b38e%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092171759153161%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=FdR8DvfHsndsnoCcZnVAoDgddHQqSutqeeTf17UpP6o%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C59d863a18b494219353c08de82f1b38e%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092171759175566%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=QQi7dgaA2iNxTfrL7oYRpIW0LakQNnxfblZOy4zvvqs%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cf2ef61a84b2644f5ae6008de8344cbd9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092528650292150%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=78UTxoTNqyLQ%2FWrxbfWKATRQgkVqozGkY2%2F%2FF%2Fjo5fQ%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cf2ef61a84b2644f5ae6008de8344cbd9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092528650349457%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=kAZ0cg%2BT6Wi6YV%2F2FvKHhgzUelZHQNChp5GDuuJq8Fo%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <script src="pelvis-ai-v2.js"></script>
   <style>
@@ -96,6 +96,7 @@
       <label><input type="checkbox" id="endo1"> Règles très douloureuses</label>
       <label><input type="checkbox" id="aden1"> Règles très abondantes</label>
       <label><input type="checkbox" id="aden2"> Caillots pendant les règles</label>
+      <label><input type="checkbox" id="fib1"> Sensation de masse / boule / pesanteur dans le bas ventre</label>
       <label><input type="checkbox" id="endo2"> Douleur pendant les rapports profonds</label>
       <label><input type="checkbox" id="cong2"> Douleur après les rapports</label>
       <label><input type="checkbox" id="endo3"> Douleur à la selle pendant les règles</label>
@@ -174,6 +175,7 @@
       <option value="Congestion pelvienne">Congestion pelvienne</option>
       <option value="Névralgie pudendale">Névralgie pudendale</option>
       <option value="OPK">OPK</option>
+      <option value="Fibrome">Fibrome</option>
       <option value="Syndrome de l'intestin irritable">Syndrome de l'intestin irritable</option>
       <option value="Cystite interstitielle">Cystite interstitielle</option>
       <option value="Douleur pelvienne chronique">Douleur pelvienne chronique</option>
@@ -207,6 +209,7 @@ const PROFILE_MAX = {
   "Névralgie pudendale": 8,
   "Congestion pelvienne": 10,
   "OPK": 4,
+  "Fibrome": 6,
   "Hypersensibilisation centrale": 5
 };
 
@@ -282,6 +285,7 @@ function buildProfileScores(data) {
     "Névralgie pudendale": 0,
     "Congestion pelvienne": 0,
     "OPK": 0,
+    "Fibrome": 0,
     "Hypersensibilisation centrale": 0
   };
 
@@ -297,6 +301,11 @@ function buildProfileScores(data) {
   if (data.endo1) addScore(scores, "Adénomyose", 1);
   if (data.time.includes("Pendant les règles")) addScore(scores, "Adénomyose", 1);
   if (data.topo.includes("Bas du ventre (centre)")) addScore(scores, "Adénomyose", 1);
+
+  if (data.fib1) addScore(scores, "Fibrome", 3);
+  if (data.aden1) addScore(scores, "Fibrome", 2);
+  if (data.aden2) addScore(scores, "Fibrome", 1);
+  if (data.previousDiagnosis === "Fibrome") addScore(scores, "Fibrome", 1);
 
   if (data.pud1) addScore(scores, "Névralgie pudendale", 2);
   if (data.pud2) addScore(scores, "Névralgie pudendale", 2);
@@ -432,6 +441,7 @@ async function submitForm() {
     endo1: document.getElementById("endo1").checked,
     aden1: document.getElementById("aden1").checked,
     aden2: document.getElementById("aden2").checked,
+    fib1: document.getElementById("fib1").checked,
     endo2: document.getElementById("endo2").checked,
     endo3: document.getElementById("endo3").checked,
     endo4: document.getElementById("endo4").checked,
@@ -466,7 +476,8 @@ async function submitForm() {
     "Adénomyose": byLabel["Adénomyose"].pct,
     "Congestion pelvienne": byLabel["Congestion pelvienne"].pct,
     "Névralgie pudendale": byLabel["Névralgie pudendale"].pct,
-    "OPK": byLabel["OPK"].pct
+    "OPK": byLabel["OPK"].pct,
+    "Fibrome": byLabel["Fibrome"].pct
   };
 
   const aiModel = typeof pelvisLoadModelFromLocalStorage === "function"
@@ -481,14 +492,16 @@ async function submitForm() {
           "Adénomyose": 0,
           "Congestion pelvienne": 0,
           "Névralgie pudendale": 0,
-          "OPK": 0
+          "OPK": 0,
+          "Fibrome": 0
         },
         finalProbas: {
           "Endométriose": expertPercentMap["Endométriose"] / 100,
           "Adénomyose": expertPercentMap["Adénomyose"] / 100,
           "Congestion pelvienne": expertPercentMap["Congestion pelvienne"] / 100,
           "Névralgie pudendale": expertPercentMap["Névralgie pudendale"] / 100,
-          "OPK": expertPercentMap["OPK"] / 100
+          "OPK": expertPercentMap["OPK"] / 100,
+          "Fibrome": expertPercentMap["Fibrome"] / 100
         },
         ranking: Object.entries(expertPercentMap)
           .map(([diagnosis, pct]) => ({ diagnosis, prob: pct / 100 }))
@@ -528,6 +541,7 @@ async function submitForm() {
     endo1: flags.endo1,
     aden1: flags.aden1,
     aden2: flags.aden2,
+    fib1: flags.fib1,
     endo2: flags.endo2,
     endo3: flags.endo3,
     endo4: flags.endo4,
@@ -561,6 +575,10 @@ async function submitForm() {
     opk_pct: byLabel["OPK"].pct,
     opk_score: byLabel["OPK"].raw,
 
+    fibrome: byLabel["Fibrome"].level,
+    fibrome_pct: byLabel["Fibrome"].pct,
+    fibrome_score: byLabel["Fibrome"].raw,
+
     hypersensibilisation: byLabel["Hypersensibilisation centrale"].level,
     hypersensibilisation_pct: byLabel["Hypersensibilisation centrale"].pct,
     hypersensibilisation_score: byLabel["Hypersensibilisation centrale"].raw,
@@ -589,12 +607,14 @@ async function submitForm() {
     ai_congestion_pct: formatPct(aiAnalysis.aiProbas["Congestion pelvienne"]),
     ai_pudendal_pct: formatPct(aiAnalysis.aiProbas["Névralgie pudendale"]),
     ai_opk_pct: formatPct(aiAnalysis.aiProbas["OPK"]),
+    ai_fibrome_pct: formatPct(aiAnalysis.aiProbas["Fibrome"]),
 
     final_endometriose_pct: formatPct(aiAnalysis.finalProbas["Endométriose"]),
     final_adenomyose_pct: formatPct(aiAnalysis.finalProbas["Adénomyose"]),
     final_congestion_pct: formatPct(aiAnalysis.finalProbas["Congestion pelvienne"]),
     final_pudendal_pct: formatPct(aiAnalysis.finalProbas["Névralgie pudendale"]),
     final_opk_pct: formatPct(aiAnalysis.finalProbas["OPK"]),
+    final_fibrome_pct: formatPct(aiAnalysis.finalProbas["Fibrome"]),
 
     finalRanking: aiAnalysis.ranking,
     finalHypothesisPrimary: aiAnalysis.ranking?.[0]?.diagnosis || "",
