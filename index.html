@@ -256,20 +256,6 @@ const PROFILE_MAX = {
   "Hypersensibilisation centrale": 5
 };
 
-let isSubmitting = false;
-
-function getPractitionerFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  const doc = params.get("doc") || "";
-  return PRACTITIONERS[doc] ? doc : "";
-}
-
-function initPractitioner() {
-  selectedPractitionerId = getPractitionerFromUrl();
-  const name = PRACTITIONERS[selectedPractitionerId] || "Non reconnu";
-  const display = document.getElementById("practitionerDisplay");
-  if (display) display.textContent = name;
-}
 
 function togglePillOptions() {
   const type = document.getElementById("contraceptionType").value;
