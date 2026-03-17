@@ -6,9 +6,10 @@
   <title>Inscription praticien – Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C09a9eeac73a24f5e450d08de83fb96b2%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093313738845164%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=f0VDrW2Byir3OcSE7U7UePdTNRm2DGgXNisqp4%2BacCM%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C09a9eeac73a24f5e450d08de83fb96b2%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093313738884602%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=MGinyrbyj52VIZhzJ2fnNwAC6bmxjP6ih3A1lE0EIgc%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097895479%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=20hYXwsa%2BFtrnDMwK3uAcsTnJWth3keyquuxy%2FeK1V8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097916378%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=HAchjxHyUlbq9m8HCw7yNoVzLFzuM7%2FxHSFr5da16Kg%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fqrcodejs%2F1.0.0%2Fqrcode.min.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097929882%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=A1jqonVA47KF9DUgG1HyKDtq18Pt1K8uBnDBhNlQaN8%3D&reserved=0"></script>
 
   <style>
     body{
@@ -23,6 +24,7 @@
       align-items:center;
       justify-content:center;
       padding:24px;
+      box-sizing:border-box;
     }
     .card{
       width:min(100%, 560px);
@@ -31,6 +33,7 @@
       border-radius:18px;
       padding:28px;
       box-shadow:0 8px 30px rgba(0,0,0,.08);
+      box-sizing:border-box;
     }
     h1{
       margin:0 0 8px 0;
@@ -94,6 +97,7 @@
       font-size:14px;
       display:none;
       white-space:pre-line;
+      line-height:1.5;
     }
     .status.error{
       display:block;
@@ -107,18 +111,85 @@
       color:#065f46;
       border:1px solid #bbf7d0;
     }
-    .infoBox{
-      margin-top:18px;
-      padding:14px;
-      border-radius:12px;
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
-      font-size:14px;
+
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.5);
+      z-index:9999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      box-sizing:border-box;
+    }
+    .modalCard{
+      width:min(100%, 720px);
+      max-height:90vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:18px;
+      padding:24px;
+      box-shadow:0 14px 40px rgba(0,0,0,.22);
+      box-sizing:border-box;
+    }
+    .modalCard h2{
+      margin-top:0;
+      margin-bottom:16px;
+    }
+    .modalCard p{
+      margin:0 0 14px 0;
       line-height:1.5;
     }
-    .qrLink{
+    .linkBox{
+      display:block;
       word-break:break-all;
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      padding:10px 12px;
+      text-decoration:none;
+      color:#24324a;
       font-weight:600;
+    }
+    .modalActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    .qrWrap{
+      margin-top:18px;
+      padding:18px;
+      border:1px solid #e5e7eb;
+      border-radius:14px;
+      background:#f8fafc;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+    }
+    #qrCode{
+      background:#fff;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #e5e7eb;
+      min-width:220px;
+      min-height:220px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #qrCode img,
+    #qrCode canvas{
+      display:block;
+      max-width:100%;
+      height:auto;
+    }
+    .qrCaption{
+      font-size:13px;
+      color:#6b7280;
+      text-align:center;
     }
   </style>
 </head>
@@ -157,12 +228,41 @@
       </div>
 
       <div class="actions">
-        <button class="primary" onclick="registerPractitioner()">Créer mon compte</button>
-        <button class="secondary" onclick="goToLogin()">Aller à la connexion</button>
+        <button type="button" class="primary" onclick="registerPractitioner()">Créer mon compte</button>
+        <button type="button" class="secondary" onclick="goToLogin()">Aller à la connexion</button>
       </div>
 
       <div id="status" class="status"></div>
-      <div id="successBox" class="infoBox" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="successModal" class="modalOverlay">
+    <div class="modalCard">
+      <h2>Compte créé avec succès</h2>
+
+      <p><b>Identifiant praticien :</b><br><span id="modalPractitionerId"></span></p>
+      <p><b>Login :</b><br><span id="modalLogin"></span></p>
+
+      <p><b>Lien questionnaire patientes :</b></p>
+      <a id="modalQrUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+      <div class="qrWrap">
+        <div id="qrCode"></div>
+        <div class="qrCaption">
+          QR code à transmettre aux patientes
+        </div>
+      </div>
+
+      <p style="margin-top:14px;"><b>Lien connexion praticien :</b></p>
+      <a id="modalDoctorUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+      <div class="modalActions">
+        <button type="button" class="secondary" onclick="copyLink('modalQrUrl')">Copier lien QR</button>
+        <button type="button" class="secondary" onclick="copyLink('modalDoctorUrl')">Copier lien connexion</button>
+        <button type="button" class="secondary" onclick="downloadQrImage()">Télécharger le QR</button>
+        <button type="button" class="primary" onclick="goToLogin()">Aller à la connexion</button>
+        <button type="button" class="secondary" onclick="closeSuccessModal()">Fermer</button>
+      </div>
     </div>
   </div>
 
@@ -177,34 +277,10 @@
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase()
         .trim()
-        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/[^a-z0-9._-]+/g, "_")
         .replace(/^_+|_+$/g, "")
         .replace(/_+/g, "_");
     }
-
-    function showSuccessModal(practitionerId, login, qrUrl, doctorUrl){
-  document.getElementById("modalPractitionerId").innerText = practitionerId;
-  document.getElementById("modalLogin").innerText = login;
-
-  const qrEl = document.getElementById("modalQrUrl");
-  qrEl.href = qrUrl;
-  qrEl.innerText = qrUrl;
-
-  const doctorEl = document.getElementById("modalDoctorUrl");
-  doctorEl.href = doctorUrl;
-  doctorEl.innerText = doctorUrl;
-
-  document.getElementById("successModal").style.display = "flex";
-}
-
-function closeSuccessModal(){
-  document.getElementById("successModal").style.display = "none";
-}
-
-function copyLink(id){
-  const el = document.getElementById(id);
-  navigator.clipboard.writeText(el.href);
-}
 
     function showStatus(message, type){
       const el = document.getElementById("status");
@@ -212,25 +288,11 @@ function copyLink(id){
       el.textContent = message;
     }
 
-    
-
     function clearStatus(){
       const el = document.getElementById("status");
       el.className = "status";
       el.textContent = "";
       el.style.display = "none";
-    }
-
-    function showSuccessBox(html){
-      const box = document.getElementById("successBox");
-      box.style.display = "block";
-      box.innerHTML = html;
-    }
-
-    function hideSuccessBox(){
-      const box = document.getElementById("successBox");
-      box.style.display = "none";
-      box.innerHTML = "";
     }
 
     function isValidPin(pin){
@@ -244,7 +306,7 @@ function copyLink(id){
     function buildPractitionerId(name, login){
       const fromName = slugify(name);
       const fromLogin = slugify(login);
-      return fromName || fromLogin || "praticien";
+      return fromLogin || fromName || "praticien";
     }
 
     async function findAllowedByEmail(email){
@@ -298,9 +360,89 @@ function copyLink(id){
       return `${APP_BASE_URL}/doctor-login.html?id=${encodeURIComponent(practitionerId)}`;
     }
 
+    function renderQrCode(url){
+      const qrContainer = document.getElementById("qrCode");
+      qrContainer.innerHTML = "";
+
+      new QRCode(qrContainer, {
+        text: url,
+        width: 220,
+        height: 220,
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function showSuccessModal(practitionerId, login, qrUrl, doctorUrl){
+      document.getElementById("modalPractitionerId").innerText = practitionerId;
+      document.getElementById("modalLogin").innerText = login;
+
+      const qrEl = document.getElementById("modalQrUrl");
+      qrEl.href = qrUrl;
+      qrEl.innerText = qrUrl;
+
+      const doctorEl = document.getElementById("modalDoctorUrl");
+      doctorEl.href = doctorUrl;
+      doctorEl.innerText = doctorUrl;
+
+      renderQrCode(qrUrl);
+
+      document.getElementById("successModal").style.display = "flex";
+    }
+
+    function closeSuccessModal(){
+      document.getElementById("successModal").style.display = "none";
+    }
+
+    async function copyLink(id){
+      try{
+        const el = document.getElementById(id);
+        const text = el.href;
+
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+
+        showStatus("Lien copié avec succès.", "success");
+      }catch(e){
+        console.error(e);
+        showStatus("Impossible de copier le lien.", "error");
+      }
+    }
+
+    function downloadQrImage(){
+      const qrContainer = document.getElementById("qrCode");
+      const canvas = qrContainer.querySelector("canvas");
+      const img = qrContainer.querySelector("img");
+
+      let imageUrl = "";
+
+      if (canvas) {
+        imageUrl = canvas.toDataURL("image/png");
+      } else if (img) {
+        imageUrl = img.src;
+      } else {
+        showStatus("QR code introuvable.", "error");
+        return;
+      }
+
+      const practitionerId = document.getElementById("modalPractitionerId").innerText || "praticien";
+      const a = document.createElement("a");
+      a.href = imageUrl;
+      a.download = `qr-pelvis-pain-map-${practitionerId}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
     async function registerPractitioner(){
       clearStatus();
-      hideSuccessBox();
 
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim().toLowerCase();
@@ -319,7 +461,7 @@ function copyLink(id){
       }
 
       if (!isValidLogin(login)) {
-        showStatus("L’identifiant doit contenir 4 à 30 caractères (lettres, chiffres, point, tiret, underscore).", "error");
+        showStatus("L’identifiant doit contenir 4 à 30 caractères.", "error");
         return;
       }
 
@@ -339,7 +481,7 @@ function copyLink(id){
         const allowedDoc = await findAllowedByEmail(email);
 
         if (!allowedDoc) {
-          showStatus("Cet e-mail n’est pas autorisé. Vérifie l’abonnement ou l’adresse saisie.", "error");
+          showStatus("Cet e-mail n’est pas autorisé.", "error");
           return;
         }
 
@@ -388,9 +530,9 @@ function copyLink(id){
 
         sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
-     showStatus("Compte créé avec succès.", "success");
-showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
-        
+        showStatus("Compte créé avec succès.", "success");
+        showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
+
       } catch (error) {
         console.error(error);
         showStatus("Erreur lors de la création du compte. Regarde la console pour le détail.", "error");
@@ -400,37 +542,14 @@ showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
     function goToLogin(){
       window.location.href = "doctor-login.html";
     }
+
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape") closeSuccessModal();
+    });
+
+    document.getElementById("successModal").addEventListener("click", function(e){
+      if (e.target.id === "successModal") closeSuccessModal();
+    });
   </script>
-  <!-- POPUP SUCCESS -->
-<div id="successModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fff;max-width:600px;width:100%;border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
-
-    <h2 style="margin-top:0;">🎉 Compte créé avec succès</h2>
-
-    <p><b>Identifiant praticien :</b><br>
-      <span id="modalPractitionerId"></span>
-    </p>
-
-    <p><b>Login :</b><br>
-      <span id="modalLogin"></span>
-    </p>
-
-    <p><b>Lien questionnaire patientes / QR :</b><br>
-      <a id="modalQrUrl" href="#" target="_blank"></a>
-    </p>
-
-    <p><b>Lien connexion praticien :</b><br>
-      <a id="modalDoctorUrl" href="#" target="_blank"></a>
-    </p>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;">
-      <button onclick="copyLink('modalQrUrl')">📋 Copier lien QR</button>
-      <button onclick="copyLink('modalDoctorUrl')">📋 Copier lien connexion</button>
-      <button onclick="goToLogin()">➡️ Aller à la connexion</button>
-      <button onclick="closeSuccessModal()">❌ Fermer</button>
-    </div>
-
-  </div>
-</div>
 </body>
 </html>
