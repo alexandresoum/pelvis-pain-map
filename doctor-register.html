@@ -182,11 +182,37 @@
         .replace(/_+/g, "_");
     }
 
+    function showSuccessModal(practitionerId, login, qrUrl, doctorUrl){
+  document.getElementById("modalPractitionerId").innerText = practitionerId;
+  document.getElementById("modalLogin").innerText = login;
+
+  const qrEl = document.getElementById("modalQrUrl");
+  qrEl.href = qrUrl;
+  qrEl.innerText = qrUrl;
+
+  const doctorEl = document.getElementById("modalDoctorUrl");
+  doctorEl.href = doctorUrl;
+  doctorEl.innerText = doctorUrl;
+
+  document.getElementById("successModal").style.display = "flex";
+}
+
+function closeSuccessModal(){
+  document.getElementById("successModal").style.display = "none";
+}
+
+function copyLink(id){
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.href);
+}
+
     function showStatus(message, type){
       const el = document.getElementById("status");
       el.className = "status " + type;
       el.textContent = message;
     }
+
+    
 
     function clearStatus(){
       const el = document.getElementById("status");
@@ -362,8 +388,8 @@
 
         sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
-      alert("Compte créé avec succès");
-console.log("Compte créé avec succès", { practitionerId, login, qrUrl, doctorUrl });
+     showStatus("Compte créé avec succès.", "success");
+showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
         
       } catch (error) {
         console.error(error);
@@ -375,5 +401,36 @@ console.log("Compte créé avec succès", { practitionerId, login, qrUrl, doctor
       window.location.href = "doctor-login.html";
     }
   </script>
+  <!-- POPUP SUCCESS -->
+<div id="successModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;max-width:600px;width:100%;border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+
+    <h2 style="margin-top:0;">🎉 Compte créé avec succès</h2>
+
+    <p><b>Identifiant praticien :</b><br>
+      <span id="modalPractitionerId"></span>
+    </p>
+
+    <p><b>Login :</b><br>
+      <span id="modalLogin"></span>
+    </p>
+
+    <p><b>Lien questionnaire patientes / QR :</b><br>
+      <a id="modalQrUrl" href="#" target="_blank"></a>
+    </p>
+
+    <p><b>Lien connexion praticien :</b><br>
+      <a id="modalDoctorUrl" href="#" target="_blank"></a>
+    </p>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;">
+      <button onclick="copyLink('modalQrUrl')">📋 Copier lien QR</button>
+      <button onclick="copyLink('modalDoctorUrl')">📋 Copier lien connexion</button>
+      <button onclick="goToLogin()">➡️ Aller à la connexion</button>
+      <button onclick="closeSuccessModal()">❌ Fermer</button>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
