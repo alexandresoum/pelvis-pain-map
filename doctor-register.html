@@ -362,17 +362,9 @@
 
         sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
-        showStatus("Compte créé avec succès.", "success");
-        showSuccessBox(`
-          <b>Compte activé.</b><br><br>
-          <b>Identifiant praticien :</b> ${practitionerId}<br>
-          <b>Login :</b> ${login}<br><br>
-          <b>Lien questionnaire patientes / QR :</b><br>
-          <span class="qrLink">${qrUrl}</span><br><br>
-          <b>Lien connexion praticien :</b><br>
-          <span class="qrLink">${doctorUrl}</span><br><br>
-          Pense à générer ensuite le QR code à partir du lien questionnaire.
-        `);
+      alert("Compte créé avec succès");
+console.log("Compte créé avec succès", { practitionerId, login, qrUrl, doctorUrl });
+        
       } catch (error) {
         console.error(error);
         showStatus("Erreur lors de la création du compte. Regarde la console pour le détail.", "error");
