@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inscription praticien – Pelvis Pain Map</title>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C09a9eeac73a24f5e450d08de83fb96b2%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093313738845164%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=f0VDrW2Byir3OcSE7U7UePdTNRm2DGgXNisqp4%2BacCM%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C09a9eeac73a24f5e450d08de83fb96b2%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093313738884602%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=MGinyrbyj52VIZhzJ2fnNwAC6bmxjP6ih3A1lE0EIgc%3D&reserved=0"></script>
+  <script src="firebase-config.js"></script>
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:#f8fafc;
+      color:#24324a;
+    }
+    .wrap{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:min(100%, 560px);
+      background:#fff;
+      border:1px solid #e5e7eb;
+      border-radius:18px;
+      padding:28px;
+      box-shadow:0 8px 30px rgba(0,0,0,.08);
+    }
+    h1{
+      margin:0 0 8px 0;
+      font-size:28px;
+    }
+    .muted{
+      color:#6b7280;
+      font-size:14px;
+      margin-bottom:22px;
+      line-height:1.5;
+    }
+    .field{
+      margin-bottom:16px;
+    }
+    label{
+      display:block;
+      font-weight:600;
+      margin-bottom:8px;
+    }
+    input{
+      width:100%;
+      box-sizing:border-box;
+      padding:12px 14px;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      font-size:16px;
+      background:#fff;
+    }
+    input:focus{
+      outline:none;
+      border-color:#94a3b8;
+      box-shadow:0 0 0 3px rgba(148,163,184,.15);
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .primary{
+      background:#24324a;
+      color:#fff;
+    }
+    .secondary{
+      background:#eef2ff;
+      color:#24324a;
+      border:1px solid #dbe3ff;
+    }
+    .status{
+      margin-top:18px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      display:none;
+      white-space:pre-line;
+    }
+    .status.error{
+      display:block;
+      background:#fef2f2;
+      color:#991b1b;
+      border:1px solid #fecaca;
+    }
+    .status.success{
+      display:block;
+      background:#ecfdf5;
+      color:#065f46;
+      border:1px solid #bbf7d0;
+    }
+    .infoBox{
+      margin-top:18px;
+      padding:14px;
+      border-radius:12px;
+      background:#f8fafc;
+      border:1px solid #e5e7eb;
+      font-size:14px;
+      line-height:1.5;
+    }
+    .qrLink{
+      word-break:break-all;
+      font-weight:600;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Inscription praticien</h1>
+      <p class="muted">
+        Cette page permet d’activer un compte praticien après validation de l’abonnement.
+        L’e-mail doit déjà exister dans la base des praticiens autorisés.
+      </p>
+
+      <div class="field">
+        <label for="name">Nom affiché</label>
+        <input id="name" type="text" placeholder="Ex : Alexandre Soum">
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail autorisé</label>
+        <input id="email" type="email" placeholder="Ex : dr@email.fr" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="login">Identifiant de connexion</label>
+        <input id="login" type="text" placeholder="Ex : alexsoum">
+      </div>
+
+      <div class="field">
+        <label for="pin">Code PIN à 4 chiffres</label>
+        <input id="pin" type="password" maxlength="4" inputmode="numeric" placeholder="4 chiffres">
+      </div>
+
+      <div class="field">
+        <label for="pin2">Confirmer le code PIN</label>
+        <input id="pin2" type="password" maxlength="4" inputmode="numeric" placeholder="4 chiffres">
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="registerPractitioner()">Créer mon compte</button>
+        <button class="secondary" onclick="goToLogin()">Aller à la connexion</button>
+      </div>
+
+      <div id="status" class="status"></div>
+      <div id="successBox" class="infoBox" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const APP_BASE_URL = window.location.origin;
+    const PRACTITIONER_COLLECTION = "practitioners";
+    const ALLOWED_COLLECTION = "allowed_practitioners";
+
+    function slugify(value){
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .replace(/_+/g, "_");
+    }
+
+    function showStatus(message, type){
+      const el = document.getElementById("status");
+      el.className = "status " + type;
+      el.textContent = message;
+    }
+
+    function clearStatus(){
+      const el = document.getElementById("status");
+      el.className = "status";
+      el.textContent = "";
+      el.style.display = "none";
+    }
+
+    function showSuccessBox(html){
+      const box = document.getElementById("successBox");
+      box.style.display = "block";
+      box.innerHTML = html;
+    }
+
+    function hideSuccessBox(){
+      const box = document.getElementById("successBox");
+      box.style.display = "none";
+      box.innerHTML = "";
+    }
+
+    function isValidPin(pin){
+      return /^\d{4}$/.test(pin);
+    }
+
+    function isValidLogin(login){
+      return /^[a-zA-Z0-9._-]{4,30}$/.test(login);
+    }
+
+    function buildPractitionerId(name, login){
+      const fromName = slugify(name);
+      const fromLogin = slugify(login);
+      return fromName || fromLogin || "praticien";
+    }
+
+    async function findAllowedByEmail(email){
+      const snap = await db.collection(ALLOWED_COLLECTION)
+        .where("email_lower", "==", email.toLowerCase())
+        .limit(1)
+        .get();
+
+      if (!snap.empty) return snap.docs[0];
+
+      const fallback = await db.collection(ALLOWED_COLLECTION)
+        .where("email", "==", email)
+        .limit(1)
+        .get();
+
+      return fallback.empty ? null : fallback.docs[0];
+    }
+
+    async function loginExists(login){
+      const snap = await db.collection(PRACTITIONER_COLLECTION)
+        .where("login", "==", login.toLowerCase())
+        .limit(1)
+        .get();
+
+      return !snap.empty;
+    }
+
+    async function practitionerIdExists(practitionerId){
+      const doc = await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).get();
+      return doc.exists;
+    }
+
+    async function buildUniquePractitionerId(name, login){
+      const base = buildPractitionerId(name, login);
+      let candidate = base;
+      let i = 2;
+
+      while (await practitionerIdExists(candidate)) {
+        candidate = `${base}_${i}`;
+        i++;
+      }
+
+      return candidate;
+    }
+
+    function buildQrUrl(practitionerId){
+      return `${APP_BASE_URL}/index.html?doc=${encodeURIComponent(practitionerId)}`;
+    }
+
+    function buildDoctorUrl(practitionerId){
+      return `${APP_BASE_URL}/doctor-login.html?id=${encodeURIComponent(practitionerId)}`;
+    }
+
+    async function registerPractitioner(){
+      clearStatus();
+      hideSuccessBox();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const login = document.getElementById("login").value.trim().toLowerCase();
+      const pin = document.getElementById("pin").value.trim();
+      const pin2 = document.getElementById("pin2").value.trim();
+
+      if (!name) {
+        showStatus("Merci de renseigner le nom affiché.", "error");
+        return;
+      }
+
+      if (!email) {
+        showStatus("Merci de renseigner l’e-mail.", "error");
+        return;
+      }
+
+      if (!isValidLogin(login)) {
+        showStatus("L’identifiant doit contenir 4 à 30 caractères (lettres, chiffres, point, tiret, underscore).", "error");
+        return;
+      }
+
+      if (!isValidPin(pin)) {
+        showStatus("Le code PIN doit contenir exactement 4 chiffres.", "error");
+        return;
+      }
+
+      if (pin !== pin2) {
+        showStatus("Les deux codes PIN ne correspondent pas.", "error");
+        return;
+      }
+
+      try {
+        showStatus("Vérification en cours...", "success");
+
+        const allowedDoc = await findAllowedByEmail(email);
+
+        if (!allowedDoc) {
+          showStatus("Cet e-mail n’est pas autorisé. Vérifie l’abonnement ou l’adresse saisie.", "error");
+          return;
+        }
+
+        const allowedData = allowedDoc.data();
+
+        if (allowedData.paid === false) {
+          showStatus("Cet abonnement n’est pas validé.", "error");
+          return;
+        }
+
+        if (allowedData.used === true) {
+          showStatus("Cet e-mail a déjà servi à créer un compte praticien.", "error");
+          return;
+        }
+
+        const loginAlreadyExists = await loginExists(login);
+        if (loginAlreadyExists) {
+          showStatus("Cet identifiant est déjà utilisé. Choisis-en un autre.", "error");
+          return;
+        }
+
+        const practitionerId = await buildUniquePractitionerId(name, login);
+        const now = firebase.firestore.FieldValue.serverTimestamp();
+
+        await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).set({
+          id: practitionerId,
+          name: name,
+          email: email,
+          email_lower: email,
+          login: login,
+          pin: pin,
+          active: true,
+          createdAt: now,
+          source: "self_register"
+        });
+
+        await db.collection(ALLOWED_COLLECTION).doc(allowedDoc.id).update({
+          used: true,
+          practitionerId: practitionerId,
+          activatedAt: now,
+          chosenLogin: login
+        });
+
+        const qrUrl = buildQrUrl(practitionerId);
+        const doctorUrl = buildDoctorUrl(practitionerId);
+
+        sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
+
+        showStatus("Compte créé avec succès.", "success");
+        showSuccessBox(`
+          <b>Compte activé.</b><br><br>
+          <b>Identifiant praticien :</b> ${practitionerId}<br>
+          <b>Login :</b> ${login}<br><br>
+          <b>Lien questionnaire patientes / QR :</b><br>
+          <span class="qrLink">${qrUrl}</span><br><br>
+          <b>Lien connexion praticien :</b><br>
+          <span class="qrLink">${doctorUrl}</span><br><br>
+          Pense à générer ensuite le QR code à partir du lien questionnaire.
+        `);
+      } catch (error) {
+        console.error(error);
+        showStatus("Erreur lors de la création du compte. Regarde la console pour le détail.", "error");
+      }
+    }
+
+    function goToLogin(){
+      window.location.href = "doctor-login.html";
+    }
+  </script>
+</body>
+</html>
