@@ -55,12 +55,8 @@
 <div id="pinOverlay" class="pinOverlay">
   <div class="pinCard">
     <h2>Accès Dashboard praticien</h2>
-    <label for="practitionerLogin">Praticien</label>
-    <select id="practitionerLogin" class="pinInput">
-      <option value="alexandre_soum">Alexandre Soum</option>
-      <option value="praticien_2">Dr Jean-Marc Levaillant</option>
-      <option value="praticien_3">Anne-Laure Siraga</option>
-    </select>
+  <label>ID praticien</label>
+<input type="text" id="practitionerLogin" class="pinInput" readonly>
     <label for="pinInput">Code PIN</label>
     <input type="password" id="pinInput" maxlength="4" class="pinInput">
     <button class="primary" onclick="checkPin()">Entrer</button>
@@ -558,6 +554,20 @@ function loadRows() {
 document.addEventListener("keydown", e => {
   if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") checkPin();
 });
+  function getPractitionerFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("doc");
+}
+
+window.onload = () => {
+  const docId = getPractitionerFromURL();
+
+  if (docId) {
+    document.getElementById("practitionerLogin").value = docId;
+  } else {
+    document.getElementById("pinError").textContent = "Lien invalide (pas de praticien).";
+  }
+};
 </script>
 </body>
 </html>
