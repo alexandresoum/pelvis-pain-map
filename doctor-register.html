@@ -6,10 +6,10 @@
   <title>Inscription praticien – Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097895479%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=20hYXwsa%2BFtrnDMwK3uAcsTnJWth3keyquuxy%2FeK1V8%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097916378%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=HAchjxHyUlbq9m8HCw7yNoVzLFzuM7%2FxHSFr5da16Kg%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C7f3311999a7d431c8e1908de84325166%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093548842857649%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=8aJ5IUqjbj39QLD2ZKom1eshQeuYHNZgxQ0BKb7JNP0%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C7f3311999a7d431c8e1908de84325166%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093548842885086%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=LfWT9revFjbXhx7mbjKqA9Y%2BRcLfniN63ZTjhLKL4JY%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fqrcodejs%2F1.0.0%2Fqrcode.min.js&data=05%7C02%7C%7Cedd034c476564dc8a27a08de841d31d6%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093458097929882%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=A1jqonVA47KF9DUgG1HyKDtq18Pt1K8uBnDBhNlQaN8%3D&reserved=0"></script>
+  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdnjs.cloudflare.com%2Fajax%2Flibs%2Fqrcodejs%2F1.0.0%2Fqrcode.min.js&data=05%7C02%7C%7C7f3311999a7d431c8e1908de84325166%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639093548843305360%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=LOq6TIWUemIbjHwQerqMlYdkt3sDzwE8CEi7%2Fj7%2BafQ%3D&reserved=0"></script>
 
   <style>
     body{
@@ -271,6 +271,14 @@
     const PRACTITIONER_COLLECTION = "practitioners";
     const ALLOWED_COLLECTION = "allowed_practitioners";
 
+    if (typeof firebase === "undefined") {
+      alert("Firebase non chargé");
+    }
+
+    if (typeof db === "undefined") {
+      alert("db non chargé depuis firebase-config.js");
+    }
+
     function slugify(value){
       return String(value || "")
         .normalize("NFD")
@@ -290,6 +298,7 @@
 
     function clearStatus(){
       const el = document.getElementById("status");
+      if (!el) return;
       el.className = "status";
       el.textContent = "";
       el.style.display = "none";
@@ -356,10 +365,9 @@
       return `${APP_BASE_URL}/index.html?doc=${encodeURIComponent(practitionerId)}`;
     }
 
-  function buildDoctorUrl(practitionerId){
-  return `${APP_BASE_URL}/doctor.html`;
-}
-
+    function buildDoctorUrl(practitionerId){
+      return `${APP_BASE_URL}/doctor.html`;
+    }
 
     function renderQrCode(url){
       const qrContainer = document.getElementById("qrCode");
@@ -541,7 +549,7 @@
     }
 
     function goToLogin(){
-      window.location.href = "doctor-login.html";
+      window.location.href = "doctor.html";
     }
 
     document.addEventListener("keydown", function(e){
