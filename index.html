@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cf2ef61a84b2644f5ae6008de8344cbd9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092528650292150%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=78UTxoTNqyLQ%2FWrxbfWKATRQgkVqozGkY2%2F%2FF%2Fjo5fQ%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cf2ef61a84b2644f5ae6008de8344cbd9%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639092528650349457%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=kAZ0cg%2BT6Wi6YV%2F2FvKHhgzUelZHQNChp5GDuuJq8Fo%3D&reserved=0"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="pelvis-ai-v2.js"></script>
   <style>
@@ -197,11 +197,54 @@
 </div>
 
 <script>
-const PRACTITIONERS = {
+const LEGACY_PRACTITIONERS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
   praticien_3: "Anne-Laure Siraga"
 };
+
+let selectedPractitionerId = "";
+let selectedPractitionerName = "";
+let isSubmitting = false;
+
+function getPractitionerIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return (params.get("doc") || "").trim();
+}
+
+async function initPractitioner() {
+  selectedPractitionerId = getPractitionerIdFromUrl();
+  const display = document.getElementById("practitionerDisplay");
+
+  if (!selectedPractitionerId) {
+    selectedPractitionerName = "";
+    if (display) display.textContent = "Non reconnu";
+    return;
+  }
+
+  try {
+    const practitionerDoc = await db.collection("pratitioners").doc(selectedPractitionerId).get();
+
+    if (practitionerDoc.exists) {
+      const practitionerData = practitionerDoc.data() || {};
+      selectedPractitionerName =
+        practitionerData.name ||
+        practitionerData.login ||
+        LEGACY_PRACTITIONERS[selectedPractitionerId] ||
+        selectedPractitionerId;
+
+      if (display) display.textContent = selectedPractitionerName;
+      return;
+    }
+
+    selectedPractitionerName = LEGACY_PRACTITIONERS[selectedPractitionerId] || "";
+    if (display) display.textContent = selectedPractitionerName || "Non reconnu";
+  } catch (e) {
+    console.error("Erreur chargement praticien :", e);
+    selectedPractitionerName = LEGACY_PRACTITIONERS[selectedPractitionerId] || "";
+    if (display) display.textContent = selectedPractitionerName || "Non reconnu";
+  }
+}
 
 const PROFILE_MAX = {
   "Endométriose": 9,
@@ -209,11 +252,10 @@ const PROFILE_MAX = {
   "Névralgie pudendale": 8,
   "Congestion pelvienne": 10,
   "OPK": 4,
-  "Fibrome": 6,
+  "Fibrome": 7,
   "Hypersensibilisation centrale": 5
 };
 
-let selectedPractitionerId = "";
 let isSubmitting = false;
 
 function getPractitionerFromUrl() {
@@ -411,7 +453,8 @@ async function submitForm() {
   }
 
   const practitionerId = selectedPractitionerId;
-  const practitionerName = PRACTITIONERS[practitionerId];
+  const practitionerName = selectedPractitionerName || LEGACY_PRACTITIONERS[practitionerId] || practitionerId;
+ 
 
   const nom = document.getElementById("nom").value.trim();
   const prenom = document.getElementById("prenom").value.trim();
