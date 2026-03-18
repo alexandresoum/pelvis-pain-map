@@ -717,15 +717,18 @@ function selectAllPractitioners(){
 }
 
 function clearAllPractitioners(){
-  selectedPractitionerIds = [];
+  selectedPractitionerIds = new Set();
   renderPractitionerPicker();
   updateAll();
 }
 
-function filteredDocs(){
-  const selected = selectedPractitioners();
-  return rows.map(r => r.data).filter(d => selected.includes(d.practitionerId));
+  function filteredDocs(){
+  return rows
+    .map(r => r.data)
+    .filter(d => selectedPractitionerIds.has(d.practitionerId));
 }
+
+
 
 function ageFromDob(dob){
   if(!dob) return null;
