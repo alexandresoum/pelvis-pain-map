@@ -1649,6 +1649,75 @@ function runCustomAnalysis(){
   `;
 }
 
+  function updateV3Stats(docs) {
+  let total = 0;
+  let usable = 0;
+  let top1ok = 0;
+  let top2ok = 0;
+  let mixed = 0;
+  let confidenceSum = 0;
+
+  const mapLabel = (label) => {
+    const map = {
+      endometriose: "Endométriose",
+      adenomyose: "Adénomyose",
+      congestion: "Congestion pelvienne",
+      pudendal: "Névralgie pudendale",
+      opk: "OPK",
+      fibrome: "Fibrome"
+    };
+    return map[label] || "";
+  };
+
+  docs.forEach(d => {
+    if (typeof pelvisComputeV3 !== "function") return;
+
+    const v3 = pelvisComputeV3(d);
+    total++;
+
+    if (v3.usableForTraining) usable++;
+    if (v3.flags && v3.flags.mixedProfile) mixed++;
+
+    if (typeof v3.confidence === "number" && !isNaN(v3.confidence)) {
+      confidenceSum += v3.confidence;
+    }
+
+    const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    const usableEcho = echo.filter(x =>
+      x &&
+      x !== "Normal" &&
+      x !== "Non contributif" &&
+      x !== "Autre"
+    );
+
+    if (!usableEcho.length) return;
+
+    const top1Label = v3.top1 ? mapLabel(v3.top1.label || v3.top1.key) : "";
+    const top2Labels = [v3.top1, v3.top2]
+      .filter(Boolean)
+      .map(x => mapLabel(x.label || x.key));
+
+    if (top1Label && usableEcho.includes(top1Label)) {
+      top1ok++;
+    }
+
+    if (top2Labels.some(label => usableEcho.includes(label))) {
+      top2ok++;
+    }
+  });
+
+  document.getElementById("v3_total").textContent = total;
+  document.getElementById("v3_usable").textContent = usable;
+  document.getElementById("v3_top1").textContent =
+    total ? Math.round((top1ok / total) * 100) + "%" : "0%";
+  document.getElementById("v3_top2").textContent =
+    total ? Math.round((top2ok / total) * 100) + "%" : "0%";
+  document.getElementById("v3_mixed").textContent =
+    total ? Math.round((mixed / total) * 100) + "%" : "0%";
+  document.getElementById("v3_conf").textContent =
+    total ? Math.round((confidenceSum / total) * 100) + "%" : "0%";
+}
+
 function updateAll(){
   renderPractitionerPicker();
   const docs = filteredDocs();
@@ -1787,23 +1856,7 @@ v3_mixed = 0;
     }catch(e){
       console.warn("IA non entraînée :", e);
     }
-  document.getElementById("v3_total").textContent = v3_total;
-document.getElementById("v3_usable").textContent = v3_usable;
-
-document.getElementById("v3_top1").textContent =
-  v3_total ? Math.round((v3_top1 / v3_total) * 100) + "%" : "0%";
-
-document.getElementById("v3_top2").textContent =
-  v3_total ? Math.round((v3_top2 / v3_total) * 100) + "%" : "0%";
-
-document.getElementById("v3_mixed").textContent =
-  v3_total ? Math.round((v3_mixed / v3_total) * 100) + "%" : "0%";
-
-    document.getElementById("v3_conf").textContent =
-  v3_total
-    ? Math.round((totalConfidence / v3_total) * 100) + "%"
-    : "0%";
-
+ 
     try {
   const allPatientRecords = rows.map(r => r.data);
   if (allPatientRecords.length && typeof pelvisRetrainV31 === "function") {
