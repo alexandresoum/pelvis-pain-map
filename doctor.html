@@ -117,8 +117,8 @@ let openCardId = null;
 let currentDisplayedList = [];
 
 async function checkPin() {
-  const p = document.getElementById("practitionerLogin").value;
-  const pin = document.getElementById("pinInput").value;
+  const p = document.getElementById("practitionerLogin").value.trim();
+  const pin = document.getElementById("pinInput").value.trim();
 
   if (!p) {
     document.getElementById("pinError").textContent = "ID requis.";
@@ -140,12 +140,11 @@ async function checkPin() {
       return;
     }
 
-    if (pin !== data.pin) {
+    if (pin !== String(data.pin || "").trim()) {
       document.getElementById("pinError").textContent = "Code incorrect.";
       return;
     }
 
-    // ✅ LOGIN OK
     currentPractitioner = p;
     sessionStorage.setItem("ppm_currentPractitioner", p);
 
