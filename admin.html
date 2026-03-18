@@ -486,6 +486,7 @@
   <p>Top1 OK : <span id="v3_top1">0</span></p>
   <p>Top2 OK : <span id="v3_top2">0</span></p>
   <p>Profils mixtes : <span id="v3_mixed">0</span></p>
+  <p>Confiance IA : <span id="v3_conf">0%</span></p>
 </div>
 
     <div class="statsGrid">
@@ -1706,11 +1707,15 @@ v3_usable = 0;
 v3_top1 = 0;
 v3_top2 = 0;
 v3_mixed = 0;
+ totalConfidence = 0;
     s.forEach(doc => {
   const d = doc.data();
   rows.push({ id: doc.id, data: d });
 
   const v3 = pelvisComputeV3(d);
+      if (v3.confidence !== undefined) {
+  totalConfidence += v3.confidence;
+}
 
   v3_total++;
 
@@ -1769,6 +1774,11 @@ document.getElementById("v3_top2").textContent =
 
 document.getElementById("v3_mixed").textContent =
   v3_total ? Math.round((v3_mixed / v3_total) * 100) + "%" : "0%";
+
+    document.getElementById("v3_conf").textContent =
+  v3_total
+    ? Math.round((totalConfidence / v3_total) * 100) + "%"
+    : "0%";
     updateAll();
     showAIStatus();
   }, err => {
