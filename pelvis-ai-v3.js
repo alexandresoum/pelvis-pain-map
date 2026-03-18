@@ -325,7 +325,23 @@ function pelvisComputeV3(raw) {
  const uncertainty = computeUncertainty(ranking);
 const uncertaintyScore = uncertaintyToScore(uncertainty);
   const training = getTrainingLabel(raw);
-  const scoreTop1 = ranking && ranking[0] && typeof ranking[0].pct === "number" ? ranking[0].pct / 100 : 0;
+  const v2Score = typeof pelvisPredictV2 === "function"
+  ? pelvisPredictV2(d)
+  : null;
+
+const scoreTop1 = ranking && ranking[0] && typeof ranking[0].pct === "number"
+  ? ranking[0].pct / 100
+  : 0;
+
+const v3Confidence = (scoreTop1 * 0.7) + ((1 - uncertaintyScore) * 0.3);
+
+const v2Confidence = v2Score && typeof v2Score.confidence === "number"
+  ? v2Score.confidence
+  : null;
+
+const hybridConfidence = v2Confidence !== null
+  ? (v3Confidence * 0.7) + (v2Confidence * 0.3)
+  : v3Confidence;
 
   return {
     version: "3.0",
@@ -337,7 +353,9 @@ const uncertaintyScore = uncertaintyToScore(uncertainty);
 
     uncertainty,
 uncertaintyScore,
-confidence: (scoreTop1 * 0.6) + ((1 - uncertaintyScore) * 0.4),
+confidence: hybridConfidence,
+confidence_v3: v3Confidence,
+confidence_v2: v2Confidence,
     
 
     scores,
@@ -356,7 +374,10 @@ confidence: (scoreTop1 * 0.6) + ((1 - uncertaintyScore) * 0.4),
       multiSitePain: f.multi_site_pain,
       digestivePresent: f.digestive_present,
       cyclicPattern: f.cyclic_pattern,
-      mixedProfile: (ranking[1]?.pct || 0) >= 40
+     mixedProfile: (
+  (ranking[1]?.pct || 0) >= 30 &&
+  Math.abs((ranking[0]?.pct || 0) - (ranking[1]?.pct || 0)) < 20
+)
     }
   };
 }
