@@ -157,6 +157,60 @@
       background:#eef2ff;
       cursor:pointer;
     }
+    .selectedBox,
+.resultsBox{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  min-height:20px;
+}
+
+.prBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#24324a;
+  font-size:14px;
+  font-weight:600;
+}
+
+.prBadge button{
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+  color:#475569;
+}
+
+.prResult{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
+  background:#fff;
+  cursor:pointer;
+}
+
+.prResult:hover{
+  background:#f8fafc;
+}
+
+.prResult.selected{
+  background:#eef2ff;
+  border-color:#c7d2fe;
+}
+
+.prEmpty{
+  color:#6b7280;
+  font-size:14px;
+}
   </style>
 </head>
 <body>
@@ -201,20 +255,37 @@
   <h2>Praticiens inclus</h2>
   <p class="muted">Sélectionne un, plusieurs, ou tous les praticiens.</p>
 
-  <div class="toolbar">
-    <div>
-      <label for="prSearch"><b>Recherche</b></label><br>
-      <input type="text" id="prSearch" placeholder="Rechercher un praticien..." oninput="renderPractitionerFilters()">
+  <div class="toolbar" style="align-items:center;">
+    <div style="flex:1;min-width:260px;">
+      <label for="practitionerSearch"><b>Recherche</b></label><br>
+      <input
+        type="text"
+        id="practitionerSearch"
+        placeholder="Rechercher un praticien..."
+        oninput="renderPractitionerPicker()"
+        style="width:100%;"
+      >
     </div>
-    <div>
-      <button class="aiButton" onclick="selectAllPractitioners()">Tous</button>
-      <button class="aiButton" onclick="clearAllPractitioners()">Aucun</button>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="aiButton" type="button" onclick="selectAllPractitioners()">Tous</button>
+      <button class="aiButton" type="button" onclick="clearAllPractitioners()">Aucun</button>
     </div>
   </div>
 
-  <div id="practitionerCount" class="muted" style="margin:8px 0 12px 0;"></div>
-  <div id="prFiltersWrap" class="checkRow"></div>
+  <div style="margin-top:14px;">
+    <div class="muted" style="margin-bottom:8px;">Praticiens sélectionnés</div>
+    <div id="selectedPractitionersBox" class="selectedBox"></div>
+  </div>
+
+  <div style="margin-top:14px;">
+    <div class="muted" style="margin-bottom:8px;">Résultats</div>
+    <div id="practitionerResults" class="resultsBox"></div>
+  </div>
+
+  <div class="muted" id="practitionerCountInfo" style="margin-top:12px;"></div>
 </div>
+
 
     <div class="statsGrid">
       <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
