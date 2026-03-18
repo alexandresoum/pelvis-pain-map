@@ -11,6 +11,7 @@
   <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C4c50c310e15c4e741eb008de84b7005c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639094118675617156%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=QdHeMecSpKandxruwah1gfbhgCTaahtWY3r8AB8r%2FyE%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
   <script src="pelvis-ai-v2.js"></script>
+  <script src="pelvis-ai-v3.js"></script>
 
   <style>
     :root{
@@ -704,7 +705,7 @@ Analyse : sous-ensemble défini par sélection praticiens + filtres utilisateurs
 
   </div>
 </div>
-<script src="pelvis-ai-v3.js"></script>
+
 <script>
 const ADMIN_PIN = atob("MTYxMg==");
 const PRACTITIONER_COLLECTION = "pratitioners";
@@ -722,11 +723,12 @@ let rows = [];
 let charts = {};
 let selectedPractitionerIds = new Set();
 let allRowsUnsubscribe = null;
-  let v3_total = 0;
+let v3_total = 0;
 let v3_usable = 0;
 let v3_top1 = 0;
 let v3_top2 = 0;
 let v3_mixed = 0;
+let totalConfidence = 0;
 
 const VARIABLE_DEFS = {
   practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || "Non renseigné"] },
@@ -1792,6 +1794,7 @@ function retrainAI(){
 }
 
 function loadRows(){
+
   if (typeof allRowsUnsubscribe === "function") allRowsUnsubscribe();
 
   allRowsUnsubscribe = db.collection(PATIENT_COLLECTION).onSnapshot(s => {
