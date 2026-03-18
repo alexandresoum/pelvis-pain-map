@@ -374,10 +374,16 @@ confidence_v2: v2Confidence,
       multiSitePain: f.multi_site_pain,
       digestivePresent: f.digestive_present,
       cyclicPattern: f.cyclic_pattern,
-     mixedProfile: (
-  (ranking[1]?.pct || 0) >= 25 &&
-  Math.abs((ranking[0]?.pct || 0) - (ranking[1]?.pct || 0)) < 25
-)
+     mixedProfile: (() => {
+  const p1 = Number(ranking?.[0]?.pct ?? 0);
+  const p2 = Number(ranking?.[1]?.pct ?? 0);
+
+  const pp1 = p1 <= 1 ? p1 * 100 : p1;
+  const pp2 = p2 <= 1 ? p2 * 100 : p2;
+
+  return pp2 >= 25 && Math.abs(pp1 - pp2) <= 25;
+})()
+ 
     }
   };
 }
