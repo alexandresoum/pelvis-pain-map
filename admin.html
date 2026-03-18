@@ -197,15 +197,24 @@
       </div>
     </div>
 
-    <div class="filtersCard">
-      <h2>Praticiens inclus</h2>
-      <p class="muted">Sélectionne un, plusieurs, ou tous les praticiens.</p>
-      <div class="checkRow">
-        <label><input type="checkbox" class="prFilter" value="alexandre_soum" checked onchange="updateAll()"> Alexandre Soum</label>
-        <label><input type="checkbox" class="prFilter" value="praticien_2" checked onchange="updateAll()"> Dr Jean-Marc Levaillant</label>
-        <label><input type="checkbox" class="prFilter" value="praticien_3" checked onchange="updateAll()"> Anne-Laure Siraga</label>
-      </div>
+   <div class="filtersCard">
+  <h2>Praticiens inclus</h2>
+  <p class="muted">Sélectionne un, plusieurs, ou tous les praticiens.</p>
+
+  <div class="toolbar">
+    <div>
+      <label for="prSearch"><b>Recherche</b></label><br>
+      <input type="text" id="prSearch" placeholder="Rechercher un praticien..." oninput="renderPractitionerFilters()">
     </div>
+    <div>
+      <button class="aiButton" onclick="selectAllPractitioners()">Tous</button>
+      <button class="aiButton" onclick="clearAllPractitioners()">Aucun</button>
+    </div>
+  </div>
+
+  <div id="practitionerCount" class="muted" style="margin:8px 0 12px 0;"></div>
+  <div id="prFiltersWrap" class="checkRow"></div>
+</div>
 
     <div class="statsGrid">
       <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
@@ -387,14 +396,87 @@
 
 <script>
 const ADMIN_PIN = atob("MTYxMg==");
-const PRACTITIONER_LABELS = {
-  alexandre_soum: "Alexandre Soum",
-  praticien_2: "Dr Jean-Marc Levaillant",
-  praticien_3: "Anne-Laure Siraga"
-};
+let PRACTITIONER_LABELS = {};
+let PRACTITIONERS = [];
 
 let rows = [];
 let charts = {};
+
+  async function loadPractitioners(){
+  try{
+    const snap = await db.collection("pratitioners").where("active", "==", true).get();
+
+    PRACTITIONERS = snap.docs.map(doc => {
+      const data = doc.data() || {};
+      return {
+        id: doc.id,
+        name: data.name || data.login || doc.id,
+        login: data.login || doc.id,
+        active: data.active === true
+      };
+    }).sort((a,b) => a.name.localeCompare(b.name, "fr"));
+
+    PRACTITIONER_LABELS = {};
+    PRACTITIONERS.forEach(p => {
+      PRACTITIONER_LABELS[p.id] = p.name;
+    });
+
+    renderPractitionerFilters(true);
+  }catch(e){
+    console.error("Erreur chargement praticiens :", e);
+    document.getElementById("prFiltersWrap").innerHTML = "<p class='muted'>Erreur de chargement des praticiens.</p>";
+  }
+}
+
+function renderPractitionerFilters(selectAll = false){
+  const wrap = document.getElementById("prFiltersWrap");
+  const countEl = document.getElementById("practitionerCount");
+  const q = (document.getElementById("prSearch")?.value || "").toLowerCase().trim();
+
+  const selectedBefore = new Set(
+    [...document.querySelectorAll(".prFilter:checked")].map(x => x.value)
+  );
+
+  const filtered = PRACTITIONERS.filter(p => {
+    return (
+      p.name.toLowerCase().includes(q) ||
+      p.login.toLowerCase().includes(q) ||
+      p.id.toLowerCase().includes(q)
+    );
+  });
+
+  wrap.innerHTML = filtered.map(p => {
+    const checked = selectAll || selectedBefore.has(p.id) || selectedBefore.size === 0;
+    return `
+      <label>
+        <input type="checkbox" class="prFilter" value="${p.id}" ${checked ? "checked" : ""} onchange="updateAll()">
+        ${p.name}
+      </label>
+    `;
+  }).join("");
+
+  const selectedNow = [...document.querySelectorAll(".prFilter:checked")].length;
+  countEl.innerText = `${selectedNow} praticien(s) sélectionné(s) sur ${PRACTITIONERS.length}`;
+}
+
+function selectAllPractitioners(){
+  document.querySelectorAll(".prFilter").forEach(cb => cb.checked = true);
+  updateAll();
+  updatePractitionerCount();
+}
+
+function clearAllPractitioners(){
+  document.querySelectorAll(".prFilter").forEach(cb => cb.checked = false);
+  updateAll();
+  updatePractitionerCount();
+}
+
+function updatePractitionerCount(){
+  const countEl = document.getElementById("practitionerCount");
+  if (!countEl) return;
+  const selected = [...document.querySelectorAll(".prFilter:checked")].length;
+  countEl.innerText = `${selected} praticien(s) sélectionné(s) sur ${PRACTITIONERS.length}`;
+}
 
 function normalizeLevel(v){
   if (!v) return "";
@@ -455,7 +537,9 @@ function checkPin(){
     document.getElementById("pinOverlay").style.display = "none";
     document.getElementById("content").style.display = "block";
     initVariableSelectors();
-    loadRows();
+loadPractitioners().then(() => {
+  loadRows();
+});
   } else {
     document.getElementById("pinError").innerText = "Code incorrect.";
   }
@@ -463,7 +547,7 @@ function checkPin(){
 
 function selectedPractitioners(){
   const vals = [...document.querySelectorAll(".prFilter:checked")].map(x => x.value);
-  return vals.length ? vals : Object.keys(PRACTITIONER_LABELS);
+  return vals.length ? vals : PRACTITIONERS.map(p => p.id);
 }
 
 function filteredDocs(){
@@ -1243,7 +1327,6 @@ function retrainAI(){
     alert("Erreur lors du réentraînement IA");
   }
 }
-
 function loadRows(){
   db.collection("patients").onSnapshot(s => {
     rows = [];
@@ -1259,8 +1342,11 @@ function loadRows(){
 
     updateAll();
     showAIStatus();
+    updatePractitionerCount();
   });
 }
+
+
 
 document.addEventListener("keydown", e => {
   if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") {
