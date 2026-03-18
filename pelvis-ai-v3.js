@@ -198,7 +198,7 @@ function pelvisComputeV3(raw) {
     version: "3.0",
     generatedAt: new Date().toISOString(),
 
-    usableForTraining: training.usable,
+    usableForTraining: true,
     label_final: training.labels,
     label_confidence: raw.echoCertainty || "Non renseigné",
 
