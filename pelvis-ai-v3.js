@@ -191,7 +191,7 @@ function pelvisComputeV3(raw) {
   const s = computeExpertScores(d, f);
   const scores = mergeScores(d, s);
   const ranking = buildRanking(scores);
-  const uncertainty = computeUncertainty(ranking);
+  const uncertainty = Math.max(0, Math.min(1, computeUncertainty(ranking) || 0));
   const training = getTrainingLabel(raw);
 
   return {
@@ -203,7 +203,10 @@ function pelvisComputeV3(raw) {
     label_confidence: raw.echoCertainty || "Non renseigné",
 
     uncertainty,
-    confidence: typeof uncertainty === "number" ? 1 - uncertainty : 0,
+    confidence:
+  ranking && ranking[0] && typeof ranking[0].score === "number"
+    ? Math.max(0, Math.min(1, ranking[0].score))
+    : 0,
     
 
     scores,
