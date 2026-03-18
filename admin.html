@@ -1713,9 +1713,11 @@ v3_mixed = 0;
   rows.push({ id: doc.id, data: d });
 
   const v3 = pelvisComputeV3(d);
-    if (typeof v3.confidence === "number" && !isNaN(v3.confidence)) {
+   if (typeof v3.confidence === "number") {
   totalConfidence += v3.confidence;
-} 
+} else {
+  console.log("CONFIDENCE BUG", v3);
+}
 
   v3_total++;
 
