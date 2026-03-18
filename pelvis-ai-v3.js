@@ -171,6 +171,12 @@ function computeUncertainty(ranking) {
   if (diff <= 15) return "modérée";
   return "faible";
 }
+function uncertaintyToScore(level) {
+  if (level === "faible") return 0.2;
+  if (level === "modérée") return 0.5;
+  if (level === "élevée") return 0.8;
+  return 0.5;
+}
 
 // -------- TRAINING LABEL --------
 function getTrainingLabel(d) {
@@ -191,7 +197,8 @@ function pelvisComputeV3(raw) {
   const s = computeExpertScores(d, f);
   const scores = mergeScores(d, s);
   const ranking = buildRanking(scores);
-  const uncertainty = Math.max(0, Math.min(1, computeUncertainty(ranking) || 0));
+ const uncertainty = computeUncertainty(ranking);
+const uncertaintyScore = uncertaintyToScore(uncertainty);
   const training = getTrainingLabel(raw);
 
   return {
@@ -203,10 +210,8 @@ function pelvisComputeV3(raw) {
     label_confidence: raw.echoCertainty || "Non renseigné",
 
     uncertainty,
-    confidence:
-  ranking && ranking[0] && typeof ranking[0].score === "number"
-    ? Math.max(0, Math.min(1, ranking[0].score))
-    : 0,
+uncertaintyScore,
+confidence: Math.max(0, Math.min(1, 1 - uncertaintyScore)),
     
 
     scores,
