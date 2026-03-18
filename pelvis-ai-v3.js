@@ -342,6 +342,13 @@ const v2Confidence = v2Score && typeof v2Score.confidence === "number"
 const hybridConfidence = v2Confidence !== null
   ? (v3Confidence * 0.7) + (v2Confidence * 0.3)
   : v3Confidence;
+  
+  console.log("MIX DEBUG", {
+  r1: ranking?.[0],
+  r2: ranking?.[1],
+  p1: ranking?.[0]?.pct,
+  p2: ranking?.[1]?.pct
+});
 
   return {
     version: "3.0",
