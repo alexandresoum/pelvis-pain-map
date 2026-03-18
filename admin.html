@@ -487,6 +487,8 @@
   <p>Top2 OK : <span id="v3_top2">0</span></p>
   <p>Profils mixtes : <span id="v3_mixed">0</span></p>
   <p>Confiance IA : <span id="v3_conf">0%</span></p>
+  <p>Mode apprentissage : <span id="v31_mode">actif</span></p>
+  <p>Facteur moyen V3.1 : <span id="v31_factor">-</span></p>
 </div>
 
     <div class="statsGrid">
@@ -1656,6 +1658,26 @@ function updateAll(){
   updateLearningCurve(docs);
   refreshFilterValues();
   runCustomAnalysis();
+  try {
+  const ls = typeof pelvisGetV31Stats === "function" ? pelvisGetV31Stats() : null;
+
+  if (ls) {
+    const factors = PROFILE_KEYS.map(key => {
+      const row = ls[key];
+      if (!row || !row.total) return 1;
+
+      const rate = row.success / row.total;
+      return Math.max(0.85, Math.min(1.15, 0.85 + rate * 0.30));
+    });
+
+    const avgFactor = factors.reduce((a, b) => a + b, 0) / factors.length;
+
+    const el = document.getElementById("v31_factor");
+    if (el) el.textContent = avgFactor.toFixed(2);
+  }
+} catch (e) {
+  console.warn("Impossible d’afficher les stats V3.1 :", e);
+}
 }
 
 function showAIStatus(){
@@ -1781,6 +1803,16 @@ document.getElementById("v3_mixed").textContent =
   v3_total
     ? Math.round((totalConfidence / v3_total) * 100) + "%"
     : "0%";
+
+    try {
+  const allPatientRecords = rows.map(r => r.data);
+  if (allPatientRecords.length && typeof pelvisRetrainV31 === "function") {
+    const learningStats = pelvisRetrainV31(allPatientRecords);
+    console.log("V3.1 réentraînée :", learningStats);
+  }
+} catch (e) {
+  console.warn("V3.1 non réentraînée :", e);
+}
     updateAll();
     showAIStatus();
   }, err => {
