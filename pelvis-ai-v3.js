@@ -2,6 +2,17 @@
 // PELVIS AI V3 — CORE ENGINE
 // ===============================
 
+const PELVIS_V31_STATS_KEY = "pelvis_v31_learning_stats";
+
+const PROFILE_KEYS = [
+  "endometriose",
+  "adenomyose",
+  "congestion",
+  "pudendal",
+  "opk",
+  "fibrome"
+];
+
 // -------- NORMALISATION --------
 function normalizePatientData(d) {
   return {
@@ -115,22 +126,32 @@ function computeExpertScores(d, f) {
 }
 
 // -------- FUSION --------
-function mergeScores(d, s) {
-  function combine(score, max, pct) {
-    const expert = (score / max) * 100;
-    return Math.round(expert * 0.4 + pct * 0.6);
-  }
-
+function mergeScoresBase(d, s) {
   return {
-    endometriose: combine(s.endometriose, 11, d.endometriose_pct),
-    adenomyose: combine(s.adenomyose, 7, d.adenomyose_pct),
-    congestion: combine(s.congestion, 6, d.congestion_pct),
-    pudendal: combine(s.pudendal, 8, d.pudendal_pct),
-    opk: combine(s.opk, 6, d.opk_pct),
-    fibrome: combine(s.fibrome, 5, d.fibrome_pct),
-    hypersensibilisation: combine(s.hypersensibilisation, 5, d.hypersensibilisation_pct)
+    endometriose: Number(s.endometriose || 0),
+    adenomyose: Number(s.adenomyose || 0),
+    congestion: Number(s.congestion || 0),
+    pudendal: Number(s.pudendal || 0),
+    opk: Number(s.opk || 0),
+    fibrome: Number(s.fibrome || 0)
   };
 }
+
+function mergeScores(d, s) {
+  const base = mergeScoresBase(d, s);
+  const learningStats = loadLearningStats();
+
+  return {
+    endometriose: base.endometriose * getLearningFactor("endometriose", learningStats),
+    adenomyose: base.adenomyose * getLearningFactor("adenomyose", learningStats),
+    congestion: base.congestion * getLearningFactor("congestion", learningStats),
+    pudendal: base.pudendal * getLearningFactor("pudendal", learningStats),
+    opk: base.opk * getLearningFactor("opk", learningStats),
+    fibrome: base.fibrome * getLearningFactor("fibrome", learningStats)
+  };
+}
+
+  
 
 // -------- LEVEL --------
 function level(score) {
@@ -188,6 +209,110 @@ function getTrainingLabel(d) {
   return { usable: true, labels: echo };
 }
 
+
+function emptyLearningStats() {
+  return {
+    endometriose: { success: 0, total: 0 },
+    adenomyose: { success: 0, total: 0 },
+    congestion: { success: 0, total: 0 },
+    pudendal: { success: 0, total: 0 },
+    opk: { success: 0, total: 0 },
+    fibrome: { success: 0, total: 0 }
+  };
+}
+
+function loadLearningStats() {
+  try {
+    const raw = localStorage.getItem(PELVIS_V31_STATS_KEY);
+    if (!raw) return emptyLearningStats();
+
+    const parsed = JSON.parse(raw);
+    const base = emptyLearningStats();
+
+    PROFILE_KEYS.forEach(key => {
+      if (parsed[key]) {
+        base[key].success = Number(parsed[key].success || 0);
+        base[key].total = Number(parsed[key].total || 0);
+      }
+    });
+
+    return base;
+  } catch (e) {
+    console.warn("Impossible de charger les stats V3.1 :", e);
+    return emptyLearningStats();
+  }
+}
+
+function saveLearningStats(stats) {
+  try {
+    localStorage.setItem(PELVIS_V31_STATS_KEY, JSON.stringify(stats));
+  } catch (e) {
+    console.warn("Impossible d’enregistrer les stats V3.1 :", e);
+  }
+}
+
+function getLearningFactor(profileKey, stats) {
+  const row = stats?.[profileKey];
+  if (!row || row.total < 5) return 1;
+
+  const rate = row.success / row.total;
+
+  // borne volontairement douce pour éviter de déformer brutalement l’IA
+  // 0.85 à 1.15
+  return Math.max(0.85, Math.min(1.15, 0.85 + rate * 0.30));
+}
+
+function mapEchoLabelToProfileKey(label) {
+  const map = {
+    "Endométriose": "endometriose",
+    "Adénomyose": "adenomyose",
+    "Congestion pelvienne": "congestion",
+    "Névralgie pudendale": "pudendal",
+    "OPK": "opk",
+    "Fibrome": "fibrome"
+  };
+  return map[label] || null;
+}
+
+function rebuildLearningStatsFromDataset(docs) {
+  const stats = emptyLearningStats();
+
+  docs.forEach(raw => {
+    const d = normalizePatientData(raw);
+    const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    const usableEcho = echo.filter(x =>
+      x &&
+      x !== "Normal" &&
+      x !== "Non contributif" &&
+      x !== "Autre"
+    );
+
+    if (!usableEcho.length) return;
+
+    const f = computeDerivedFeatures(d);
+    const s = computeExpertScores(d, f);
+    const merged = mergeScoresBase(d, s); // voir étape 4
+
+    const ranking = buildRanking(merged);
+    const top2 = ranking.slice(0, 2).map(x => x.key);
+
+    PROFILE_KEYS.forEach(key => {
+      const echoMatch = usableEcho.some(label => mapEchoLabelToProfileKey(label) === key);
+      const predicted = top2.includes(key);
+
+      if (predicted || echoMatch) {
+        stats[key].total += 1;
+        if (predicted && echoMatch) {
+          stats[key].success += 1;
+        }
+      }
+    });
+  });
+
+  saveLearningStats(stats);
+  return stats;
+}
+
 // ===============================
 // 🚀 MAIN FUNCTION
 // ===============================
@@ -234,3 +359,14 @@ confidence: Math.max(0, Math.min(1, 1 - uncertaintyScore)),
     }
   };
 }
+function pelvisRetrainV31(docs) {
+  return rebuildLearningStatsFromDataset(docs || []);
+}
+
+function pelvisGetV31Stats() {
+  return loadLearningStats();
+}
+
+window.pelvisComputeV3 = pelvisComputeV3;
+window.pelvisRetrainV31 = pelvisRetrainV31;
+window.pelvisGetV31Stats = pelvisGetV31Stats;
