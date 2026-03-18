@@ -375,8 +375,8 @@ confidence_v2: v2Confidence,
       digestivePresent: f.digestive_present,
       cyclicPattern: f.cyclic_pattern,
      mixedProfile: (
-  (ranking[1]?.pct || 0) >= 30 &&
-  Math.abs((ranking[0]?.pct || 0) - (ranking[1]?.pct || 0)) < 20
+  (ranking[1]?.pct || 0) >= 25 &&
+  Math.abs((ranking[0]?.pct || 0) - (ranking[1]?.pct || 0)) < 25
 )
     }
   };
