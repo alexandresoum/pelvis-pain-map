@@ -473,31 +473,7 @@ let PRACTITIONERS = [];
 let rows = [];
 let charts = {};
 
-  async function loadPractitioners(){
-  try{
-    const snap = await db.collection("pratitioners").where("active", "==", true).get();
-
-    PRACTITIONERS = snap.docs.map(doc => {
-      const data = doc.data() || {};
-      return {
-        id: doc.id,
-        name: data.name || data.login || doc.id,
-        login: data.login || doc.id,
-        active: data.active === true
-      };
-    }).sort((a,b) => a.name.localeCompare(b.name, "fr"));
-
-    PRACTITIONER_LABELS = {};
-    PRACTITIONERS.forEach(p => {
-      PRACTITIONER_LABELS[p.id] = p.name;
-    });
-
-    renderPractitionerFilters(true);
-  }catch(e){
-    console.error("Erreur chargement praticiens :", e);
-    document.getElementById("prFiltersWrap").innerHTML = "<p class='muted'>Erreur de chargement des praticiens.</p>";
-  }
-}
+ 
 
 function renderPractitionerFilters(selectAll = false){
   const wrap = document.getElementById("prFiltersWrap");
@@ -556,7 +532,7 @@ function normalizeLevel(v){
 }
 
 const VARIABLE_DEFS = {
-  practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || "Non renseigné"] },
+  practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || practitionerMap[d.practitionerId] || "Non renseigné"] },
   hypothesisPrimary: { label:"Hypothèse principale", extractor:d => [d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "Non renseigné"] },
   hypothesisPrimaryPct: { label:"Poids hypothèse principale", extractor:d => [d.hypothesisPrimaryPct !== undefined && d.hypothesisPrimaryPct !== null && d.hypothesisPrimaryPct !== "" ? String(d.hypothesisPrimaryPct) + "%" : "Non renseigné"] },
   diagnostic_echo: { label:"Diagnostic écho", extractor:d => Array.isArray(d.diagnostic_echo) && d.diagnostic_echo.length ? d.diagnostic_echo : ["Non renseigné"] },
@@ -617,8 +593,119 @@ loadPractitioners().then(() => {
 }
 
 function selectedPractitioners(){
-  const vals = [...document.querySelectorAll(".prFilter:checked")].map(x => x.value);
-  return vals.length ? vals : PRACTITIONERS.map(p => p.id);
+  return selectedPractitionerIds.length
+    ? [...selectedPractitionerIds]
+    : Object.keys(practitionerMap);
+}
+
+  async function loadPractitioners(){
+  practitionerMap = { ...LEGACY_PRACTITIONER_LABELS };
+
+  try{
+    const snap = await db.collection("pratitioners").get();
+    snap.forEach(doc => {
+      const d = doc.data() || {};
+      practitionerMap[doc.id] = d.name || d.login || d.id || doc.id;
+    });
+  }catch(e){
+    console.warn("Chargement praticiens impossible :", e);
+  }
+
+  if (!selectedPractitionerIds.length) {
+    selectedPractitionerIds = Object.keys(practitionerMap);
+  }
+
+  renderPractitionerPicker();
+}
+
+function renderPractitionerPicker(){
+  const q = (document.getElementById("practitionerSearch")?.value || "").toLowerCase().trim();
+  const all = Object.entries(practitionerMap)
+    .map(([id, name]) => ({ id, name }))
+    .sort((a,b) => a.name.localeCompare(b.name, "fr"));
+
+  const selectedBox = document.getElementById("selectedPractitionersBox");
+  const resultsBox = document.getElementById("practitionerResults");
+  const countInfo = document.getElementById("practitionerCountInfo");
+
+  if (!selectedBox || !resultsBox || !countInfo) return;
+
+  if (!selectedPractitionerIds.length) {
+    selectedBox.innerHTML = `<div class="prEmpty">Aucun praticien sélectionné</div>`;
+  } else {
+    selectedBox.innerHTML = selectedPractitionerIds
+      .map(id => {
+        const name = practitionerMap[id] || id;
+        return `
+          <span class="prBadge">
+            ${name}
+            <button type="button" onclick="removePractitioner('${id}')">×</button>
+          </span>
+        `;
+      })
+      .join("");
+  }
+
+  let filtered = all;
+  if (q) {
+    filtered = all.filter(x =>
+      x.name.toLowerCase().includes(q) ||
+      x.id.toLowerCase().includes(q)
+    );
+  }
+
+  filtered = filtered.slice(0, 15);
+
+  if (!filtered.length) {
+    resultsBox.innerHTML = `<div class="prEmpty">Aucun résultat</div>`;
+  } else {
+    resultsBox.innerHTML = filtered.map(x => `
+      <div
+        class="prResult ${selectedPractitionerIds.includes(x.id) ? "selected" : ""}"
+        onclick="togglePractitioner('${x.id}')"
+      >
+        <input
+          type="checkbox"
+          ${selectedPractitionerIds.includes(x.id) ? "checked" : ""}
+          onclick="event.stopPropagation()"
+          onchange="togglePractitioner('${x.id}')"
+        >
+        <span>${x.name}</span>
+        <span class="muted">(${x.id})</span>
+      </div>
+    `).join("");
+  }
+
+  countInfo.textContent =
+    `${selectedPractitionerIds.length} praticien(s) sélectionné(s) sur ${Object.keys(practitionerMap).length}`;
+}
+
+function togglePractitioner(id){
+  if (selectedPractitionerIds.includes(id)) {
+    selectedPractitionerIds = selectedPractitionerIds.filter(x => x !== id);
+  } else {
+    selectedPractitionerIds.push(id);
+  }
+  renderPractitionerPicker();
+  updateAll();
+}
+
+function removePractitioner(id){
+  selectedPractitionerIds = selectedPractitionerIds.filter(x => x !== id);
+  renderPractitionerPicker();
+  updateAll();
+}
+
+function selectAllPractitioners(){
+  selectedPractitionerIds = Object.keys(practitionerMap);
+  renderPractitionerPicker();
+  updateAll();
+}
+
+function clearAllPractitioners(){
+  selectedPractitionerIds = [];
+  renderPractitionerPicker();
+  updateAll();
 }
 
 function filteredDocs(){
@@ -1028,7 +1115,7 @@ function renderByPractitionerTable(docs){
 
     return `
       <tr>
-        <td>${PRACTITIONER_LABELS[prId] || prId}</td>
+        <td>${practitionerMap[prId] || prId}</td>
         <td>${docsPr.length}</td>
         <td>${exactMatch.rate}%</td>
         <td>${top2Match.rate}%</td>
