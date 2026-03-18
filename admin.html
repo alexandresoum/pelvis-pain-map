@@ -472,6 +472,8 @@ let PRACTITIONERS = [];
 
 let rows = [];
 let charts = {};
+  let selectedPractitionerIds = new Set();
+  
   const LEGACY_PRACTITIONER_LABELS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
@@ -515,6 +517,13 @@ function selectAllPractitioners(){
   document.querySelectorAll(".prFilter").forEach(cb => cb.checked = true);
   updateAll();
   updatePractitionerCount();
+}
+
+  function updateSelectedPractitioners(){
+  selectedPractitionerIds = new Set(
+    [...document.querySelectorAll(".prFilter:checked")]
+      .map(cb => cb.value)
+  );
 }
 
 function clearAllPractitioners(){
@@ -1441,7 +1450,14 @@ function runCustomAnalysis(){
   `;
 }
 
+function updateSelectedPractitioners(){
+  selectedPractitionerIds = new Set(
+    [...document.querySelectorAll(".prFilter:checked")].map(cb => cb.value)
+  );
+}
+
 function updateAll(){
+  updateSelectedPractitioners();
   const docs = filteredDocs();
   updateKpis(docs);
   updateRoc(docs);
