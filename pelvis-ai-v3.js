@@ -325,6 +325,7 @@ function pelvisComputeV3(raw) {
  const uncertainty = computeUncertainty(ranking);
 const uncertaintyScore = uncertaintyToScore(uncertainty);
   const training = getTrainingLabel(raw);
+  const scoreTop1 = ranking && ranking[0] && typeof ranking[0].pct === "number" ? ranking[0].pct / 100 : 0;
 
   return {
     version: "3.0",
