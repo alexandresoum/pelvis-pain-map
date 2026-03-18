@@ -336,7 +336,7 @@ const uncertaintyScore = uncertaintyToScore(uncertainty);
 
     uncertainty,
 uncertaintyScore,
-confidence: Math.max(0, Math.min(1, 1 - uncertaintyScore)),
+confidence = (scoreTop1 * 0.6) + ((1 - uncertainty) * 0.4)
     
 
     scores,
