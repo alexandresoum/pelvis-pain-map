@@ -1649,7 +1649,7 @@ function runCustomAnalysis(){
   `;
 }
 
-  function updateV3Stats(docs) {
+ function updateV3Stats(docs) {
   let total = 0;
   let usable = 0;
   let top1ok = 0;
@@ -1664,9 +1664,10 @@ function runCustomAnalysis(){
       congestion: "Congestion pelvienne",
       pudendal: "Névralgie pudendale",
       opk: "OPK",
-      fibrome: "Fibrome"
+      fibrome: "Fibrome",
+      hypersensibilisation: "Hypersensibilisation centrale"
     };
-    return map[label] || "";
+    return map[label] || label || "";
   };
 
   docs.forEach(d => {
@@ -1693,15 +1694,16 @@ function runCustomAnalysis(){
     if (!usableEcho.length) return;
 
     const top1Label = v3.top1 ? mapLabel(v3.top1.label || v3.top1.key) : "";
-    const top2Labels = [v3.top1, v3.top2]
-      .filter(Boolean)
-      .map(x => mapLabel(x.label || x.key));
+    const top2Label = v3.top2 ? mapLabel(v3.top2.label || v3.top2.key) : "";
 
     if (top1Label && usableEcho.includes(top1Label)) {
       top1ok++;
     }
 
-    if (top2Labels.some(label => usableEcho.includes(label))) {
+    if (
+      (top1Label && usableEcho.includes(top1Label)) ||
+      (top2Label && usableEcho.includes(top2Label))
+    ) {
       top2ok++;
     }
   });
@@ -1721,34 +1723,35 @@ function runCustomAnalysis(){
 function updateAll(){
   renderPractitionerPicker();
   const docs = filteredDocs();
+
   updateKpis(docs);
+  updateV3Stats(docs);
   updateRoc(docs);
   updateCalibration(docs);
   updateLearningCurve(docs);
   refreshFilterValues();
   runCustomAnalysis();
+
   try {
-  const ls = typeof pelvisGetV31Stats === "function" ? pelvisGetV31Stats() : null;
+    const ls = typeof pelvisGetV31Stats === "function" ? pelvisGetV31Stats() : null;
 
-  if (ls) {
-    const factors = PROFILE_KEYS.map(key => {
-      const row = ls[key];
-      if (!row || !row.total) return 1;
+    if (ls) {
+      const factors = ["endometriose","adenomyose","congestion","pudendal","opk","fibrome"].map(key => {
+        const row = ls[key];
+        if (!row || !row.total) return 1;
 
-      const rate = row.success / row.total;
-      return Math.max(0.85, Math.min(1.15, 0.85 + rate * 0.30));
-    });
+        const rate = row.success / row.total;
+        return Math.max(0.85, Math.min(1.15, 0.85 + rate * 0.30));
+      });
 
-    const avgFactor = factors.reduce((a, b) => a + b, 0) / factors.length;
-
-    const el = document.getElementById("v31_factor");
-    if (el) el.textContent = avgFactor.toFixed(2);
+      const avgFactor = factors.reduce((a, b) => a + b, 0) / factors.length;
+      const el = document.getElementById("v31_factor");
+      if (el) el.textContent = avgFactor.toFixed(2);
+    }
+  } catch (e) {
+    console.warn("Impossible d’afficher les stats V3.1 :", e);
   }
-} catch (e) {
-  console.warn("Impossible d’afficher les stats V3.1 :", e);
 }
-}
-
 function showAIStatus(){
   const el = document.getElementById("aiInfo");
   if (!el) return;
