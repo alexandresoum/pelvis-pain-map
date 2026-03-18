@@ -203,7 +203,7 @@ function pelvisComputeV3(raw) {
     label_confidence: raw.echoCertainty || "Non renseigné",
 
     uncertainty,
-    confidence: 1 - uncertainty,
+    confidence: typeof uncertainty === "number" ? 1 - uncertainty : 0,
     
 
     scores,
