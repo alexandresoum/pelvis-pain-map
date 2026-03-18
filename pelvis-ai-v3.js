@@ -203,6 +203,8 @@ function pelvisComputeV3(raw) {
     label_confidence: raw.echoCertainty || "Non renseigné",
 
     uncertainty,
+    confidence: 1 - uncertainty,
+    
 
     scores,
     levels: Object.fromEntries(
