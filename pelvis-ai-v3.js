@@ -343,13 +343,7 @@ const hybridConfidence = v2Confidence !== null
   ? (v3Confidence * 0.7) + (v2Confidence * 0.3)
   : v3Confidence;
   
-  console.log("MIX DEBUG", {
-  r1: ranking?.[0],
-  r2: ranking?.[1],
-  p1: ranking?.[0]?.pct,
-  p2: ranking?.[1]?.pct
-});
-
+  
   return {
     version: "3.0",
     generatedAt: new Date().toISOString(),
@@ -381,14 +375,14 @@ confidence_v2: v2Confidence,
       multiSitePain: f.multi_site_pain,
       digestivePresent: f.digestive_present,
       cyclicPattern: f.cyclic_pattern,
-     mixedProfile: (() => {
+    mixedProfile: (() => {
   const p1 = Number(ranking?.[0]?.pct ?? 0);
   const p2 = Number(ranking?.[1]?.pct ?? 0);
 
-  const pp1 = p1 <= 1 ? p1 * 100 : p1;
-  const pp2 = p2 <= 1 ? p2 * 100 : p2;
-
-  return pp2 >= 25 && Math.abs(pp1 - pp2) <= 25;
+  return (
+    p2 >= 2 &&
+    Math.abs(p1 - p2) <= 3
+  );
 })()
  
     }
