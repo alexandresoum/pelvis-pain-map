@@ -1724,7 +1724,7 @@ function runCustomAnalysis(){
   document.getElementById("v3_mixed").textContent =
     total ? Math.round((mixed / total) * 100) + "%" : "0%";
   document.getElementById("v3_conf").textContent =
-    total ? Math.round((confidenceSum / total) * 100) + "%" : "0%";
+  total ? Math.round(Math.max(0.25, confidenceSum / total) * 100) + "%" : "0%";
 }
 
 function updateAll(){
