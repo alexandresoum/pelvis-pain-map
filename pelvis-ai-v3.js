@@ -337,7 +337,7 @@ const uncertaintyScore = uncertaintyToScore(uncertainty);
 
     uncertainty,
 uncertaintyScore,
-confidence: (scoreTop1 * 0.6) + ((1 - uncertainty) * 0.4)
+confidence: (scoreTop1 * 0.6) + ((1 - uncertainty) * 0.4),
     
 
     scores,
