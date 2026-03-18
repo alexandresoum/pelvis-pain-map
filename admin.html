@@ -730,6 +730,11 @@ let v3_top2 = 0;
 let v3_mixed = 0;
 let totalConfidence = 0;
 
+  console.log("V2 loaded:", typeof pelvisTrainAndSaveModel);
+console.log("V3 loaded:", typeof pelvisComputeV3);
+console.log("V3 retrain loaded:", typeof pelvisRetrainV31);
+console.log("db loaded:", typeof db);
+
 const VARIABLE_DEFS = {
   practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || "Non renseigné"] },
   hypothesisPrimary: { label:"Hypothèse principale", extractor:d => [d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "Non renseigné"] },
