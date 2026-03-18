@@ -479,6 +479,15 @@
       </div>
     </div>
 
+    <div class="kpiBox">
+  <h3>IA V3</h3>
+  <p>Total dossiers : <span id="v3_total">0</span></p>
+  <p>Exploitables : <span id="v3_usable">0</span></p>
+  <p>Top1 OK : <span id="v3_top1">0</span></p>
+  <p>Top2 OK : <span id="v3_top2">0</span></p>
+  <p>Profils mixtes : <span id="v3_mixed">0</span></p>
+</div>
+
     <div class="statsGrid">
       <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
       <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue big" id="statAge">0</div></div>
@@ -692,7 +701,7 @@ Analyse : sous-ensemble défini par sélection praticiens + filtres utilisateurs
 
   </div>
 </div>
-
+<script src="pelvis-ai-v3.js"></script>
 <script>
 const ADMIN_PIN = atob("MTYxMg==");
 const PRACTITIONER_COLLECTION = "pratitioners";
@@ -710,6 +719,11 @@ let rows = [];
 let charts = {};
 let selectedPractitionerIds = new Set();
 let allRowsUnsubscribe = null;
+  let v3_total = 0;
+let v3_usable = 0;
+let v3_top1 = 0;
+let v3_top2 = 0;
+let v3_mixed = 0;
 
 const VARIABLE_DEFS = {
   practitionerName: { label:"Praticien", extractor:d => [d.practitionerName || PRACTITIONER_LABELS[d.practitionerId] || "Non renseigné"] },
@@ -1687,7 +1701,53 @@ function loadRows(){
 
   allRowsUnsubscribe = db.collection(PATIENT_COLLECTION).onSnapshot(s => {
     rows = [];
-    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+    v3_total = 0;
+v3_usable = 0;
+v3_top1 = 0;
+v3_top2 = 0;
+v3_mixed = 0;
+    s.forEach(doc => {
+  const d = doc.data();
+  rows.push({ id: doc.id, data: d });
+
+  const v3 = pelvisComputeV3(d);
+
+  v3_total++;
+
+  if (v3.usableForTraining) v3_usable++;
+  if (v3.flags && v3.flags.mixedProfile) v3_mixed++;
+
+  const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+
+  const mapLabel = (label) => {
+    if (!label) return "";
+    const map = {
+      endometriose: "Endométriose",
+      adenomyose: "Adénomyose",
+      congestion: "Congestion pelvienne",
+      pudendal: "Névralgie pudendale",
+      opk: "OPK",
+      fibrome: "Fibrome",
+      hypersensibilisation: "Hypersensibilisation centrale"
+    };
+    return map[label] || label;
+  };
+
+  const top1Label = mapLabel(v3.top1?.label);
+  const top2Label = mapLabel(v3.top2?.label);
+
+  if (top1Label && echo.includes(top1Label)) {
+    v3_top1++;
+  }
+
+  if (
+    (top1Label && echo.includes(top1Label)) ||
+    (top2Label && echo.includes(top2Label))
+  ) {
+    v3_top2++;
+  }
+});
+   
 
     try{
       const allPatientRecords = rows.map(r => r.data);
