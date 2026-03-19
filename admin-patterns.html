@@ -338,8 +338,11 @@
       </div>
     </div>
 
+  </div class="card" style="margin-bottom:20px;"></div>
+     <div id="aiEnhancedBlock" 
+       
     <div class="card">
-      <h2>Résumé intelligent</h2>
+           <h2>Résumé intelligent</h2>
       <div id="summaryPills"></div>
       <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
     </div>
@@ -1354,9 +1357,32 @@ function loadRows(){
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
     updateAll();
-
     renderEnhancedAI(rows);
   });
+}
+
+  function renderEnhancedAI(rows){
+
+  if (!rows || rows.length === 0) return;
+
+  const topItems = window.patternStats?.topItems || [];
+
+  const top1 = topItems[0];
+  const top2 = topItems[1];
+
+  let html = `<h3>🧠 Analyse IA avancée</h3>`;
+
+  if (top1){
+    html += `<p><b>Profil dominant :</b> ${top1.label}</p>`;
+  }
+
+  if (top2 && top2.score > 2){
+    html += `<p><b>Profil mixte :</b> ${top1.label} + ${top2.label}</p>`;
+  }
+
+  html += `<p><b>Nombre de dossiers :</b> ${rows.length}</p>`;
+
+  document.getElementById("aiEnhancedBlock").innerHTML = html;
 }
 
 document.addEventListener("keydown", e => {
