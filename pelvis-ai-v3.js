@@ -339,6 +339,8 @@ const v2Confidence = v2Score && typeof v2Score.confidence === "number"
   ? v2Score.confidence
   : null;
 
+
+
 const hybridConfidence = v2Confidence !== null
   ? (v3Confidence * 0.7) + (v2Confidence * 0.3)
   : v3Confidence;
@@ -357,6 +359,12 @@ uncertaintyScore,
 confidence: hybridConfidence,
 confidence_v3: v3Confidence,
 confidence_v2: v2Confidence,
+
+      admin_pattern: {
+  top1: ranking?.[0],
+  top2: ranking?.[1],
+  scores: scores
+},
     
 
     scores,
