@@ -564,126 +564,7 @@ function ageFromDob(dob){
   return a;
 }
 
- function renderEnhancedAI(rows){
-
-  if (!rows || rows.length === 0){
-    document.getElementById("aiEnhancedBlock").innerHTML = `
-      <h2>🧠 Analyse IA avancée</h2>
-      <p>Aucun dossier disponible.</p>
-    `;
-    return;
-  }
-
-  let total = rows.length;
-  let top1OK = 0;
-  let top2OK = 0;
-  let mixed = 0;
-  let confidenceSum = 0;
-
-  const top1Counts = {};
-
-  rows.forEach(r => {
-    const res = pelvisComputeV3(r.data);
-
-    const top1 = res.top1?.label || "";
-    const top2 = res.top2?.label || "";
-    const echo = Array.isArray(r.data.diagnostic_echo) ? r.data.diagnostic_echo : [];
-
-    const mapLabel = (label) => {
-      const map = {
-        endometriose: "Endométriose",
-        adenomyose: "Adénomyose",
-        congestion: "Congestion pelvienne",
-        pudendal: "Névralgie pudendale",
-        opk: "OPK",
-        fibrome: "Fibrome",
-        hypersensibilisation: "Hypersensibilisation centrale"
-      };
-      return map[label] || label || "-";
-    };
-
-    const t1 = mapLabel(top1);
-    const t2 = mapLabel(top2);
-
-    if (echo.includes(t1)) top1OK++;
-    if (echo.includes(t1) || echo.includes(t2)) top2OK++;
-    if (res.flags?.mixedProfile) mixed++;
-
-    confidenceSum += Number(res.confidence || 0);
-
-    top1Counts[t1] = (top1Counts[t1] || 0) + 1;
-  });
-
-  const top1Rate = total ? Math.round((top1OK / total) * 100) : 0;
-  const top2Rate = total ? Math.round((top2OK / total) * 100) : 0;
-  const mixedRate = total ? Math.round((mixed / total) * 100) : 0;
-  const confidenceRate = total ? Math.round((confidenceSum / total) * 100) : 0;
-
-  let confidenceLabel = "Faible";
-  if (confidenceRate >= 60) confidenceLabel = "Bonne";
-  else if (confidenceRate >= 40) confidenceLabel = "Modérée";
-
-  const dominantTop1 = Object.entries(top1Counts).sort((a,b) => b[1] - a[1])[0]?.[0] || "-";
-
-  let interpretation = "";
-  if (top2Rate >= 60) interpretation += "Bonne capacité d’orientation diagnostique. ";
-  if (mixedRate >= 40) interpretation += "Forte intrication des profils, cohérente avec la complexité pelvienne. ";
-  if (confidenceRate < 40) interpretation += "Confiance moyenne encore prudente, nécessitant une lecture clinique experte. ";
-  if (!interpretation) interpretation = "Signal IA globalement cohérent sur la cohorte analysée.";
-
-  document.getElementById("aiEnhancedBlock").innerHTML = `
-    <h2>🧠 Analyse IA avancée</h2>
-
-    <div class="statsGrid" style="margin-top:16px;">
-      <div class="statCard">
-        <div class="statLabel">Dossiers analysés</div>
-        <div class="statValue big">${total}</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top1 concordant</div>
-        <div class="statValue big">${top1Rate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top2 concordant</div>
-        <div class="statValue big">${top2Rate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Profils mixtes</div>
-        <div class="statValue big">${mixedRate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Confiance clinique</div>
-        <div class="statValue big">${confidenceLabel}</div>
-        <div class="statSub">${confidenceRate}% de confiance moyenne brute</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Profil dominant IA</div>
-        <div class="statValue small">${dominantTop1}</div>
-      </div>
-    </div>
-
-    <div class="publicationBox" style="margin-top:16px;">
-      <h3>Lecture clinique IA</h3>
-      <div class="publicationText">
-Sur ${total} dossiers filtrés, l’IA retrouve le bon diagnostic en top 1 dans ${top1Rate}% des cas et dans le top 2 dans ${top2Rate}% des cas.
-
-La fréquence des profils mixtes est de ${mixedRate}%, ce qui traduit la coexistence fréquente de profils cliniques proches ou intriqués.
-
-La confiance moyenne brute est de ${confidenceRate}%, ce qui correspond ici à une confiance clinique ${confidenceLabel.toLowerCase()}.
-
-Profil dominant actuellement observé sur la cohorte : ${dominantTop1}.
-
-👉 ${interpretation}
-      </div>
-    </div>
-  `;
-}
-
+ 
 function docTimestamp(d){
   if (!d.date) return 0;
   if (d.date.seconds) return d.date.seconds * 1000;
@@ -1420,33 +1301,124 @@ function loadRows(){
 
   function renderEnhancedAI(rows){
 
-  if (!rows || rows.length === 0) return;
-
-  const topItems = window.patternStats?.topItems || [];
-
-  const top1 = topItems[0];
-  const top2 = topItems[1];
-
-  let html = `<h3>🧠 Analyse IA avancée</h3>`;
-
-  if (top1){
-    html += `<p><b>Profil dominant :</b> ${top1.label}</p>`;
+  if (!rows || rows.length === 0){
+    document.getElementById("aiEnhancedBlock").innerHTML = `
+      <h2>🧠 Analyse IA avancée</h2>
+      <p>Aucun dossier disponible.</p>
+    `;
+    return;
   }
 
-  if (top2 && top2.score > 2){
-    html += `<p><b>Profil mixte :</b> ${top1.label} + ${top2.label}</p>`;
-  }
+  let total = rows.length;
+  let top1OK = 0;
+  let top2OK = 0;
+  let mixed = 0;
+  let confidenceSum = 0;
 
-  html += `<p><b>Nombre de dossiers :</b> ${rows.length}</p>`;
+  const top1Counts = {};
 
-  document.getElementById("aiEnhancedBlock").innerHTML = html;
+  rows.forEach(r => {
+    const res = pelvisComputeV3(r.data);
+
+    const top1 = res.top1?.label || "";
+    const top2 = res.top2?.label || "";
+    const echo = Array.isArray(r.data.diagnostic_echo) ? r.data.diagnostic_echo : [];
+
+    const mapLabel = (label) => {
+      const map = {
+        endometriose: "Endométriose",
+        adenomyose: "Adénomyose",
+        congestion: "Congestion pelvienne",
+        pudendal: "Névralgie pudendale",
+        opk: "OPK",
+        fibrome: "Fibrome",
+        hypersensibilisation: "Hypersensibilisation centrale"
+      };
+      return map[label] || label || "-";
+    };
+
+    const t1 = mapLabel(top1);
+    const t2 = mapLabel(top2);
+
+    if (echo.includes(t1)) top1OK++;
+    if (echo.includes(t1) || echo.includes(t2)) top2OK++;
+    if (res.flags?.mixedProfile) mixed++;
+
+    confidenceSum += Number(res.confidence || 0);
+
+    top1Counts[t1] = (top1Counts[t1] || 0) + 1;
+  });
+
+  const top1Rate = total ? Math.round((top1OK / total) * 100) : 0;
+  const top2Rate = total ? Math.round((top2OK / total) * 100) : 0;
+  const mixedRate = total ? Math.round((mixed / total) * 100) : 0;
+  const confidenceRate = total ? Math.round((confidenceSum / total) * 100) : 0;
+
+  let confidenceLabel = "Faible";
+  if (confidenceRate >= 60) confidenceLabel = "Bonne";
+  else if (confidenceRate >= 40) confidenceLabel = "Modérée";
+
+  const dominantTop1 = Object.entries(top1Counts).sort((a,b) => b[1] - a[1])[0]?.[0] || "-";
+
+  let interpretation = "";
+  if (top2Rate >= 60) interpretation += "Bonne capacité d’orientation diagnostique. ";
+  if (mixedRate >= 40) interpretation += "Forte intrication des profils, cohérente avec la complexité pelvienne. ";
+  if (confidenceRate < 40) interpretation += "Confiance moyenne encore prudente, nécessitant une lecture clinique experte. ";
+  if (!interpretation) interpretation = "Signal IA globalement cohérent sur la cohorte analysée.";
+
+  document.getElementById("aiEnhancedBlock").innerHTML = `
+    <h2>🧠 Analyse IA avancée</h2>
+
+    <div class="statsGrid" style="margin-top:16px;">
+      <div class="statCard">
+        <div class="statLabel">Dossiers analysés</div>
+        <div class="statValue big">${total}</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top1 concordant</div>
+        <div class="statValue big">${top1Rate}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top2 concordant</div>
+        <div class="statValue big">${top2Rate}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Profils mixtes</div>
+        <div class="statValue big">${mixedRate}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Confiance clinique</div>
+        <div class="statValue big">${confidenceLabel}</div>
+        <div class="statSub">${confidenceRate}% de confiance moyenne brute</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Profil dominant IA</div>
+        <div class="statValue small">${dominantTop1}</div>
+      </div>
+    </div>
+
+    <div class="publicationBox" style="margin-top:16px;">
+      <h3>Lecture clinique IA</h3>
+      <div class="publicationText">
+Sur ${total} dossiers filtrés, l’IA retrouve le bon diagnostic en top 1 dans ${top1Rate}% des cas et dans le top 2 dans ${top2Rate}% des cas.
+
+La fréquence des profils mixtes est de ${mixedRate}%, ce qui traduit la coexistence fréquente de profils cliniques proches ou intriqués.
+
+La confiance moyenne brute est de ${confidenceRate}%, ce qui correspond ici à une confiance clinique ${confidenceLabel.toLowerCase()}.
+
+Profil dominant actuellement observé sur la cohorte : ${dominantTop1}.
+
+👉 ${interpretation}
+      </div>
+    </div>
+  `;
 }
 
-document.addEventListener("keydown", e => {
-  if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") {
-    checkPin();
-  }
-});
 </script>
 </body>
 </html>
