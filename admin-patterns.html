@@ -7,68 +7,50 @@
 
 <link rel="stylesheet" href="style.css">
 
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088454586%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=i6P6Fvy9%2BIb%2BQ4zTeZUz0IKmyvmAGoc2oCvGxpAvMvQ%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088479967%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1BGJE%2BC%2BOaclHm2eawhJR5gzvS%2By%2FOp559WR6u3EzHE%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088494775%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=dDxlNdicxyBmHTPnc85o58hlMxMOMJLqK8kJXSNVyEA%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C397038a8b19a4bcf7cb908de85c6a9dd%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095285451144201%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=GOEi6vXZSMO6qTfptqRlSLZ%2BfdB0nRw4nv8pPdVAL68%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C397038a8b19a4bcf7cb908de85c6a9dd%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095285451188663%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=h2eIM5d2D6pSNtA2y%2FUpAtaenXC6pp8xDeTNJ9GccAY%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C397038a8b19a4bcf7cb908de85c6a9dd%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095285451213400%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=gfQ3ve0smi8JKNH1rzahcYzQj6WS59p5diTAV3w2ycg%3D&reserved=0"></script>
 
 <script src="firebase-config.js"></script>
 <script src="pelvis-ai-v3.js"></script>
 
 <style>
-/* ==== STYLES EXISTANTS + AJOUTS ==== */
-.pinOverlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px);}
-.pinCard{width:min(92vw,420px);background:#fff;border-radius:16px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.18);}
-.pinInput{width:100%;margin:8px 0 14px;padding:12px;border:1px solid #d1d5db;border-radius:10px;}
-.pinError{color:#b91c1c;min-height:22px;}
-
-.card,.filtersCard,.statCard{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
-.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0;}
-.statLabel{font-size:14px;color:#6b7280;}
-.statValue{font-size:28px;font-weight:700;color:#24324a;}
-.statValue.small{font-size:18px;}
-.statSub{font-size:13px;color:#6b7280;margin-top:6px;}
-
-.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
-select,input{padding:10px;border-radius:10px;border:1px solid #d1d5db;}
-
-.primary{background:#4f46e5;color:white;padding:10px 14px;border-radius:10px;border:none;}
-.secondaryAction{background:white;border:1px solid #d1d5db;padding:10px 14px;border-radius:10px;}
-
-.publicationBox{border:1px solid #e5e7eb;border-radius:12px;padding:14px;background:#fcfcff;}
-.publicationText{white-space:pre-line;font-size:14px;line-height:1.6;color:#374151;}
-
-.chartBox{height:350px;}
+.pinOverlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:flex;align-items:center;justify-content:center;z-index:50;}
+.pinCard{background:#fff;padding:20px;border-radius:12px;width:300px;}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-top:16px;}
+.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
+.statValue{font-size:26px;font-weight:700;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.secondaryAction{padding:8px 12px;border:1px solid #ddd;border-radius:8px;background:white;}
+.primary{background:#4f46e5;color:white;border:none;padding:8px 12px;border-radius:8px;}
+.statSub{font-size:12px;color:#6b7280;}
+.publicationBox{margin-top:10px;padding:10px;border:1px solid #ddd;border-radius:10px;}
+.publicationText{font-size:14px;line-height:1.6;}
 </style>
 </head>
 
 <body>
 
-<!-- PIN -->
 <div id="pinOverlay" class="pinOverlay">
   <div class="pinCard">
     <h2>Accès Admin</h2>
-    <input type="password" id="pinInput" maxlength="4" class="pinInput">
-    <button class="primary" onclick="checkPin()">Entrer</button>
-    <p id="pinError" class="pinError"></p>
+    <input type="password" id="pinInput">
+    <button onclick="checkPin()" class="primary">Entrer</button>
+    <p id="pinError"></p>
   </div>
 </div>
 
-<!-- CONTENT -->
 <div id="content" style="display:none;">
 
-<div class="container wide">
-
-<!-- NAV -->
 <div class="toolbar">
-<button onclick="window.location.href='admin.html'" class="secondaryAction">← Retour admin</button>
+<button onclick="window.location.href='admin.html'" class="secondaryAction">← Retour</button>
 </div>
 
 <!-- FILTRES -->
-<div class="filtersCard">
-<h2>Filtres</h2>
+<div class="card">
+<h3>Filtres</h3>
 
 <div class="toolbar">
-
 <select id="echoTarget" onchange="updateAll()">
 <option>Endométriose</option>
 <option>Adénomyose</option>
@@ -77,24 +59,31 @@ select,input{padding:10px;border-radius:10px;border:1px solid #d1d5db;}
 <option>OPK</option>
 <option>Normal</option>
 <option>Non contributif</option>
+<option>Autre</option>
 </select>
 
 <select id="practitionerSelect" onchange="updateAll()">
 <option value="all">Tous les praticiens</option>
 <option value="alexandre_soum">Alexandre Soum</option>
-<option value="praticien_2">Dr Levaillant</option>
+<option value="praticien_2">Levaillant</option>
 <option value="praticien_3">Siraga</option>
 </select>
 
-<button onclick="selectAllPractitioners()" class="secondaryAction">Tous les praticiens</button>
-
+<button onclick="selectAllPractitioners()" class="secondaryAction">Tous</button>
 </div>
 </div>
 
-<!-- KPIs -->
+<!-- KPI -->
 <div class="statsGrid">
-<div class="statCard"><div class="statLabel">Dossiers</div><div id="statCases" class="statValue">0</div></div>
-<div class="statCard"><div class="statLabel">Douleur</div><div id="statPain" class="statValue">0</div></div>
+<div class="card">
+<div>Dossiers</div>
+<div id="statCases" class="statValue">0</div>
+</div>
+
+<div class="card">
+<div>Douleur moyenne</div>
+<div id="statPain" class="statValue">0</div>
+</div>
 </div>
 
 <!-- IA -->
@@ -102,13 +91,12 @@ select,input{padding:10px;border-radius:10px;border:1px solid #d1d5db;}
 <div id="aiEnhancedBlock"></div>
 </div>
 
-<!-- GRAPHS -->
+<!-- CHART -->
 <div class="card">
-<h2>Top items</h2>
-<div class="chartBox"><canvas id="patternChart"></canvas></div>
+<h3>Top items</h3>
+<canvas id="patternChart"></canvas>
 </div>
 
-</div>
 </div>
 
 <script>
@@ -117,7 +105,7 @@ const ADMIN_PIN = atob("MTYxMg==");
 let rows = [];
 
 function checkPin(){
-if(document.getElementById("pinInput").value === ADMIN_PIN){
+if(document.getElementById("pinInput").value===ADMIN_PIN){
 document.getElementById("pinOverlay").style.display="none";
 document.getElementById("content").style.display="block";
 loadRows();
@@ -127,7 +115,7 @@ document.getElementById("pinError").innerText="Code incorrect";
 }
 
 function selectedPractitioners(){
-const val = document.getElementById("practitionerSelect").value;
+const val=document.getElementById("practitionerSelect").value;
 if(val==="all") return ["alexandre_soum","praticien_2","praticien_3"];
 return [val];
 }
@@ -141,18 +129,19 @@ function filteredDocs(){
 return rows.map(r=>r.data).filter(d=>selectedPractitioners().includes(d.practitionerId));
 }
 
-function hasEchoDiagnosis(d, diag){
+function hasEchoDiagnosis(d,diag){
 return (d.diagnostic_echo||[]).includes(diag);
 }
 
 function updateAll(){
-const diag = document.getElementById("echoTarget").value;
-const allDocs = filteredDocs();
-const docs = allDocs.filter(d=>hasEchoDiagnosis(d,diag));
+const diag=document.getElementById("echoTarget").value;
+const allDocs=filteredDocs();
+const docs=allDocs.filter(d=>hasEchoDiagnosis(d,diag));
 
-document.getElementById("statCases").innerText = docs.length;
-document.getElementById("statPain").innerText = docs.length ?
-(docs.reduce((s,d)=>s+(d.pain||0),0)/docs.length).toFixed(1) : 0;
+document.getElementById("statCases").innerText=docs.length;
+
+const pain=docs.length?(docs.reduce((s,d)=>s+(Number(d.pain)||0),0)/docs.length).toFixed(1):0;
+document.getElementById("statPain").innerText=pain;
 
 renderEnhancedAI(docs);
 drawChart(docs);
@@ -167,12 +156,11 @@ updateAll();
 }
 
 function drawChart(docs){
-const labels=["Douleur"];
-const data=[docs.reduce((s,d)=>s+(d.pain||0),0)];
+const value=docs.reduce((s,d)=>s+(Number(d.pain)||0),0);
 
 new Chart(document.getElementById("patternChart"),{
 type:"bar",
-data:{labels,datasets:[{data}]},
+data:{labels:["Douleur"],datasets:[{data:[value]}]},
 options:{responsive:true}
 });
 }
@@ -180,35 +168,35 @@ options:{responsive:true}
 function renderEnhancedAI(rows){
 
 if(!rows.length){
-document.getElementById("aiEnhancedBlock").innerHTML="<p>Aucune donnée</p>";
+document.getElementById("aiEnhancedBlock").innerHTML="<p>Aucun dossier</p>";
 return;
 }
 
 let total=rows.length;
-let confidence=Math.round(rows.reduce((s,d)=>s+(d.confidence||0),0)/total);
+let confidence=Math.round(rows.reduce((s,d)=>s+(Number(d.confidence)||0),0)/total);
 
 document.getElementById("aiEnhancedBlock").innerHTML=`
 <h2>🧠 Analyse IA</h2>
 
 <div class="statsGrid">
-<div class="statCard">
-<div class="statLabel">Dossiers</div>
+<div class="card">
+<div>Dossiers</div>
 <div class="statValue">${total}</div>
 </div>
 
-<div class="statCard">
-<div class="statLabel">Confiance</div>
+<div class="card">
+<div>Confiance</div>
 <div class="statValue">${confidence}%</div>
 </div>
 </div>
 
 <div class="publicationBox">
 <div class="publicationText">
-Analyse basée sur ${total} dossiers.
+Analyse sur ${total} dossiers.
 
-Confiance globale : ${confidence}%.
+Confiance moyenne : ${confidence}%.
 
-👉 Interprétation : cohérence globale correcte.
+👉 Signal global cohérent.
 </div>
 </div>
 `;
