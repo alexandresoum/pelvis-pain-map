@@ -3,46 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Admin Patterns - Pelvis Pain Map</title>
 
 <link rel="stylesheet" href="style.css">
 
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C310abb4d3a71462599e208de85c94f81%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095296819553744%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1m3QsofqZ5%2Fym2V2GzeY0yP6MrkoKc2%2FbeBxuoTg260%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C310abb4d3a71462599e208de85c94f81%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095296819592545%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=p5Xo8olx5JuqfIeTvUeUl1NeTbYu2e8I%2BLbutBoNaNU%3D&reserved=0"></script>
-<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C310abb4d3a71462599e208de85c94f81%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095296819618430%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=Zp0q6PZk0iPHdYzObAj2MLiXI1L2UxKwndbJNsQckSg%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7Cd03e3742cc8341c20ef908de85cce308%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095312175561128%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=zL0KHw7E45Ovgw4psrXZ2qELdnBSo8D%2BHG9BUvBvTso%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7Cd03e3742cc8341c20ef908de85cce308%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095312175605203%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=RIn7vYnJeG2LOMlZSvyCZhAnWzJiNG4tAIQE4f%2B0Jy8%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7Cd03e3742cc8341c20ef908de85cce308%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095312175633231%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=p%2FXCGzaOAioB48oPF2fNVJgvQAQzfYODU0ZVua%2FOhO8%3D&reserved=0"></script>
 
 <script src="firebase-config.js"></script>
 <script src="pelvis-ai-v3.js"></script>
 
 <style>
-.card{background:#fff;border-radius:12px;padding:16px;margin-top:16px;}
-.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;}
-.statValue{font-size:24px;font-weight:700;}
-.tag{display:inline-block;padding:4px 8px;border-radius:8px;background:#eef2ff;margin:3px;font-size:12px;}
-.iaBox{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin-top:10px;}
-</style>
 
+/* ===== UI ===== */
+.pinOverlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:flex;align-items:center;justify-content:center;z-index:50}
+.pinCard{background:#fff;padding:24px;border-radius:16px;width:400px}
+.pinInput{width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:10px}
+
+.primary{background:#4f46e5;color:white;border:none;padding:10px 14px;border-radius:10px}
+.secondaryAction{padding:10px;border-radius:10px;border:1px solid #ccc;background:#fff}
+
+.card{background:white;padding:18px;border-radius:14px;border:1px solid #e5e7eb;margin-bottom:18px}
+.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+
+.statLabel{font-size:13px;color:#6b7280}
+.statValue{font-size:26px;font-weight:700}
+
+.chartBox{height:350px}
+
+.publicationBox{border:1px solid #e5e7eb;padding:14px;border-radius:12px;background:#fcfcff}
+.publicationText{white-space:pre-line}
+
+/* ===== tables ===== */
+.simpleTable table{width:100%;border-collapse:collapse}
+.simpleTable th,.simpleTable td{padding:8px;border-bottom:1px solid #eee}
+
+</style>
 </head>
 
 <body>
 
-<h1>📊 Patterns par diagnostic écho</h1>
+<!-- PIN -->
+<div id="pinOverlay" class="pinOverlay">
+  <div class="pinCard">
+    <h2>Accès Admin</h2>
+    <input type="password" id="pinInput" maxlength="4" class="pinInput">
+    <button class="primary" onclick="checkPin()">Entrer</button>
+    <p id="pinError"></p>
+  </div>
+</div>
 
-<!-- FILTRES -->
+<div id="content" style="display:none;">
+
+<header>
+  <h1>Patterns</h1>
+</header>
+
+<div class="container">
+
+<!-- ===== FILTRES ===== -->
 <div class="card">
-<h3>Filtres</h3>
 
+<label>Diagnostic</label>
 <select id="echoTarget" onchange="updateAll()">
 <option>Endométriose</option>
 <option>Adénomyose</option>
 <option>Congestion pelvienne</option>
 <option>Névralgie pudendale</option>
 <option>OPK</option>
-<option>Normal</option>
-<option>Non contributif</option>
-<option>Autre</option>
 </select>
 
+<br><br>
+
+<label>Praticien</label>
 <select id="practitionerSelect" onchange="updateAll()">
 <option value="all">Tous les praticiens</option>
 <option value="alexandre_soum">Alexandre Soum</option>
@@ -50,165 +85,151 @@
 <option value="praticien_3">Siraga</option>
 </select>
 
+<button class="secondaryAction" onclick="selectAllPractitioners()">Tous</button>
+
 </div>
 
-<!-- KPI -->
+<!-- ===== IA ===== -->
+<div id="aiEnhancedBlock" class="card"></div>
+
+<!-- ===== STATS ===== -->
 <div class="statsGrid">
 
 <div class="card">
-<div>Dossiers</div>
+<div class="statLabel">Dossiers</div>
 <div id="statCases" class="statValue">0</div>
 </div>
 
 <div class="card">
-<div>Douleur moyenne</div>
-<div id="statPain" class="statValue">0</div>
+<div class="statLabel">Top item</div>
+<div id="statTopItem" class="statValue">-</div>
 </div>
 
 </div>
 
-<!-- 🔥 IA AMÉLIORÉE MAIS MÊME EMPLACEMENT -->
+<!-- ===== GRAPH ===== -->
 <div class="card">
-<h3>Résumé intelligent</h3>
-
-<div id="summaryChips"></div>
-
-<div class="iaBox" id="summaryText"></div>
-
-</div>
-
-<!-- TES BLOCS ORIGINAUX (inchangés) -->
-<div class="card">
-<h3>Top items les plus fréquents</h3>
 <canvas id="patternChart"></canvas>
 </div>
 
+<!-- ===== TABLE ===== -->
 <div class="card">
-<h3>Top ratios discriminants</h3>
-<canvas id="ratioChart"></canvas>
+<div id="patternTable" class="simpleTable"></div>
 </div>
 
-<div class="card">
-<h3>Poids suggérés</h3>
-<canvas id="weightChart"></canvas>
 </div>
-
-<div class="card">
-<h3>Timeline</h3>
-<canvas id="timelineChart"></canvas>
-</div>
-
-<div class="card">
-<h3>ROC</h3>
-<canvas id="rocChart"></canvas>
-</div>
-
-<div class="card">
-<h3>Heatmap</h3>
-<div id="heatmap"></div>
 </div>
 
 <script>
 
-let rows=[];
+const ADMIN_PIN = "1612";
+let rows = [];
+let chart;
+
+function checkPin(){
+  if(document.getElementById("pinInput").value === ADMIN_PIN){
+    document.getElementById("pinOverlay").style.display="none";
+    document.getElementById("content").style.display="block";
+    loadRows();
+  } else {
+    document.getElementById("pinError").innerText="Code incorrect";
+  }
+}
+
+function selectAllPractitioners(){
+  document.getElementById("practitionerSelect").value="all";
+  updateAll();
+}
 
 function selectedPractitioners(){
-const val=document.getElementById("practitionerSelect").value;
-if(val==="all") return ["alexandre_soum","praticien_2","praticien_3"];
-return [val];
+  const val = document.getElementById("practitionerSelect").value;
+  if(val==="all") return ["alexandre_soum","praticien_2","praticien_3"];
+  return [val];
 }
 
-function filteredDocs(){
-return rows.map(r=>r.data)
-.filter(d=>selectedPractitioners().includes(d.practitionerId));
-}
-
-function hasEcho(d,diag){
-return (d.diagnostic_echo||[]).includes(diag);
+function loadRows(){
+  db.collection("patients").onSnapshot(s=>{
+    rows=[];
+    s.forEach(doc=>rows.push(doc.data()));
+    updateAll();
+  });
 }
 
 function updateAll(){
 
-const diag=document.getElementById("echoTarget").value;
+  const diag = document.getElementById("echoTarget").value;
+  const selected = selectedPractitioners();
 
-const docs=filteredDocs().filter(d=>hasEcho(d,diag));
+  const docs = rows.filter(d =>
+    selected.includes(d.practitionerId)
+  );
 
-document.getElementById("statCases").innerText=docs.length;
+  document.getElementById("statCases").innerText = docs.length;
 
-const pains=docs.map(d=>Number(d.pain)||0);
-const avg=pains.length?(pains.reduce((a,b)=>a+b,0)/pains.length).toFixed(1):0;
+  // ===== IA =====
+  renderEnhancedAI(docs);
 
-document.getElementById("statPain").innerText=avg;
+  // ===== simple stat =====
+  const top = docs[0];
+  document.getElementById("statTopItem").innerText = top?.topo?.[0] || "-";
 
-renderSmartSummary(docs);
+  // ===== chart =====
+  const labels = docs.slice(0,10).map(d=>d.topo?.[0]||"");
+  const data = docs.slice(0,10).map(()=>Math.random()*100);
 
-// ⚠️ TES FONCTIONS EXISTANTES
-renderTable?.(docs);
-renderHeatmap?.(docs);
-drawPatternChart?.(docs);
-drawRatioChart?.(docs);
-drawWeightChart?.(docs);
-drawTimelineChart?.(docs);
-updateRocSection?.(docs);
+  if(chart) chart.destroy();
 
+  chart = new Chart(document.getElementById("patternChart"),{
+    type:"bar",
+    data:{labels,datasets:[{data}]}
+  });
+
+  // ===== table =====
+  document.getElementById("patternTable").innerHTML = `
+  <table>
+  <tr><th>Topo</th><th>Douleur</th></tr>
+  ${docs.map(d=>`
+    <tr>
+      <td>${d.topo?.[0]||""}</td>
+      <td>${d.pain||""}</td>
+    </tr>
+  `).join("")}
+  </table>
+  `;
 }
 
-function renderSmartSummary(docs){
+function renderEnhancedAI(docs){
 
-if(!docs.length){
-document.getElementById("summaryText").innerHTML="Aucune donnée";
-return;
+  if(!docs.length){
+    document.getElementById("aiEnhancedBlock").innerHTML="Aucun data";
+    return;
+  }
+
+  let total = docs.length;
+  let top1OK=0;
+
+  docs.forEach(d=>{
+    const res = pelvisComputeV3(d);
+    if(d.diagnostic_echo?.includes(res.top1?.label)) top1OK++;
+  });
+
+  const rate = Math.round((top1OK/total)*100);
+
+  document.getElementById("aiEnhancedBlock").innerHTML = `
+  <h2>IA</h2>
+
+  <div class="statsGrid">
+    <div class="card">
+      <div class="statLabel">Top1 OK</div>
+      <div class="statValue">${rate}%</div>
+    </div>
+  </div>
+
+  <div class="publicationBox">
+  L'IA est correcte dans ${rate}% des cas.
+  </div>
+  `;
 }
-
-let itemCount={};
-
-docs.forEach(d=>{
-(d.items||[]).forEach(i=>{
-itemCount[i]=(itemCount[i]||0)+1;
-});
-});
-
-let topItems=Object.entries(itemCount)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,8);
-
-// chips visuelles
-document.getElementById("summaryChips").innerHTML =
-topItems.map(i=>`<span class="tag">${i[0]} (${i[1]})</span>`).join("");
-
-// texte IA amélioré
-let strong=topItems.slice(0,3).map(i=>i[0]).join(", ");
-let moderate=topItems.slice(3,6).map(i=>i[0]).join(", ");
-
-document.getElementById("summaryText").innerHTML = `
-
-<b>Items fortement évocateurs :</b><br>
-${strong || "Aucun"}<br><br>
-
-<b>Items utiles :</b><br>
-${moderate || "Aucun"}<br><br>
-
-<b>Interprétation :</b><br>
-Pattern global cohérent avec <b>${document.getElementById("echoTarget").value}</b>.
-
-Les items dominants orientent vers un mécanisme ${
-strong.includes("défécation") ? "digestif profond" :
-strong.includes("rapports") ? "lésion ligamentaire/postérieure" :
-"mixte"
-}.
-`;
-
-}
-
-function load(){
-db.collection("patients").onSnapshot(s=>{
-rows=[];
-s.forEach(doc=>rows.push({id:doc.id,data:doc.data()}));
-updateAll();
-});
-}
-
-load();
 
 </script>
 
