@@ -432,6 +432,7 @@
           <button class="aiButton" onclick="retrainAI()">Réentraîner le modèle IA</button>
           <button class="ghostButton" onclick="exportFilteredJSON()">Export JSON</button>
           <button class="ghostButton" onclick="exportPractitionerCSV()">Export CSV</button>
+          <button class="ghostButton" onclick="openAdminPatternModal()">Voir pattern IA</button>
           <button class="primary" onclick="window.print()">Export PDF</button>
         </div>
       </div>
@@ -729,6 +730,8 @@ let v3_top1 = 0;
 let v3_top2 = 0;
 let v3_mixed = 0;
 let totalConfidence = 0;
+let currentPatternResult = null;
+let currentPatternPatient = null;
 
   console.log("V2 loaded:", typeof pelvisTrainAndSaveModel);
 console.log("V3 loaded:", typeof pelvisComputeV3);
@@ -1965,12 +1968,158 @@ function escapeJs(str){
   return String(str ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
+  function getLatestFilteredPatientRow(){
+  const selected = new Set(selectedPractitioners());
+  const filteredRows = rows.filter(r => selected.has(r.data.practitionerId));
+
+  if (!filteredRows.length) return null;
+
+  filteredRows.sort((a, b) => {
+    const ta = docTimestamp(a.data);
+    const tb = docTimestamp(b.data);
+    return tb - ta;
+  });
+
+  return filteredRows[0];
+}
+
+function formatPatternLabel(label){
+  const map = {
+    endometriose: "Endométriose",
+    adenomyose: "Adénomyose",
+    congestion: "Congestion pelvienne",
+    pudendal: "Névralgie pudendale",
+    opk: "OPK",
+    fibrome: "Fibrome",
+    hypersensibilisation: "Hypersensibilisation centrale"
+  };
+  return map[label] || label || "-";
+}
+
+function renderPatternScores(scores){
+  if (!scores) return "<div class='muted'>Aucun score.</div>";
+
+  const entries = Object.entries(scores).sort((a,b) => Number(b[1] || 0) - Number(a[1] || 0));
+
+  return `
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead>
+        <tr>
+          <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Profil</th>
+          <th style="text-align:left; padding:8px; border-bottom:1px solid #e5e7eb;">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(([k,v]) => `
+          <tr>
+            <td style="padding:8px; border-bottom:1px solid #f1f5f9;">${escapeHtml(formatPatternLabel(k))}</td>
+            <td style="padding:8px; border-bottom:1px solid #f1f5f9;">${Number(v || 0).toFixed(2)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function buildPatternInterpretation(result){
+  if (!result) return "Aucun calcul disponible.";
+
+  const top1 = result.admin_pattern?.top1;
+  const top2 = result.admin_pattern?.top2;
+  const conf = typeof result.confidence === "number" ? Math.round(result.confidence * 100) : null;
+  const mixed = !!result.flags?.mixedProfile;
+
+  const t1 = top1 ? `${formatPatternLabel(top1.label)} (${Number(top1.pct || 0).toFixed(2)})` : "-";
+  const t2 = top2 ? `${formatPatternLabel(top2.label)} (${Number(top2.pct || 0).toFixed(2)})` : "-";
+
+  return `
+    <div class="publicationBox">
+      <h3>Lecture rapide</h3>
+      <div class="publicationText">
+Top 1 : ${t1}
+Top 2 : ${t2}
+Profil mixte : ${mixed ? "Oui" : "Non"}
+Confiance hybride : ${conf !== null ? conf + "%" : "Non renseignée"}
+Incertitude : ${escapeHtml(String(result.uncertainty || "-"))}
+      </div>
+    </div>
+  `;
+}
+
+function openAdminPatternModal(){
+  const row = getLatestFilteredPatientRow();
+  const content = document.getElementById("patternModalContent");
+  const info = document.getElementById("patternModalInfo");
+  const modal = document.getElementById("patternModal");
+
+  if (!row) {
+    info.textContent = "Aucun dossier disponible dans la sélection actuelle.";
+    content.innerHTML = `<div class="publicationBox"><div class="publicationText">Aucune donnée à afficher.</div></div>`;
+    modal.style.display = "flex";
+    return;
+  }
+
+  const result = pelvisComputeV3(row.data);
+  currentPatternResult = result;
+  currentPatternPatient = row.data;
+
+  const patientName = `${row.data.prenom || ""} ${row.data.nom || ""}`.trim() || "Patiente non nommée";
+  const practitioner = PRACTITIONER_LABELS[row.data.practitionerId] || row.data.practitionerName || row.data.practitionerId || "-";
+
+  info.textContent = `Dossier affiché : ${patientName} • Praticien : ${practitioner}`;
+
+  content.innerHTML = `
+    <div class="publicationBox">
+      <h3>Résumé dossier</h3>
+      <div class="publicationText">
+Patiente : ${escapeHtml(patientName)}
+Praticien : ${escapeHtml(practitioner)}
+Douleur : ${escapeHtml(String(row.data.pain || "-"))}/10
+Date : ${escapeHtml(new Date(docTimestamp(row.data)).toLocaleString("fr-FR"))}
+      </div>
+    </div>
+
+    ${buildPatternInterpretation(result)}
+
+    <div class="publicationBox">
+      <h3>Top classement</h3>
+      <div class="publicationText">
+Top 1 : ${escapeHtml(formatPatternLabel(result.admin_pattern?.top1?.label))} (${Number(result.admin_pattern?.top1?.pct || 0).toFixed(2)})
+Top 2 : ${escapeHtml(formatPatternLabel(result.admin_pattern?.top2?.label))} (${Number(result.admin_pattern?.top2?.pct || 0).toFixed(2)})
+      </div>
+    </div>
+
+    <div class="publicationBox">
+      <h3>Détail des scores</h3>
+      ${renderPatternScores(result.admin_pattern?.scores)}
+    </div>
+  `;
+
+  modal.style.display = "flex";
+}
+
+function closeAdminPatternModal(){
+  document.getElementById("patternModal").style.display = "none";
+}
+
 document.addEventListener("keydown", e => {
   if (document.getElementById("pinOverlay").style.display !== "none" && e.key === "Enter") {
     checkPin();
   }
 });
 </script>
+  <div id="patternModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); z-index:200; align-items:center; justify-content:center;">
+  <div style="width:min(900px,92vw); max-height:85vh; overflow:auto; background:#fff; border-radius:16px; padding:22px; box-shadow:0 12px 40px rgba(0,0,0,.22);">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px;">
+      <h2 style="margin:0;">Pattern IA – vue admin</h2>
+      <button class="ghostButton" onclick="closeAdminPatternModal()">Fermer</button>
+    </div>
+
+    <p class="muted" id="patternModalInfo" style="margin-top:0;">Sélection du dossier le plus récent parmi les praticiens affichés.</p>
+
+    <div id="patternModalContent" style="display:grid; gap:14px;"></div>
+  </div>
+</div>
 
 </body>
 </html>
