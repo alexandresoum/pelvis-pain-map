@@ -235,6 +235,8 @@
   </div>
 </div>
 
+  <div id="aiEnhancedBlock" class="card"></div>
+
 <div id="content" style="display:none;">
   <header class="header">
     <h1>Patterns par diagnostic écho</h1>
@@ -557,6 +559,69 @@ function ageFromDob(dob){
   const m = t.getMonth() - b.getMonth();
   if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
   return a;
+}
+
+  function renderEnhancedAI(rows){
+
+  const stats = computeGlobalAIStats(rows);
+
+  let confidenceLabel = "Faible";
+
+  if (stats.confidence > 60) confidenceLabel = "Bonne";
+  else if (stats.confidence > 40) confidenceLabel = "Modérée";
+
+  document.getElementById("aiEnhancedBlock").innerHTML = `
+
+    <h2>🧠 Résumé IA avancé</h2>
+
+    <div class="statsGrid">
+
+      <div class="statCard">
+        <div class="statLabel">Modèle</div>
+        <div class="statValue">V3.2 hybride</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top1</div>
+        <div class="statValue">${stats.top1}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Top2</div>
+        <div class="statValue">${stats.top2}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Profils mixtes</div>
+        <div class="statValue">${stats.mixed}%</div>
+      </div>
+
+      <div class="statCard">
+        <div class="statLabel">Confiance clinique</div>
+        <div class="statValue">${confidenceLabel}</div>
+      </div>
+
+    </div>
+
+    <div class="publicationBox">
+      <h3>Lecture clinique IA</h3>
+      <div class="publicationText">
+
+Sur ${stats.total} dossiers :
+
+• L’IA retrouve le bon diagnostic en Top1 dans ${stats.top1}% des cas 
+• En Top2 dans ${stats.top2}% → bonne capacité d’orientation 
+
+• ${stats.mixed}% de profils mixtes → forte intrication clinique 
+• Confiance globale : ${confidenceLabel.toLowerCase()}
+
+👉 Interprétation : 
+L’IA est pertinente pour orienter, mais nécessite une lecture clinique experte en raison du chevauchement des profils.
+
+      </div>
+    </div>
+
+  `;
 }
 
 function docTimestamp(d){
@@ -1289,6 +1354,8 @@ function loadRows(){
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
     updateAll();
+
+    renderEnhancedAI(rows);
   });
 }
 
