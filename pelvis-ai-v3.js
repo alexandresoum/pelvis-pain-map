@@ -360,11 +360,16 @@ confidence: hybridConfidence,
 confidence_v3: v3Confidence,
 confidence_v2: v2Confidence,
 
-      admin_pattern: {
-  top1: ranking?.[0],
-  top2: ranking?.[1],
-  scores: scores
+    admin_pattern: {
+  top1: ranking?.[0] || null,
+  top2: ranking?.[1] || null,
+  top3: ranking?.[2] || null,
+  scores: scores,
+  uncertainty: uncertainty,
+  uncertaintyScore: uncertaintyScore,
+  confidence: hybridConfidence
 },
+      
     
 
     scores,
