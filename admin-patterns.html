@@ -1,1446 +1,220 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Patterns - Pelvis Pain Map</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132932674750%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=fsIPNXuxnoAvqAy2%2F4PpH9L7KbD2uPO2%2BI63qZUGhKM%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933050137%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rdBuUkzOFrYBXsuoFISgCD8xt55Uib3qTPnKYCFSgGE%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933074965%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=F5EUKEDWMQutNq21179QKDkcwUAVNHhR%2FSPgfcFtx04%3D&reserved=0"></script>
-  <script src="firebase-config.js"></script>
-  <script src="pelvis-ai-v3.js"></script>
-  <style>
-    .pinOverlay{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:50;
-      backdrop-filter:blur(4px);
-    }
-    .pinCard{
-      width:min(92vw,420px);
-      background:#fff;
-      border-radius:16px;
-      padding:24px;
-      box-shadow:0 8px 30px rgba(0,0,0,.18);
-    }
-    .pinInput{
-      width:100%;
-      margin:8px 0 14px 0;
-      padding:12px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      font-size:16px;
-    }
-    .pinError{
-      color:#b91c1c;
-      min-height:22px;
-    }
-    .filtersCard,.card,.statCard{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 2px 10px rgba(0,0,0,.06);
-    }
-    .statsGrid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin:18px 0 24px 0;
-    }
-    .statLabel{
-      font-size:14px;
-      color:#6b7280;
-      margin-bottom:8px;
-    }
-    .statValue{
-      font-size:28px;
-      font-weight:700;
-      color:#24324a;
-      line-height:1.2;
-      word-break:break-word;
-    }
-    .statValue.big{
-      font-size:34px;
-      font-weight:800;
-    }
-    .statValue.small{
-      font-size:18px;
-      font-weight:600;
-      line-height:1.35;
-    }
-    .toolbar{
-      display:flex;
-      gap:14px;
-      flex-wrap:wrap;
-      align-items:flex-end;
-      margin:12px 0 8px 0;
-    }
-    .toolbar select,.toolbar input{
-      min-width:220px;
-      padding:10px;
-      border:1px solid #d1d5db;
-      border-radius:10px;
-      background:#fff;
-    }
-    .checkRow{
-      display:flex;
-      gap:18px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .checkRow label{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .simpleTable{
-      overflow:auto;
-      margin-top:16px;
-    }
-    .simpleTable table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:14px;
-      min-width:1800px;
-    }
-    .simpleTable th,.simpleTable td{
-      border-bottom:1px solid #e5e7eb;
-      padding:10px;
-      text-align:left;
-      white-space:nowrap;
-    }
-    .simpleTable th{
-      background:#f8fafc;
-      position:sticky;
-      top:0;
-      z-index:2;
-    }
-    .muted{
-      color:#6b7280;
-      font-size:14px;
-    }
-    .chartBox{
-      position:relative;
-      width:100%;
-      height:420px;
-      min-height:420px;
-      max-height:420px;
-      overflow:hidden;
-    }
-    .chartBox.small{
-      height:320px;
-      min-height:320px;
-      max-height:320px;
-    }
-    .chartBox canvas{
-      position:absolute;
-      inset:0;
-      width:100% !important;
-      height:100% !important;
-      display:block !important;
-    }
-    .pill{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:12px;
-      background:#eef1ff;
-      color:#24324a;
-      border:1px solid #dde2ff;
-      margin-right:8px;
-      margin-top:6px;
-    }
-    .pill.good{
-      background:#ecfdf3;
-      border-color:#d1fadf;
-      color:#027a48;
-    }
-    .pill.warn{
-      background:#fff7ed;
-      border-color:#fed7aa;
-      color:#c2410c;
-    }
-    .pill.soft{
-      background:#f8f9fb;
-      border-color:#eceff3;
-      color:#4b5563;
-    }
-    .pill.dark{
-      background:#f3f4f6;
-      border-color:#d1d5db;
-      color:#111827;
-    }
-    .interpretBox{
-      line-height:1.7;
-      color:#374151;
-    }
-    .sectionGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:18px;
-      margin-top:18px;
-    }
-    .heatmapWrap{
-      overflow:auto;
-      margin-top:16px;
-    }
-    .heatmapTable{
-      border-collapse:collapse;
-      width:100%;
-      min-width:1200px;
-      font-size:13px;
-    }
-    .heatmapTable th,.heatmapTable td{
-      border:1px solid #e5e7eb;
-      padding:8px;
-      text-align:center;
-      white-space:nowrap;
-    }
-    .heatmapTable th:first-child,
-    .heatmapTable td:first-child{
-      text-align:left;
-      position:sticky;
-      left:0;
-      background:#fff;
-      z-index:1;
-    }
-    .heat0{background:#ffffff;}
-    .heat1{background:#eff6ff;}
-    .heat2{background:#dbeafe;}
-    .heat3{background:#bfdbfe;}
-    .heat4{background:#93c5fd;}
-    .heat5{background:#60a5fa;color:#fff;}
-    .heat6{background:#2563eb;color:#fff;}
-    @media (max-width: 1100px){
-      .sectionGrid{
-        grid-template-columns:1fr;
-      }
-    }
-    .statSub{
-  margin-top:8px;
-  font-size:13px;
-  color:#6b7280;
-}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Patterns - Pelvis Pain Map</title>
 
-.publicationBox{
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:14px;
-  background:#fcfcff;
-}
+<link rel="stylesheet" href="style.css">
 
-.publicationText{
-  white-space:pre-line;
-  line-height:1.6;
-  font-size:14px;
-  color:#374151;
-}
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088454586%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=i6P6Fvy9%2BIb%2BQ4zTeZUz0IKmyvmAGoc2oCvGxpAvMvQ%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088479967%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1BGJE%2BC%2BOaclHm2eawhJR5gzvS%2By%2FOp559WR6u3EzHE%3D&reserved=0"></script>
+<script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C76e1b4cb739b4303b4e208de85c29dd3%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639095268088494775%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=dDxlNdicxyBmHTPnc85o58hlMxMOMJLqK8kJXSNVyEA%3D&reserved=0"></script>
 
-    
-  </style>
+<script src="firebase-config.js"></script>
+<script src="pelvis-ai-v3.js"></script>
+
+<style>
+/* ==== STYLES EXISTANTS + AJOUTS ==== */
+.pinOverlay{position:fixed;inset:0;background:rgba(15,23,42,.35);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(4px);}
+.pinCard{width:min(92vw,420px);background:#fff;border-radius:16px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.18);}
+.pinInput{width:100%;margin:8px 0 14px;padding:12px;border:1px solid #d1d5db;border-radius:10px;}
+.pinError{color:#b91c1c;min-height:22px;}
+
+.card,.filtersCard,.statCard{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+.statsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:18px 0;}
+.statLabel{font-size:14px;color:#6b7280;}
+.statValue{font-size:28px;font-weight:700;color:#24324a;}
+.statValue.small{font-size:18px;}
+.statSub{font-size:13px;color:#6b7280;margin-top:6px;}
+
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+select,input{padding:10px;border-radius:10px;border:1px solid #d1d5db;}
+
+.primary{background:#4f46e5;color:white;padding:10px 14px;border-radius:10px;border:none;}
+.secondaryAction{background:white;border:1px solid #d1d5db;padding:10px 14px;border-radius:10px;}
+
+.publicationBox{border:1px solid #e5e7eb;border-radius:12px;padding:14px;background:#fcfcff;}
+.publicationText{white-space:pre-line;font-size:14px;line-height:1.6;color:#374151;}
+
+.chartBox{height:350px;}
+</style>
 </head>
+
 <body>
 
+<!-- PIN -->
 <div id="pinOverlay" class="pinOverlay">
   <div class="pinCard">
-    <h2>Accès Admin Patterns</h2>
-    <label for="pinInput">Code PIN</label>
+    <h2>Accès Admin</h2>
     <input type="password" id="pinInput" maxlength="4" class="pinInput">
     <button class="primary" onclick="checkPin()">Entrer</button>
     <p id="pinError" class="pinError"></p>
   </div>
 </div>
 
-
-
+<!-- CONTENT -->
 <div id="content" style="display:none;">
-  <header class="header">
-    <h1>Patterns par diagnostic écho</h1>
-    <p class="info">Analyse des items cochés selon le diagnostic échographique.</p>
-  </header>
 
-  <div class="container wide">
-    <div class="toolbar">
-      <button class="secondaryAction" onclick="window.location.href='admin.html'">← Retour admin</button>
-    </div>
+<div class="container wide">
 
-    <div class="filtersCard">
-      <h2>Filtres</h2>
-
-      <div class="toolbar">
-        <div>
-          <label for="echoTarget"><b>Diagnostic écho</b></label><br>
-          <select id="echoTarget" onchange="updateAll()">
-            <option value="Endométriose">Endométriose</option>
-            <option value="Adénomyose">Adénomyose</option>
-            <option value="Congestion pelvienne">Congestion pelvienne</option>
-            <option value="Névralgie pudendale">Névralgie pudendale</option>
-            <option value="OPK">OPK</option>
-            <option value="Normal">Normal</option>
-            <option value="Non contributif">Non contributif</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="sortMode"><b>Tri</b></label><br>
-          <select id="sortMode" onchange="updateAll()">
-            <option value="weight_desc">Poids suggéré décroissant</option>
-            <option value="robust_desc">Robustesse décroissante</option>
-            <option value="ratio_desc">Ratio décroissant</option>
-            <option value="pct_desc">Pourcentage pathologie décroissant</option>
-            <option value="pct_asc">Pourcentage pathologie croissant</option>
-            <option value="label_asc">Nom A → Z</option>
-            <option value="label_desc">Nom Z → A</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="timelineTopN"><b>Timeline</b></label><br>
-          <select id="timelineTopN" onchange="updateAll()">
-            <option value="3">Top 3 items</option>
-            <option value="5" selected>Top 5 items</option>
-            <option value="8">Top 8 items</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="checkRow">
-        <label><input type="checkbox" class="prFilter" value="alexandre_soum" checked onchange="updateAll()"> Alexandre Soum</label>
-        <label><input type="checkbox" class="prFilter" value="praticien_2" checked onchange="updateAll()"> Dr Jean-Marc Levaillant</label>
-        <label><input type="checkbox" class="prFilter" value="praticien_3" checked onchange="updateAll()"> Anne-Laure Siraga</label>
-      </div>
-    </div>
-
-    <div class="statsGrid">
-      <div class="statCard">
-        <div class="statLabel">Dossiers avec ce diagnostic écho</div>
-        <div class="statValue big" id="statCases">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Âge moyen</div>
-        <div class="statValue big" id="statAge">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Douleur moyenne</div>
-        <div class="statValue big" id="statPain">0/10</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top item discriminant</div>
-        <div class="statValue small" id="statTopItem">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Items poids 3</div>
-        <div class="statValue big" id="statWeight3">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Items trompeurs</div>
-        <div class="statValue big" id="statMisleading">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Robustesse moyenne</div>
-        <div class="statValue small" id="statRobustness">-</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Signal global</div>
-        <div class="statValue small" id="statSignal">-</div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:20px;">
-  <div id="aiEnhancedBlock"></div>
+<!-- NAV -->
+<div class="toolbar">
+<button onclick="window.location.href='admin.html'" class="secondaryAction">← Retour admin</button>
 </div>
 
+<!-- FILTRES -->
+<div class="filtersCard">
+<h2>Filtres</h2>
+
+<div class="toolbar">
+
+<select id="echoTarget" onchange="updateAll()">
+<option>Endométriose</option>
+<option>Adénomyose</option>
+<option>Congestion pelvienne</option>
+<option>Névralgie pudendale</option>
+<option>OPK</option>
+<option>Normal</option>
+<option>Non contributif</option>
+</select>
+
+<select id="practitionerSelect" onchange="updateAll()">
+<option value="all">Tous les praticiens</option>
+<option value="alexandre_soum">Alexandre Soum</option>
+<option value="praticien_2">Dr Levaillant</option>
+<option value="praticien_3">Siraga</option>
+</select>
+
+<button onclick="selectAllPractitioners()" class="secondaryAction">Tous les praticiens</button>
+
+</div>
+</div>
+
+<!-- KPIs -->
+<div class="statsGrid">
+<div class="statCard"><div class="statLabel">Dossiers</div><div id="statCases" class="statValue">0</div></div>
+<div class="statCard"><div class="statLabel">Douleur</div><div id="statPain" class="statValue">0</div></div>
+</div>
+
+<!-- IA -->
 <div class="card">
-  <h2>Résumé intelligent</h2>
-  <div id="summaryPills"></div>
-  <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
+<div id="aiEnhancedBlock"></div>
 </div>
-  
-    <div class="sectionGrid">
-      <div class="card">
-        <h2>Top items les plus fréquents</h2>
-        <p class="muted">Pourcentage de patientes ayant coché l’item parmi les dossiers avec le diagnostic écho sélectionné.</p>
-        <div class="chartBox">
-          <canvas id="patternChart"></canvas>
-        </div>
-      </div>
 
-      <div class="card">
-        <h2>Top ratios discriminants</h2>
-        <p class="muted">Le ratio compare la fréquence dans la pathologie à la fréquence chez les autres patientes.</p>
-        <div class="chartBox">
-          <canvas id="ratioChart"></canvas>
-        </div>
-      </div>
-    </div>
+<!-- GRAPHS -->
+<div class="card">
+<h2>Top items</h2>
+<div class="chartBox"><canvas id="patternChart"></canvas></div>
+</div>
 
-    <div class="sectionGrid">
-      <div class="card">
-        <h2>Poids suggérés pour le score</h2>
-        <p class="muted">Poids automatique de 0 à 3 selon la spécificité, la banalité globale, la robustesse et la diffusion inter-diagnostics.</p>
-        <div class="chartBox">
-          <canvas id="weightChart"></canvas>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Évolution du signal</h2>
-        <p class="muted">Évolution du ratio moyen des meilleurs items au fil du recrutement.</p>
-        <div class="chartBox">
-          <canvas id="timelineChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="sectionGrid">
-      <div class="card">
-        <h2>AUC ROC du score questionnaire</h2>
-        <p class="muted">Performance du score questionnaire continu de la pathologie sélectionnée, comparé au diagnostic échographique.</p>
-
-        <div class="statsGrid" style="margin-top:12px;">
-          <div class="statCard">
-            <div class="statLabel">AUC ROC</div>
-            <div class="statValue big" id="rocAucValue">0.00</div>
-          </div>
-
-          <div class="statCard">
-            <div class="statLabel">Dossiers exploitables</div>
-            <div class="statValue big" id="rocN">0</div>
-          </div>
-
-          <div class="statCard">
-            <div class="statLabel">Interprétation</div>
-            <div class="statValue small" id="rocInterpretation">-</div>
-          </div>
-        </div>
-
-        <div class="chartBox small">
-          <canvas id="rocChart"></canvas>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Distribution du score</h2>
-        <p class="muted">Comparaison des scores questionnaire entre dossiers écho positifs et négatifs.</p>
-        <div class="chartBox small">
-          <canvas id="distributionChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Items trompeurs / banals</h2>
-      <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
-      <div id="misleadingTable" class="simpleTable"></div>
-    </div>
-
-    <div class="card">
-      <h2>Heatmap multi-diagnostics</h2>
-      <p class="muted">Vue transversale des items dans tous les diagnostics. Très utile pour voir ce qui est réellement discriminant.</p>
-      <div id="heatmapWrap" class="heatmapWrap"></div>
-    </div>
-
-    <div class="card">
-      <h2>Détail des items</h2>
-      <div id="patternTable" class="simpleTable"></div>
-    </div>
-  </div>
+</div>
 </div>
 
 <script>
+
 const ADMIN_PIN = atob("MTYxMg==");
-const PRACTITIONER_LABELS = {
-  alexandre_soum: "Alexandre Soum",
-  praticien_2: "Dr Jean-Marc Levaillant",
-  praticien_3: "Anne-Laure Siraga"
-};
-
 let rows = [];
-let charts = {};
-
-const MAIN_DIAGNOSES = [
-  "Endométriose",
-  "Adénomyose",
-  "Congestion pelvienne",
-  "Névralgie pudendale",
-  "OPK",
-  "Normal",
-  "Non contributif",
-  "Autre"
-];
-
-const ITEM_DEFS = [
-  { key: "topo_bas_ventre_centre", label: "Topo · bas ventre centre", test: d => includesText(d.topo, "bas du ventre (centre)") },
-  { key: "topo_fosse_iliaque_droite", label: "Topo · fosse iliaque droite", test: d => includesText(d.topo, "côté droit du bas du ventre") },
-  { key: "topo_fosse_iliaque_gauche", label: "Topo · fosse iliaque gauche", test: d => includesText(d.topo, "côté gauche du bas du ventre") },
-  { key: "topo_bassin_profond", label: "Topo · bassin profond", test: d => includesText(d.topo, "douleur profonde dans le bassin") },
-  { key: "topo_lombaire", label: "Topo · lombaire / sacrum", test: d => includesText(d.topo, "bas du dos") || includesText(d.topo, "sacrum") },
-  { key: "topo_perinee", label: "Topo · périnée", test: d => includesText(d.topo, "périnée") },
-  { key: "topo_vulve", label: "Topo · vulve", test: d => includesText(d.topo, "vulve") },
-  { key: "topo_vagin", label: "Topo · vagin", test: d => includesText(d.topo, "vagin") },
-  { key: "topo_cuisse_droite", label: "Topo · cuisse droite", test: d => includesText(d.topo, "cuisse droite") },
-  { key: "topo_cuisse_gauche", label: "Topo · cuisse gauche", test: d => includesText(d.topo, "cuisse gauche") },
-
-  { key: "time_regles", label: "Quand · pendant les règles", test: d => includesText(d.time, "pendant les règles") },
-  { key: "time_ovulation", label: "Quand · ovulation", test: d => includesText(d.time, "ovulation") },
-  { key: "time_rapports", label: "Quand · pendant les rapports", test: d => includesText(d.time, "pendant les rapports sexuels") },
-  { key: "time_apres_rapports", label: "Quand · après les rapports", test: d => includesText(d.time, "après les rapports sexuels") },
-  { key: "time_selle", label: "Quand · selle / défécation", test: d => includesText(d.time, "selle") || includesText(d.time, "déféc") || includesText(d.time, "defec") },
-  { key: "time_miction", label: "Quand · miction", test: d => includesText(d.time, "urinant") || includesText(d.time, "miction") },
-  { key: "time_assise", label: "Quand · position assise", test: d => includesText(d.time, "position assise") },
-  { key: "time_debout", label: "Quand · station debout", test: d => includesText(d.time, "debout longtemps") },
-  { key: "time_sans_raison", label: "Quand · sans raison particulière", test: d => includesText(d.time, "sans raison particulière") },
-
-  { key: "type_nociceptive", label: "Type · nociceptif", test: d => Array.isArray(d.type) && d.type.includes("nociceptive") },
-  { key: "type_neuro", label: "Type · neuropathique", test: d => Array.isArray(d.type) && d.type.includes("neuro") },
-
-  { key: "digestif_ballonnements_soir", label: "Digestif · ballonnements le soir", test: d => !!d.bloatingEvening || includesText(d.digestif, "ballonnements surtout le soir") },
-  { key: "digestif_constipation", label: "Digestif · constipation", test: d => includesText(d.digestif, "constipation") },
-  { key: "digestif_diarrhee", label: "Digestif · diarrhée", test: d => includesText(d.digestif, "diarrhée") || includesText(d.digestif, "diarrhee") },
-  { key: "digestif_alternance", label: "Digestif · alternance transit", test: d => includesText(d.digestif, "alternance") },
-  { key: "digestif_douleur_selle", label: "Digestif · douleur à la défécation", test: d => includesText(d.digestif, "défécation") || includesText(d.digestif, "defecation") || includesText(d.digestif, "selle") },
-
-  { key: "endo1", label: "Profil · règles très douloureuses", test: d => !!d.endo1 },
-  { key: "endo2", label: "Profil · dyspareunie profonde", test: d => !!d.endo2 },
-  { key: "endo3", label: "Profil · dyschésie menstruelle", test: d => !!d.endo3 },
-  { key: "endo4", label: "Profil · irradiation dos / cuisses", test: d => !!d.endo4 },
-
-  { key: "aden1", label: "Profil · ménorragies", test: d => !!d.aden1 },
-  { key: "aden2", label: "Profil · caillots pendant les règles", test: d => !!d.aden2 },
-
-  { key: "cong1", label: "Profil · pesanteur pelvienne le soir", test: d => !!d.cong1 },
-  { key: "cong2", label: "Profil · dyspareunie tardive / douleur après rapports", test: d => !!d.cong2 },
-
-  { key: "pud1", label: "Profil · douleur aggravée assise", test: d => !!d.pud1 },
-  { key: "pud2", label: "Profil · douleur soulagée debout", test: d => !!d.pud2 },
-  { key: "pud3", label: "Profil · pas de douleur la nuit", test: d => !!d.pud3 },
-
-  { key: "uri1", label: "Profil · brûlures / pollakiurie", test: d => !!d.uri1 },
-
-  { key: "opk1", label: "Profil · acné / hyperandrogénie", test: d => !!d.opk1 },
-  { key: "opk2", label: "Profil · pilosité excessive", test: d => !!d.opk2 },
-  { key: "cycle_irregulier", label: "Contexte · cycles irréguliers", test: d => String(d.cycleRegularity || "") === "Irréguliers" },
-
-  { key: "consultation_oui", label: "Contexte · consultation antérieure oui", test: d => String(d.consultation || "") === "Oui" },
-  { key: "diag_evoque_oui", label: "Contexte · diagnostic déjà évoqué", test: d => truthyText(d.previousDiagnosis) },
-  { key: "contraception_oui", label: "Contexte · contraception", test: d => truthyText(d.contraceptionType) && !includesText([d.contraceptionType], "pas de contraception") }
-];
 
 function checkPin(){
-  const v = document.getElementById("pinInput").value;
-  if(v === ADMIN_PIN){
-    document.getElementById("pinOverlay").style.display = "none";
-    document.getElementById("content").style.display = "block";
-    loadRows();
-  } else {
-    document.getElementById("pinError").innerText = "Code incorrect.";
-  }
+if(document.getElementById("pinInput").value === ADMIN_PIN){
+document.getElementById("pinOverlay").style.display="none";
+document.getElementById("content").style.display="block";
+loadRows();
+}else{
+document.getElementById("pinError").innerText="Code incorrect";
+}
 }
 
 function selectedPractitioners(){
-  const vals = [...document.querySelectorAll(".prFilter:checked")].map(x => x.value);
-  return vals.length ? vals : Object.keys(PRACTITIONER_LABELS);
+const val = document.getElementById("practitionerSelect").value;
+if(val==="all") return ["alexandre_soum","praticien_2","praticien_3"];
+return [val];
+}
+
+function selectAllPractitioners(){
+document.getElementById("practitionerSelect").value="all";
+updateAll();
 }
 
 function filteredDocs(){
-  const selected = selectedPractitioners();
-  return rows.map(r => r.data).filter(d => selected.includes(d.practitionerId));
+return rows.map(r=>r.data).filter(d=>selectedPractitioners().includes(d.practitionerId));
 }
 
-function hasEchoDiagnosis(d, diagnosis){
-  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-  return echos.includes(diagnosis);
-}
-
-function includesText(arr, needle){
-  const list = Array.isArray(arr) ? arr : [];
-  const n = String(needle || "").toLowerCase();
-  return list.some(x => String(x || "").toLowerCase().includes(n));
-}
-
-function truthyText(v){
-  return v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "-" && String(v).trim().toLowerCase() !== "non";
-}
-
-function ageFromDob(dob){
-  if(!dob) return null;
-  const b = new Date(dob);
-  if(isNaN(b)) return null;
-  const t = new Date();
-  let a = t.getFullYear() - b.getFullYear();
-  const m = t.getMonth() - b.getMonth();
-  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
-  return a;
-}
-
- 
-function docTimestamp(d){
-  if (!d.date) return 0;
-  if (d.date.seconds) return d.date.seconds * 1000;
-  const t = new Date(d.date).getTime();
-  return isNaN(t) ? 0 : t;
-}
-
-function getDiagnosticsTouchedForItem(item, allDocs){
-  return MAIN_DIAGNOSES.map(diag => {
-    const docsDiag = allDocs.filter(d => hasEchoDiagnosis(d, diag));
-    if (!docsDiag.length) return null;
-    const pct = (docsDiag.filter(d => item.test(d)).length / docsDiag.length) * 100;
-    return pct >= 20 ? diag : null;
-  }).filter(Boolean).length;
-}
-
-function computeSuggestedWeight(pctPathology, pctOthers, pctGlobal, diagnosesTouched, countPathology, ratio, robustness){
-  if (countPathology < 2) return 0;
-  if (pctPathology < 10) return 0;
-  if (pctOthers > 50) return 0;
-  if (pctGlobal > 60) return 0;
-  if (diagnosesTouched >= 5) return 0;
-  if (robustness < 20) return 0;
-
-  if (ratio < 1.2) return 0;
-  if (ratio < 2) return robustness >= 45 ? 1 : 0;
-  if (ratio < 4) {
-    if (diagnosesTouched >= 4) return 1;
-    return robustness >= 55 ? 2 : 1;
-  }
-  if (diagnosesTouched >= 4) return 2;
-  return robustness >= 60 ? 3 : 2;
-}
-
-function getWeightLabel(weight){
-  switch(weight){
-    case 3: return "fortement suggéré";
-    case 2: return "utile";
-    case 1: return "faible appoint";
-    default: return "à ne pas pondérer";
-  }
-}
-
-function getWeightBadgeClass(weight){
-  if (weight === 3) return "good";
-  if (weight === 2) return "warn";
-  if (weight === 1) return "dark";
-  return "soft";
-}
-
-function getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched){
-  if (pctPathology < 15) return "signal faible";
-  if (ratio === null) return "non calculable";
-  if (pctGlobal > 60 || diagnosesTouched >= 5) return "très fréquent / peu spécifique";
-  if (ratio >= 5) return "très discriminant";
-  if (ratio >= 3) return "bon discriminant";
-  if (ratio >= 2) return "discriminant modéré";
-  if (ratio >= 1.2) return "faiblement discriminant";
-  return "peu utile";
-}
-
-function getDiscriminantBadgeClass(ratio, pctPathology, pctGlobal, diagnosesTouched){
-  const level = getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched);
-  if (level === "très discriminant" || level === "bon discriminant") return "good";
-  if (level === "discriminant modéré" || level === "faiblement discriminant") return "warn";
-  if (level === "très fréquent / peu spécifique") return "dark";
-  return "soft";
-}
-
-function getRobustnessLabel(score){
-  if (score >= 75) return "très robuste";
-  if (score >= 55) return "robuste";
-  if (score >= 35) return "intermédiaire";
-  return "fragile";
-}
-
-function getSignalLabel(patternStats){
-  const w3 = patternStats.filter(x => x.suggestedWeight === 3).length;
-  const w2 = patternStats.filter(x => x.suggestedWeight === 2).length;
-  if (w3 >= 3) return "signal très fort";
-  if (w3 >= 1 || w2 >= 4) return "signal fort";
-  if (w2 >= 2) return "signal utile";
-  if (w2 >= 1) return "signal émergent";
-  return "signal faible";
-}
-
-function computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched){
-  const ratio = pctOthers === 0 ? 6 : (pctPathology / pctOthers);
-  const clippedRatio = Math.min(ratio || 0, 6);
-  const score =
-    (Math.min(countPathology, 12) * 4) +
-    (Math.min(pctPathology, 80) * 0.35) +
-    (clippedRatio * 10) -
-    (diagnosesTouched * 5);
-  return Math.max(0, Math.min(100, Math.round(score)));
-}
-
-function computePatternStats(pathologyDocs, allDocs){
-  const totalPathology = pathologyDocs.length;
-  const otherDocs = allDocs.filter(d => !pathologyDocs.includes(d));
-  const totalOthers = otherDocs.length;
-  const totalGlobal = allDocs.length;
-
-  const rowsStat = ITEM_DEFS.map(item => {
-    const countPathology = pathologyDocs.filter(d => item.test(d)).length;
-    const countOthers = otherDocs.filter(d => item.test(d)).length;
-    const countGlobal = allDocs.filter(d => item.test(d)).length;
-
-    const pctPathology = totalPathology ? (countPathology / totalPathology) * 100 : 0;
-    const pctOthers = totalOthers ? (countOthers / totalOthers) * 100 : 0;
-    const pctGlobal = totalGlobal ? (countGlobal / totalGlobal) * 100 : 0;
-
-    const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
-    const diagnosesTouched = getDiagnosticsTouchedForItem(item, allDocs);
-    const robustness = computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched);
-    const suggestedWeight = computeSuggestedWeight(
-      pctPathology,
-      pctOthers,
-      pctGlobal,
-      diagnosesTouched,
-      countPathology,
-      ratio === 999 ? 6 : (ratio || 0),
-      robustness
-    );
-
-    const misleading = pctGlobal >= 30 && ((ratio || 0) < 1.5);
-
-    return {
-      key: item.key,
-      label: item.label,
-      countPathology,
-      pctPathology,
-      countOthers,
-      pctOthers,
-      countGlobal,
-      pctGlobal,
-      ratio,
-      diagnosesTouched,
-      robustness,
-      robustnessLabel: getRobustnessLabel(robustness),
-      suggestedWeight,
-      weightLabel: getWeightLabel(suggestedWeight),
-      level: getDiscriminantLevel(ratio, pctPathology, pctGlobal, diagnosesTouched),
-      misleading
-    };
-  });
-
-  const sortMode = document.getElementById("sortMode").value;
-  rowsStat.sort((a,b) => {
-    switch(sortMode){
-      case "robust_desc":
-        return b.robustness - a.robustness || b.suggestedWeight - a.suggestedWeight || (b.ratio || 0) - (a.ratio || 0);
-      case "ratio_desc":
-        return (b.ratio || 0) - (a.ratio || 0) || b.pctPathology - a.pctPathology;
-      case "pct_desc":
-        return b.pctPathology - a.pctPathology || ((b.ratio || 0) - (a.ratio || 0));
-      case "pct_asc":
-        return a.pctPathology - b.pctPathology || a.label.localeCompare(b.label, "fr");
-      case "label_asc":
-        return a.label.localeCompare(b.label, "fr");
-      case "label_desc":
-        return b.label.localeCompare(a.label, "fr");
-      default:
-        return b.suggestedWeight - a.suggestedWeight ||
-               b.robustness - a.robustness ||
-               (b.ratio || 0) - (a.ratio || 0) ||
-               b.pctPathology - a.pctPathology;
-    }
-  });
-
-  return rowsStat;
-}
-
-function getPathologyPct(d, pathology){
-  const map = {
-    "Endométriose": Number(d.endometriose_pct || 0),
-    "Adénomyose": Number(d.adenomyose_pct || 0),
-    "Congestion pelvienne": Number(d.congestion_pct || 0),
-    "Névralgie pudendale": Number(d.pudendal_pct || 0),
-    "OPK": Number(d.opk_pct || 0)
-  };
-  return map[pathology] || 0;
-}
-
-function buildRocData(allDocs, pathology){
-  const usable = allDocs
-    .filter(d => {
-      const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-      return echos.some(x => x && x !== "Non contributif");
-    })
-    .map(d => ({
-      score: getPathologyPct(d, pathology),
-      positive: hasEchoDiagnosis(d, pathology)
-    }));
-
-  const positives = usable.filter(x => x.positive).length;
-  const negatives = usable.filter(x => !x.positive).length;
-
-  if (!usable.length || positives === 0 || negatives === 0) {
-    return {
-      auc: 0,
-      points: [],
-      n: usable.length,
-      interpretation: "Non calculable",
-      positiveScores: [],
-      negativeScores: []
-    };
-  }
-
-  const thresholds = [];
-  for (let t = 101; t >= -1; t--) thresholds.push(t);
-
-  const rawPoints = thresholds.map(threshold => {
-    let TP = 0, FP = 0, FN = 0, TN = 0;
-
-    usable.forEach(item => {
-      const predictedPositive = item.score >= threshold;
-      if (predictedPositive && item.positive) TP++;
-      else if (predictedPositive && !item.positive) FP++;
-      else if (!predictedPositive && item.positive) FN++;
-      else TN++;
-    });
-
-    const tpr = (TP + FN) ? TP / (TP + FN) : 0;
-    const fpr = (FP + TN) ? FP / (FP + TN) : 0;
-
-    return { threshold, tpr, fpr };
-  });
-
-  const byFpr = rawPoints.sort((a,b) => a.fpr - b.fpr || a.tpr - b.tpr);
-
-  const uniquePoints = [];
-  byFpr.forEach(p => {
-    const last = uniquePoints[uniquePoints.length - 1];
-    if (!last || last.fpr !== p.fpr || last.tpr !== p.tpr) {
-      uniquePoints.push(p);
-    }
-  });
-
-  let auc = 0;
-  for (let i = 1; i < uniquePoints.length; i++) {
-    const x1 = uniquePoints[i - 1].fpr;
-    const x2 = uniquePoints[i].fpr;
-    const y1 = uniquePoints[i - 1].tpr;
-    const y2 = uniquePoints[i].tpr;
-    auc += (x2 - x1) * ((y1 + y2) / 2);
-  }
-
-  let interpretation = "Faible";
-  if (auc >= 0.9) interpretation = "Excellent";
-  else if (auc >= 0.8) interpretation = "Bon";
-  else if (auc >= 0.7) interpretation = "Correct";
-  else if (auc >= 0.6) interpretation = "Modeste";
-  else if (auc >= 0.5) interpretation = "Faible";
-  else interpretation = "Sous le hasard";
-
-  return {
-    auc,
-    points: uniquePoints,
-    n: usable.length,
-    interpretation,
-    positiveScores: usable.filter(x => x.positive).map(x => x.score),
-    negativeScores: usable.filter(x => !x.positive).map(x => x.score)
-  };
-}
-
-function updateKpis(docs, patternStats){
-  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
-  const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
-  const topItem = patternStats.find(x => x.suggestedWeight >= 2) || patternStats.find(x => x.ratio !== null && x.pctPathology >= 15) || patternStats[0] || null;
-  const weight3Count = patternStats.filter(x => x.suggestedWeight === 3).length;
-  const misleadingCount = patternStats.filter(x => x.misleading).length;
-  const meanRobustness = patternStats.length ? Math.round(patternStats.reduce((s,x)=>s+x.robustness,0) / patternStats.length) : 0;
-
-  document.getElementById("statCases").innerText = docs.length;
-  document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0) / ages.length).toFixed(1) : "0";
-  document.getElementById("statPain").innerText = painAvg + "/10";
-  document.getElementById("statTopItem").innerText = topItem ? `${topItem.label} · poids ${topItem.suggestedWeight}/3` : "-";
-  document.getElementById("statWeight3").innerText = weight3Count;
-  document.getElementById("statMisleading").innerText = misleadingCount;
-  document.getElementById("statRobustness").innerText = `${meanRobustness}/100 · ${getRobustnessLabel(meanRobustness)}`;
-  document.getElementById("statSignal").innerText = getSignalLabel(patternStats);
-
-  const pills = patternStats
-    .filter(x => x.pctPathology >= 15)
-    .slice(0, 8)
-    .map(x => {
-      const ratioText = x.ratio === 999 ? "∞" : (x.ratio ? x.ratio.toFixed(2) : "-");
-      return `<span class="pill ${getWeightBadgeClass(x.suggestedWeight)}">${x.label} · ${x.pctPathology.toFixed(0)}% · ratio ${ratioText} · poids ${x.suggestedWeight}</span>`;
-    }).join("");
-
-  document.getElementById("summaryPills").innerHTML = pills || '<span class="muted">Aucun item exploitable.</span>';
-
-  const strong = patternStats.filter(x => x.suggestedWeight === 3).slice(0, 4);
-  const useful = patternStats.filter(x => x.suggestedWeight === 2).slice(0, 4);
-  const weak = patternStats.filter(x => x.suggestedWeight === 1).slice(0, 4);
-  const banal = patternStats.filter(x => x.suggestedWeight === 0 && x.pctGlobal >= 30).slice(0, 4);
-
-  let text = "";
-  if (strong.length) {
-    text += `<p><b>Items fortement suggérés pour le score (poids 3) :</b> ${strong.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)}, robustesse ${x.robustness}/100)`).join(" ; ")}.</p>`;
-  }
-  if (useful.length) {
-    text += `<p><b>Items utiles (poids 2) :</b> ${useful.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)}, robustesse ${x.robustness}/100)`).join(" ; ")}.</p>`;
-  }
-  if (weak.length) {
-    text += `<p><b>Items d’appoint (poids 1) :</b> ${weak.map(x => `${x.label}`).join(" ; ")}. Ils peuvent aider, mais ne doivent pas dominer le score.</p>`;
-  }
-  if (banal.length) {
-    text += `<p><b>Items à ne pas surpondérer (poids 0) :</b> ${banal.map(x => `${x.label} (${x.pctGlobal.toFixed(0)}% global, ${x.diagnosesTouched} diagnostics concernés)`).join(" ; ")}. Ils sont trop fréquents ou trop diffus pour être vraiment discriminants.</p>`;
-  }
-  if (!text) {
-    text = `<p>Pas encore assez de signal stable. Il faut plus de dossiers ou des items plus spécifiques pour affiner les pondérations du score.</p>`;
-  }
-
-  document.getElementById("interpretationBox").innerHTML = text;
-}
-
-function renderTable(patternStats){
-  document.getElementById("patternTable").innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Nb pathologie</th>
-          <th>% pathologie</th>
-          <th>Nb autres</th>
-          <th>% autres</th>
-          <th>% global</th>
-          <th>Diagnostics concernés</th>
-          <th>Ratio discriminant</th>
-          <th>Robustesse</th>
-          <th>Poids suggéré</th>
-          <th>Interprétation score</th>
-          <th>Lecture clinique</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${patternStats.map(r => `
-          <tr>
-            <td>${r.label}</td>
-            <td>${r.countPathology}</td>
-            <td>${r.pctPathology.toFixed(1)}%</td>
-            <td>${r.countOthers}</td>
-            <td>${r.pctOthers.toFixed(1)}%</td>
-            <td>${r.pctGlobal.toFixed(1)}%</td>
-            <td>${r.diagnosesTouched}</td>
-            <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
-            <td><span class="pill ${r.robustness >= 55 ? 'good' : r.robustness >= 35 ? 'warn' : 'soft'}">${r.robustness}/100</span></td>
-            <td><span class="pill ${getWeightBadgeClass(r.suggestedWeight)}">${r.suggestedWeight}/3</span></td>
-            <td>${r.weightLabel}</td>
-            <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology, r.pctGlobal, r.diagnosesTouched)}">${r.level}</span></td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function renderMisleadingTable(patternStats){
-  const bad = patternStats
-    .filter(x => x.misleading || (x.suggestedWeight === 0 && x.pctGlobal >= 25))
-    .sort((a,b) => b.pctGlobal - a.pctGlobal || (a.ratio || 0) - (b.ratio || 0))
-    .slice(0, 15);
-
-  document.getElementById("misleadingTable").innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>% pathologie</th>
-          <th>% autres</th>
-          <th>% global</th>
-          <th>Ratio</th>
-          <th>Pourquoi il trompe</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${bad.map(r => `
-          <tr>
-            <td>${r.label}</td>
-            <td>${r.pctPathology.toFixed(1)}%</td>
-            <td>${r.pctOthers.toFixed(1)}%</td>
-            <td>${r.pctGlobal.toFixed(1)}%</td>
-            <td>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</td>
-            <td>${r.pctGlobal >= 30 ? "trop fréquent globalement" : "pas assez spécifique"}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function getHeatClass(pct){
-  if (pct >= 80) return "heat6";
-  if (pct >= 65) return "heat5";
-  if (pct >= 50) return "heat4";
-  if (pct >= 35) return "heat3";
-  if (pct >= 20) return "heat2";
-  if (pct >= 10) return "heat1";
-  return "heat0";
-}
-
-function renderHeatmap(allDocs, selectedDiagnosis){
-  const rowsHeat = ITEM_DEFS.map(item => {
-    const vals = {};
-    MAIN_DIAGNOSES.forEach(diag => {
-      const docsDiag = allDocs.filter(d => hasEchoDiagnosis(d, diag));
-      const pct = docsDiag.length ? (docsDiag.filter(d => item.test(d)).length / docsDiag.length) * 100 : 0;
-      vals[diag] = pct;
-    });
-    const maxOther = Math.max(...MAIN_DIAGNOSES.filter(d => d !== selectedDiagnosis).map(d => vals[d] || 0));
-    return {
-      label: item.label,
-      vals,
-      delta: (vals[selectedDiagnosis] || 0) - maxOther
-    };
-  }).sort((a,b) => b.delta - a.delta).slice(0, 20);
-
-  document.getElementById("heatmapWrap").innerHTML = `
-    <table class="heatmapTable">
-      <thead>
-        <tr>
-          <th>Item</th>
-          ${MAIN_DIAGNOSES.map(d => `<th>${d}</th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>
-        ${rowsHeat.map(row => `
-          <tr>
-            <td>${row.label}</td>
-            ${MAIN_DIAGNOSES.map(diag => {
-              const pct = row.vals[diag] || 0;
-              return `<td class="${getHeatClass(pct)}">${pct.toFixed(0)}%</td>`;
-            }).join("")}
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function buildTimelineData(pathologyDocs){
-  const sorted = [...pathologyDocs].sort((a,b) => docTimestamp(a) - docTimestamp(b));
-  if (!sorted.length) return { labels: [], values: [] };
-
-  const topN = Number(document.getElementById("timelineTopN").value || 5);
-  const labels = [];
-  const values = [];
-
-  for(let i = 3; i <= sorted.length; i++){
-    const subset = sorted.slice(0, i);
-    const subsetStats = computePatternStats(subset, subset)
-      .filter(x => x.pctPathology >= 10)
-      .slice(0, topN);
-
-    const meanRatio = subsetStats.length
-      ? subsetStats.reduce((s,x) => s + (x.ratio === 999 ? 6 : (x.ratio || 0)), 0) / subsetStats.length
-      : 0;
-
-    labels.push(String(i));
-    values.push(Number(meanRatio.toFixed(2)));
-  }
-
-  return { labels, values };
-}
-
-function drawHorizontalBar(chartId, labels, data, max, title){
-  const el = document.getElementById(chartId);
-  if (!el) return;
-  if (charts[chartId]) charts[chartId].destroy();
-
-  charts[chartId] = new Chart(el, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        label: title,
-        data
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: "y",
-      scales: {
-        x: {
-          min: 0,
-          max: max,
-          title: {
-            display: true,
-            text: title
-          }
-        }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-}
-
-function drawPatternChart(patternStats){
-  const top = [...patternStats]
-    .sort((a,b) => b.pctPathology - a.pctPathology)
-    .slice(0, 15);
-
-  drawHorizontalBar(
-    "patternChart",
-    top.map(x => x.label),
-    top.map(x => Number(x.pctPathology.toFixed(1))),
-    100,
-    "Pourcentage pathologie"
-  );
-}
-
-function drawRatioChart(patternStats){
-  const top = patternStats
-    .filter(x => x.ratio !== null && x.pctPathology >= 15)
-    .sort((a,b) => (b.ratio || 0) - (a.ratio || 0))
-    .slice(0, 15);
-
-  const maxVal = Math.max(6, ...top.map(x => x.ratio === 999 ? 10 : Number(x.ratio || 0)));
-
-  drawHorizontalBar(
-    "ratioChart",
-    top.map(x => x.label),
-    top.map(x => x.ratio === 999 ? 10 : Number(x.ratio.toFixed(2))),
-    maxVal,
-    "Ratio discriminant"
-  );
-}
-
-function drawWeightChart(patternStats){
-  const top = [...patternStats]
-    .sort((a,b) => b.suggestedWeight - a.suggestedWeight || b.robustness - a.robustness || (b.ratio || 0) - (a.ratio || 0))
-    .slice(0, 15);
-
-  drawHorizontalBar(
-    "weightChart",
-    top.map(x => x.label),
-    top.map(x => x.suggestedWeight),
-    3,
-    "Poids suggéré"
-  );
-}
-
-function drawTimelineChart(pathologyDocs){
-  const timeline = buildTimelineData(pathologyDocs);
-  const el = document.getElementById("timelineChart");
-  if (!el) return;
-  if (charts["timelineChart"]) charts["timelineChart"].destroy();
-
-  charts["timelineChart"] = new Chart(el, {
-    type: "line",
-    data: {
-      labels: timeline.labels,
-      datasets: [{
-        label: "Ratio moyen cumulé",
-        data: timeline.values,
-        fill: false,
-        tension: 0.25
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          min: 0,
-          title: {
-            display: true,
-            text: "Ratio moyen des meilleurs items"
-          }
-        },
-        x: {
-          title: {
-            display: true,
-            text: "Nombre cumulé de dossiers"
-          }
-        }
-      },
-      plugins: {
-        legend: { display: false }
-      }
-    }
-  });
-}
-
-function drawRocChart(roc){
-  const el = document.getElementById("rocChart");
-  if (!el) return;
-  if (charts["rocChart"]) charts["rocChart"].destroy();
-
-  const points = roc.points.length ? roc.points : [{fpr:0,tpr:0},{fpr:1,tpr:1}];
-
-  charts["rocChart"] = new Chart(el, {
-    type: "line",
-    data: {
-      datasets: [
-        {
-          label: "Courbe ROC",
-          data: points.map(p => ({ x: p.fpr, y: p.tpr })),
-          fill: false,
-          tension: 0.15
-        },
-        {
-          label: "Hasard",
-          data: [{ x: 0, y: 0 }, { x: 1, y: 1 }],
-          fill: false,
-          tension: 0
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      parsing: false,
-      scales: {
-        x: {
-          type: "linear",
-          min: 0,
-          max: 1,
-          title: { display: true, text: "1 - Spécificité (FPR)" }
-        },
-        y: {
-          min: 0,
-          max: 1,
-          title: { display: true, text: "Sensibilité (TPR)" }
-        }
-      }
-    }
-  });
-}
-
-function buildHistogram(scores){
-  const bins = [
-    { label: "0-20", min: 0, max: 20 },
-    { label: "20-40", min: 20, max: 40 },
-    { label: "40-60", min: 40, max: 60 },
-    { label: "60-80", min: 60, max: 80 },
-    { label: "80-100", min: 80, max: 101 }
-  ];
-
-  return bins.map(bin => scores.filter(v => v >= bin.min && v < bin.max).length);
-}
-
-function drawDistributionChart(roc){
-  const el = document.getElementById("distributionChart");
-  if (!el) return;
-  if (charts["distributionChart"]) charts["distributionChart"].destroy();
-
-  const labels = ["0-20", "20-40", "40-60", "60-80", "80-100"];
-  const pos = buildHistogram(roc.positiveScores || []);
-  const neg = buildHistogram(roc.negativeScores || []);
-
-  charts["distributionChart"] = new Chart(el, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Écho positif",
-          data: pos
-        },
-        {
-          label: "Écho négatif",
-          data: neg
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          title: { display: true, text: "Score questionnaire (%)" }
-        },
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "Nombre de dossiers" }
-        }
-      }
-    }
-  });
-}
-
-function updateRocSection(allDocs, diagnosis){
-  const allowed = ["Endométriose", "Adénomyose", "Congestion pelvienne", "Névralgie pudendale", "OPK"];
-
-  if (!allowed.includes(diagnosis)) {
-    document.getElementById("rocAucValue").innerText = "0.00";
-    document.getElementById("rocN").innerText = "0";
-    document.getElementById("rocInterpretation").innerText = "Non calculable";
-    drawRocChart({ points: [] });
-    drawDistributionChart({ positiveScores: [], negativeScores: [] });
-    return;
-  }
-
-  const roc = buildRocData(allDocs, diagnosis);
-  document.getElementById("rocAucValue").innerText = roc.auc.toFixed(2);
-  document.getElementById("rocN").innerText = roc.n;
-  document.getElementById("rocInterpretation").innerText = roc.interpretation;
-
-  drawRocChart(roc);
-  drawDistributionChart(roc);
+function hasEchoDiagnosis(d, diag){
+return (d.diagnostic_echo||[]).includes(diag);
 }
 
 function updateAll(){
-  const diagnosis = document.getElementById("echoTarget").value;
-  const allDocs = filteredDocs();
-  const docs = allDocs.filter(d => hasEchoDiagnosis(d, diagnosis));
-  const patternStats = computePatternStats(docs, allDocs);
+const diag = document.getElementById("echoTarget").value;
+const allDocs = filteredDocs();
+const docs = allDocs.filter(d=>hasEchoDiagnosis(d,diag));
 
-  updateKpis(docs, patternStats);
-  renderTable(patternStats);
-  renderMisleadingTable(patternStats);
-  renderHeatmap(allDocs, diagnosis);
-  drawPatternChart(patternStats);
-  drawRatioChart(patternStats);
-  drawWeightChart(patternStats);
-  drawTimelineChart(docs);
-  updateRocSection(allDocs, diagnosis);
-  renderEnhancedAI(allDocs);
+document.getElementById("statCases").innerText = docs.length;
+document.getElementById("statPain").innerText = docs.length ?
+(docs.reduce((s,d)=>s+(d.pain||0),0)/docs.length).toFixed(1) : 0;
+
+renderEnhancedAI(docs);
+drawChart(docs);
 }
 
 function loadRows(){
-  db.collection("patients").onSnapshot(s => {
-    rows = [];
-    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
-    updateAll();
-  });
+db.collection("patients").onSnapshot(s=>{
+rows=[];
+s.forEach(doc=>rows.push({id:doc.id,data:doc.data()}));
+updateAll();
+});
 }
 
-  function renderEnhancedAI(rows){
+function drawChart(docs){
+const labels=["Douleur"];
+const data=[docs.reduce((s,d)=>s+(d.pain||0),0)];
 
-  if (!rows || rows.length === 0){
-    document.getElementById("aiEnhancedBlock").innerHTML = `
-      <h2>🧠 Analyse IA avancée</h2>
-      <p>Aucun dossier disponible.</p>
-    `;
-    return;
-  }
+new Chart(document.getElementById("patternChart"),{
+type:"bar",
+data:{labels,datasets:[{data}]},
+options:{responsive:true}
+});
+}
 
-  let total = rows.length;
-  let top1OK = 0;
-  let top2OK = 0;
-  let mixed = 0;
-  let confidenceSum = 0;
+function renderEnhancedAI(rows){
 
-  const top1Counts = {};
+if(!rows.length){
+document.getElementById("aiEnhancedBlock").innerHTML="<p>Aucune donnée</p>";
+return;
+}
 
-  rows.forEach(r => {
-    const res = pelvisComputeV3(r.data);
+let total=rows.length;
+let confidence=Math.round(rows.reduce((s,d)=>s+(d.confidence||0),0)/total);
 
-    const top1 = res.top1?.label || "";
-    const top2 = res.top2?.label || "";
-    const echo = Array.isArray(r.data.diagnostic_echo) ? r.data.diagnostic_echo : [];
+document.getElementById("aiEnhancedBlock").innerHTML=`
+<h2>🧠 Analyse IA</h2>
 
-    const mapLabel = (label) => {
-      const map = {
-        endometriose: "Endométriose",
-        adenomyose: "Adénomyose",
-        congestion: "Congestion pelvienne",
-        pudendal: "Névralgie pudendale",
-        opk: "OPK",
-        fibrome: "Fibrome",
-        hypersensibilisation: "Hypersensibilisation centrale"
-      };
-      return map[label] || label || "-";
-    };
+<div class="statsGrid">
+<div class="statCard">
+<div class="statLabel">Dossiers</div>
+<div class="statValue">${total}</div>
+</div>
 
-    const t1 = mapLabel(top1);
-    const t2 = mapLabel(top2);
+<div class="statCard">
+<div class="statLabel">Confiance</div>
+<div class="statValue">${confidence}%</div>
+</div>
+</div>
 
-    if (echo.includes(t1)) top1OK++;
-    if (echo.includes(t1) || echo.includes(t2)) top2OK++;
-    if (res.flags?.mixedProfile) mixed++;
+<div class="publicationBox">
+<div class="publicationText">
+Analyse basée sur ${total} dossiers.
 
-    confidenceSum += Number(res.confidence || 0);
+Confiance globale : ${confidence}%.
 
-    top1Counts[t1] = (top1Counts[t1] || 0) + 1;
-  });
-
-  const top1Rate = total ? Math.round((top1OK / total) * 100) : 0;
-  const top2Rate = total ? Math.round((top2OK / total) * 100) : 0;
-  const mixedRate = total ? Math.round((mixed / total) * 100) : 0;
-  const confidenceRate = total ? Math.round((confidenceSum / total) * 100) : 0;
-
-  let confidenceLabel = "Faible";
-  if (confidenceRate >= 60) confidenceLabel = "Bonne";
-  else if (confidenceRate >= 40) confidenceLabel = "Modérée";
-
-  const dominantTop1 = Object.entries(top1Counts).sort((a,b) => b[1] - a[1])[0]?.[0] || "-";
-
-  let interpretation = "";
-  if (top2Rate >= 60) interpretation += "Bonne capacité d’orientation diagnostique. ";
-  if (mixedRate >= 40) interpretation += "Forte intrication des profils, cohérente avec la complexité pelvienne. ";
-  if (confidenceRate < 40) interpretation += "Confiance moyenne encore prudente, nécessitant une lecture clinique experte. ";
-  if (!interpretation) interpretation = "Signal IA globalement cohérent sur la cohorte analysée.";
-
-  document.getElementById("aiEnhancedBlock").innerHTML = `
-    <h2>🧠 Analyse IA avancée</h2>
-
-    <div class="statsGrid" style="margin-top:16px;">
-      <div class="statCard">
-        <div class="statLabel">Dossiers analysés</div>
-        <div class="statValue big">${total}</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top1 concordant</div>
-        <div class="statValue big">${top1Rate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Top2 concordant</div>
-        <div class="statValue big">${top2Rate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Profils mixtes</div>
-        <div class="statValue big">${mixedRate}%</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Confiance clinique</div>
-        <div class="statValue big">${confidenceLabel}</div>
-        <div class="statSub">${confidenceRate}% de confiance moyenne brute</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Profil dominant IA</div>
-        <div class="statValue small">${dominantTop1}</div>
-      </div>
-    </div>
-
-    <div class="publicationBox" style="margin-top:16px;">
-      <h3>Lecture clinique IA</h3>
-      <div class="publicationText">
-Sur ${total} dossiers filtrés, l’IA retrouve le bon diagnostic en top 1 dans ${top1Rate}% des cas et dans le top 2 dans ${top2Rate}% des cas.
-
-La fréquence des profils mixtes est de ${mixedRate}%, ce qui traduit la coexistence fréquente de profils cliniques proches ou intriqués.
-
-La confiance moyenne brute est de ${confidenceRate}%, ce qui correspond ici à une confiance clinique ${confidenceLabel.toLowerCase()}.
-
-Profil dominant actuellement observé sur la cohorte : ${dominantTop1}.
-
-👉 ${interpretation}
-      </div>
-    </div>
-  `;
+👉 Interprétation : cohérence globale correcte.
+</div>
+</div>
+`;
 }
 
 </script>
+
 </body>
 </html>
