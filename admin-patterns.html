@@ -9,6 +9,7 @@
   <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933050137%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=rdBuUkzOFrYBXsuoFISgCD8xt55Uib3qTPnKYCFSgGE%3D&reserved=0"></script>
   <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C22d689c6a2394967091e08de8116ff9f%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639090132933074965%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=F5EUKEDWMQutNq21179QKDkcwUAVNHhR%2FSPgfcFtx04%3D&reserved=0"></script>
   <script src="firebase-config.js"></script>
+  <script src="pelvis-ai-v3.js"></script>
   <style>
     .pinOverlay{
       position:fixed;
@@ -221,6 +222,27 @@
         grid-template-columns:1fr;
       }
     }
+    .statSub{
+  margin-top:8px;
+  font-size:13px;
+  color:#6b7280;
+}
+
+.publicationBox{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:14px;
+  background:#fcfcff;
+}
+
+.publicationText{
+  white-space:pre-line;
+  line-height:1.6;
+  font-size:14px;
+  color:#374151;
+}
+
+    
   </style>
 </head>
 <body>
@@ -235,7 +257,7 @@
   </div>
 </div>
 
-  <div id="aiEnhancedBlock" class="card"></div>
+
 
 <div id="content" style="display:none;">
   <header class="header">
@@ -337,16 +359,16 @@
         <div class="statValue small" id="statSignal">-</div>
       </div>
     </div>
+    <div class="card" style="margin-bottom:20px;">
+  <div id="aiEnhancedBlock"></div>
+</div>
 
-  </div class="card" style="margin-bottom:20px;"></div>
-     <div id="aiEnhancedBlock" 
-       
-    <div class="card">
-           <h2>Résumé intelligent</h2>
-      <div id="summaryPills"></div>
-      <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
-    </div>
-
+<div class="card">
+  <h2>Résumé intelligent</h2>
+  <div id="summaryPills"></div>
+  <div id="interpretationBox" class="interpretBox" style="margin-top:14px;"></div>
+</div>
+  
     <div class="sectionGrid">
       <div class="card">
         <h2>Top items les plus fréquents</h2>
@@ -1288,6 +1310,7 @@ function updateAll(){
   drawWeightChart(patternStats);
   drawTimelineChart(docs);
   updateRocSection(allDocs, diagnosis);
+  renderEnhancedAI(allDocs);
 }
 
 function loadRows(){
@@ -1295,7 +1318,6 @@ function loadRows(){
     rows = [];
     s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
     updateAll();
-    renderEnhancedAI(rows);
   });
 }
 
