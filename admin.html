@@ -433,6 +433,7 @@
           <button class="ghostButton" onclick="exportFilteredJSON()">Export JSON</button>
           <button class="ghostButton" onclick="exportPractitionerCSV()">Export CSV</button>
           <button class="ghostButton" onclick="openAdminPatternModal()">Voir pattern IA</button>
+          <button class="aiButton" onclick="openAdminPatterns()">🧠 Patterns IA</button>
           <button class="primary" onclick="window.print()">Export PDF</button>
         </div>
       </div>
@@ -940,6 +941,10 @@ function selectAllPractitioners(){
   updateAll();
 }
 
+  function openAdminPatterns(){
+  window.location.href = "admin-patterns.html";
+}
+  
 function clearAllPractitioners(){
   selectedPractitionerIds = new Set();
   renderPractitionerPicker();
