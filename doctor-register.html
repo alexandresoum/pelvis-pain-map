@@ -532,7 +532,21 @@
       return;
     }
 
-    const allowedData = allowedDoc.data();
+   const allowedDoc = await findAllowedByEmail(email);
+alert("3 après findAllowedByEmail");
+
+if (!allowedDoc) {
+  showStatus("Cet e-mail n’est pas autorisé.", "error");
+  return;
+}
+
+if (typeof allowedDoc.data !== "function") {
+  alert("allowedDoc invalide");
+  console.log("allowedDoc =", allowedDoc);
+  return;
+}
+
+const allowedData = allowedDoc.data();
 alert("4 allowedDoc trouvé");
 
 if (allowedData.paid === false) {
