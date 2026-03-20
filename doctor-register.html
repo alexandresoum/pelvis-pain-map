@@ -6,7 +6,7 @@
   <title>Inscription praticien – Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -236,74 +236,69 @@
     </div>
   </div>
 
- <div id="successModal" class="modalOverlay">
-  <div class="modalCard">
+  <div id="successModal" class="modalOverlay">
+    <div class="modalCard">
+      <h2>Compte créé avec succès</h2>
 
-    <h2>Compte créé avec succès</h2>
+      <p style="margin-top:10px;">
+        Un email récapitulatif vous a été envoyé avec vos liens d’accès et votre identifiant de connexion.<br>
+        <b>Pensez à vérifier vos spams.</b>
+      </p>
 
-    <p style="margin-top:10px;">
-      Un email récapitulatif vous a été envoyé avec vos liens d’accès et votre identifiant de connexion.<br>
-      <b>Pensez à vérifier vos spams.</b>
-    </p>
+      <p style="margin-top:15px;">
+        <b>Identifiant praticien :</b><br>
+        <span id="modalPractitionerId"></span>
+      </p>
 
-    <p style="margin-top:15px;">
-      <b>Identifiant praticien :</b><br>
-      <span id="modalPractitionerId"></span>
-    </p>
+      <p>
+        <b>Identifiant de connexion :</b><br>
+        <span id="modalLogin"></span>
+      </p>
 
-    <p>
-      <b>Identifiant de connexion :</b><br>
-      <span id="modalLogin"></span>
-    </p>
+      <p style="margin-top:15px;">
+        <b>Lien questionnaire patient :</b>
+      </p>
 
-    <p style="margin-top:15px;">
-      <b>Lien questionnaire patient :</b>
-    </p>
+      <a id="modalQrUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
 
-    <a id="modalQrUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+      <div class="qrWrap">
+        <div id="qrCode"></div>
+        <div class="qrCaption">
+          QR code à transmettre aux patientes
+        </div>
+      </div>
 
-    <div class="qrWrap">
-      <div id="qrCode"></div>
-      <div class="qrCaption">
-        QR code à transmettre aux patientes
+      <p style="margin-top:14px;">
+        <b>Lien connexion praticien :</b>
+      </p>
+
+      <a id="modalDoctorUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+      <div class="modalActions">
+        <button type="button" class="secondary" onclick="copyLink('modalQrUrl')">
+          Copier lien questionnaire
+        </button>
+
+        <button type="button" class="secondary" onclick="copyLink('modalDoctorUrl')">
+          Copier lien praticien
+        </button>
+
+        <button type="button" class="secondary" onclick="downloadQrImage()">
+          Télécharger le QR code
+        </button>
+
+        <button type="button" class="primary" onclick="goToLogin()">
+          Accéder à la connexion
+        </button>
+
+        <button type="button" class="secondary" onclick="closeSuccessModal()">
+          Fermer
+        </button>
       </div>
     </div>
-
-    <p style="margin-top:14px;">
-      <b>Lien connexion praticien :</b>
-    </p>
-
-    <a id="modalDoctorUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
-
-    <div class="modalActions">
-      <button type="button" class="secondary" onclick="copyLink('modalQrUrl')">
-        Copier lien questionnaire
-      </button>
-
-      <button type="button" class="secondary" onclick="copyLink('modalDoctorUrl')">
-        Copier lien praticien
-      </button>
-
-      <button type="button" class="secondary" onclick="downloadQrImage()">
-        Télécharger le QR code
-      </button>
-
-      <button type="button" class="primary" onclick="goToLogin()">
-        Accéder à la connexion
-      </button>
-
-      <button type="button" class="secondary" onclick="closeSuccessModal()">
-        Fermer
-      </button>
-    </div>
-
   </div>
-</div>
-  
 
   <script>
-    alert("script chargé");
-    
     const APP_BASE_URL = window.location.origin;
     const PRACTITIONER_COLLECTION = "pratitioners";
     const ALLOWED_COLLECTION = "allowed_practitioners";
@@ -331,6 +326,7 @@
       const el = document.getElementById("status");
       el.className = "status " + type;
       el.textContent = message;
+      el.style.display = "block";
     }
 
     function clearStatus(){
@@ -356,11 +352,22 @@
     }
 
     async function findAllowedByEmail(email){
-  const doc = await db.collection(ALLOWED_COLLECTION).doc("alex").get();
-  console.log("doc alex exists =", doc.exists);
-  console.log("doc alex data =", doc.data());
-  return doc.exists ? doc : null;
-}
+      const cleanEmail = String(email || "").trim().toLowerCase();
+
+      const snap = await db.collection(ALLOWED_COLLECTION)
+        .where("email_lower", "==", cleanEmail)
+        .limit(1)
+        .get();
+
+      if (!snap.empty) return snap.docs[0];
+
+      const fallback = await db.collection(ALLOWED_COLLECTION)
+        .where("email", "==", cleanEmail)
+        .limit(1)
+        .get();
+
+      return fallback.empty ? null : fallback.docs[0];
+    }
 
     async function loginExists(login){
       const snap = await db.collection(PRACTITIONER_COLLECTION)
@@ -394,7 +401,7 @@
     }
 
     function buildDoctorUrl(practitionerId){
-      return `${APP_BASE_URL}/doctor.html`;
+      return `${APP_BASE_URL}/doctor.html?doc=${encodeURIComponent(practitionerId)}`;
     }
 
     function renderQrCode(url){
@@ -478,129 +485,103 @@
       document.body.removeChild(a);
     }
 
-   async function registerPractitioner(){
-  alert("1 fonction lancée");
-  clearStatus();
+    async function registerPractitioner(){
+      clearStatus();
 
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim().toLowerCase();
-  const login = document.getElementById("login").value.trim().toLowerCase();
-  const pin = document.getElementById("pin").value.trim();
-  const pin2 = document.getElementById("pin2").value.trim();
-     const email = document.getElementById("email").value.trim().toLowerCase();
-alert("email envoyé = [" + email + "]")
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const login = document.getElementById("login").value.trim().toLowerCase();
+      const pin = document.getElementById("pin").value.trim();
+      const pin2 = document.getElementById("pin2").value.trim();
 
-  if (!name) {
-    showStatus("Merci de renseigner le nom affiché.", "error");
-    return;
-  }
+      if (!name) {
+        showStatus("Merci de renseigner le nom affiché.", "error");
+        return;
+      }
 
-  if (!email) {
-    showStatus("Merci de renseigner l’e-mail.", "error");
-    return;
-  }
+      if (!email) {
+        showStatus("Merci de renseigner l’e-mail.", "error");
+        return;
+      }
 
-  if (!isValidLogin(login)) {
-    showStatus("L’identifiant doit contenir 4 à 30 caractères.", "error");
-    return;
-  }
+      if (!isValidLogin(login)) {
+        showStatus("L’identifiant doit contenir 4 à 30 caractères.", "error");
+        return;
+      }
 
-  if (!isValidPin(pin)) {
-    showStatus("Le code PIN doit contenir exactement 4 chiffres.", "error");
-    return;
-  }
+      if (!isValidPin(pin)) {
+        showStatus("Le code PIN doit contenir exactement 4 chiffres.", "error");
+        return;
+      }
 
-  if (pin !== pin2) {
-    showStatus("Les deux codes PIN ne correspondent pas.", "error");
-    return;
-  }
+      if (pin !== pin2) {
+        showStatus("Les deux codes PIN ne correspondent pas.", "error");
+        return;
+      }
 
-  try {
-    alert("2 avant findAllowedByEmail");
-    showStatus("Vérification en cours...", "success");
+      try {
+        showStatus("Vérification en cours...", "success");
 
+        const allowedDoc = await findAllowedByEmail(email);
 
-   const allowedDoc = await findAllowedByEmail(email);
-alert("3 après findAllowedByEmail");
+        if (!allowedDoc) {
+          showStatus("Cet e-mail n’est pas autorisé.", "error");
+          return;
+        }
 
-if (!allowedDoc) {
-  alert("3bis allowedDoc = null");
-  showStatus("Cet e-mail n’est pas autorisé.", "error");
-  return;
-}
+        const allowedData = allowedDoc.data();
 
-if (typeof allowedDoc.data !== "function") {
-  alert("3ter allowedDoc invalide");
-  console.log("allowedDoc =", allowedDoc);
-  return;
-}
+        if (allowedData.paid === false) {
+          showStatus("Cet abonnement n’est pas validé.", "error");
+          return;
+        }
 
-const allowedData = allowedDoc.data();
-alert("4 allowedDoc trouvé");
+        if (allowedData.used === true) {
+          showStatus("Cet e-mail a déjà servi à créer un compte praticien.", "error");
+          return;
+        }
 
-if (allowedData.paid === false) {
-  showStatus("Cet abonnement n’est pas validé.", "error");
-  return;
-}
+        const loginAlreadyExists = await loginExists(login);
+        if (loginAlreadyExists) {
+          showStatus("Cet identifiant est déjà utilisé. Choisissez-en un autre.", "error");
+          return;
+        }
 
-if (allowedData.used === true) {
-  showStatus("Cet e-mail a déjà servi à créer un compte praticien.", "error");
-  return;
-}
+        const practitionerId = await buildUniquePractitionerId(name, login);
+        const now = firebase.firestore.FieldValue.serverTimestamp();
 
-alert("5 avant loginExists");
-const loginAlreadyExists = await loginExists(login);
-alert("6 après loginExists");
+        await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).set({
+          id: practitionerId,
+          name: name,
+          email: email,
+          email_lower: email,
+          login: login,
+          pin: pin,
+          active: true,
+          createdAt: now,
+          source: "self_register"
+        });
 
-if (loginAlreadyExists) {
-  showStatus("Cet identifiant est déjà utilisé. Choisissez-en un autre.", "error");
-  return;
-}
+        await db.collection(ALLOWED_COLLECTION).doc(allowedDoc.id).update({
+          used: true,
+          practitionerId: practitionerId,
+          activatedAt: now,
+          chosenLogin: login
+        });
 
-const practitionerId = await buildUniquePractitionerId(name, login);
-alert("7 après buildUniquePractitionerId");
+        const qrUrl = buildQrUrl(practitionerId);
+        const doctorUrl = buildDoctorUrl(practitionerId);
 
-const now = firebase.firestore.FieldValue.serverTimestamp();
+        sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
-alert("8 avant création doc practitioners");
-await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).set({
-  id: practitionerId,
-  name: name,
-  email: email,
-  email_lower: email,
-  login: login,
-  pin: pin,
-  active: true,
-  createdAt: now,
-  source: "self_register"
-});
-alert("9 après création doc practitioners");
-   
+        showStatus("Compte créé avec succès.", "success");
+        showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
 
-   alert("10 avant update allowed");
-await db.collection(ALLOWED_COLLECTION).doc(allowedDoc.id).update({
-  used: true,
-  practitionerId: practitionerId,
-  activatedAt: now,
-  chosenLogin: login
-});
-alert("11 après update allowed");
-    
-    const qrUrl = buildQrUrl(practitionerId);
-    const doctorUrl = buildDoctorUrl(practitionerId);
-
-    sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
-
-    showStatus("Compte créé avec succès.", "success");
-    alert("12 avant popup");
-    showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
-
-  } catch (error) {
-    console.error(error);
-    alert("ERREUR: " + (error?.message || error));
-    showStatus("Erreur lors de la création du compte. Regardez la console pour le détail.", "error");
-  }
-}
+      } catch (error) {
+        console.error(error);
+        showStatus("Erreur lors de la création du compte. Regardez la console pour le détail.", "error");
+      }
+    }
 
     function goToLogin(){
       window.location.href = "doctor.html";
