@@ -533,59 +533,63 @@
     }
 
     const allowedData = allowedDoc.data();
-    alert("4 allowedDoc trouvé");
+alert("4 allowedDoc trouvé");
 
-    if (allowedData.paid === false) {
-      showStatus("Cet abonnement n’est pas validé.", "error");
-      return;
-    }
+if (allowedData.paid === false) {
+  showStatus("Cet abonnement n’est pas validé.", "error");
+  return;
+}
 
-    if (allowedData.used === true) {
-      showStatus("Cet e-mail a déjà servi à créer un compte praticien.", "error");
-      return;
-    }
+if (allowedData.used === true) {
+  showStatus("Cet e-mail a déjà servi à créer un compte praticien.", "error");
+  return;
+}
 
-    const loginAlreadyExists = await loginExists(login);
-    alert("5 après loginExists");
+alert("5 avant loginExists");
+const loginAlreadyExists = await loginExists(login);
+alert("6 après loginExists");
 
-    if (loginAlreadyExists) {
-      showStatus("Cet identifiant est déjà utilisé. Choisissez-en un autre.", "error");
-      return;
-    }
+if (loginAlreadyExists) {
+  showStatus("Cet identifiant est déjà utilisé. Choisissez-en un autre.", "error");
+  return;
+}
 
-    const practitionerId = await buildUniquePractitionerId(name, login);
-    alert("6 après buildUniquePractitionerId");
+const practitionerId = await buildUniquePractitionerId(name, login);
+alert("7 après buildUniquePractitionerId");
 
-    const now = firebase.firestore.FieldValue.serverTimestamp();
+const now = firebase.firestore.FieldValue.serverTimestamp();
 
-    await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).set({
-      id: practitionerId,
-      name: name,
-      email: email,
-      email_lower: email,
-      login: login,
-      pin: pin,
-      active: true,
-      createdAt: now,
-      source: "self_register"
-    });
-    alert("7 après création praticien");
+alert("8 avant création doc practitioners");
+await db.collection(PRACTITIONER_COLLECTION).doc(practitionerId).set({
+  id: practitionerId,
+  name: name,
+  email: email,
+  email_lower: email,
+  login: login,
+  pin: pin,
+  active: true,
+  createdAt: now,
+  source: "self_register"
+});
+alert("9 après création doc practitioners");
+   
 
-    await db.collection(ALLOWED_COLLECTION).doc(allowedDoc.id).update({
-      used: true,
-      practitionerId: practitionerId,
-      activatedAt: now,
-      chosenLogin: login
-    });
-    alert("8 après update allowed");
-
+   alert("10 avant update allowed");
+await db.collection(ALLOWED_COLLECTION).doc(allowedDoc.id).update({
+  used: true,
+  practitionerId: practitionerId,
+  activatedAt: now,
+  chosenLogin: login
+});
+alert("11 après update allowed");
+    
     const qrUrl = buildQrUrl(practitionerId);
     const doctorUrl = buildDoctorUrl(practitionerId);
 
     sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
     showStatus("Compte créé avec succès.", "success");
-    alert("9 avant popup");
+    alert("12 avant popup");
     showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
 
   } catch (error) {
