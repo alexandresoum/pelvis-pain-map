@@ -526,13 +526,6 @@
     alert("2 avant findAllowedByEmail");
     showStatus("Vérification en cours...", "success");
 
-    const allowedDoc = await findAllowedByEmail(email);
-    alert("3 après findAllowedByEmail");
-
-    if (!allowedDoc) {
-      showStatus("Cet e-mail n’est pas autorisé.", "error");
-      return;
-    }
 
    const allowedDoc = await findAllowedByEmail(email);
 alert("3 après findAllowedByEmail");
