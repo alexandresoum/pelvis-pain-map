@@ -236,35 +236,70 @@
     </div>
   </div>
 
-  <div id="successModal" class="modalOverlay">
-    <div class="modalCard">
-      <h2>Compte créé avec succès</h2>
+ <div id="successModal" class="modalOverlay">
+  <div class="modalCard">
 
-      <p><b>Identifiant praticien :</b><br><span id="modalPractitionerId"></span></p>
-      <p><b>Login :</b><br><span id="modalLogin"></span></p>
+    <h2>Compte créé avec succès</h2>
 
-      <p><b>Lien questionnaire patientes :</b></p>
-      <a id="modalQrUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+    <p style="margin-top:10px;">
+      Un email récapitulatif vous a été envoyé avec vos liens d’accès et votre identifiant de connexion.<br>
+      <b>Pensez à vérifier vos spams.</b>
+    </p>
 
-      <div class="qrWrap">
-        <div id="qrCode"></div>
-        <div class="qrCaption">
-          QR code à transmettre aux patientes
-        </div>
-      </div>
+    <p style="margin-top:15px;">
+      <b>Identifiant praticien :</b><br>
+      <span id="modalPractitionerId"></span>
+    </p>
 
-      <p style="margin-top:14px;"><b>Lien connexion praticien :</b></p>
-      <a id="modalDoctorUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+    <p>
+      <b>Identifiant de connexion :</b><br>
+      <span id="modalLogin"></span>
+    </p>
 
-      <div class="modalActions">
-        <button type="button" class="secondary" onclick="copyLink('modalQrUrl')">Copier lien QR</button>
-        <button type="button" class="secondary" onclick="copyLink('modalDoctorUrl')">Copier lien connexion</button>
-        <button type="button" class="secondary" onclick="downloadQrImage()">Télécharger le QR</button>
-        <button type="button" class="primary" onclick="goToLogin()">Aller à la connexion</button>
-        <button type="button" class="secondary" onclick="closeSuccessModal()">Fermer</button>
+    <p style="margin-top:15px;">
+      <b>Lien questionnaire patient :</b>
+    </p>
+
+    <a id="modalQrUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+    <div class="qrWrap">
+      <div id="qrCode"></div>
+      <div class="qrCaption">
+        QR code à transmettre aux patientes
       </div>
     </div>
+
+    <p style="margin-top:14px;">
+      <b>Lien connexion praticien :</b>
+    </p>
+
+    <a id="modalDoctorUrl" class="linkBox" href="#" target="_blank" rel="noopener noreferrer"></a>
+
+    <div class="modalActions">
+      <button type="button" class="secondary" onclick="copyLink('modalQrUrl')">
+        Copier lien questionnaire
+      </button>
+
+      <button type="button" class="secondary" onclick="copyLink('modalDoctorUrl')">
+        Copier lien praticien
+      </button>
+
+      <button type="button" class="secondary" onclick="downloadQrImage()">
+        Télécharger le QR code
+      </button>
+
+      <button type="button" class="primary" onclick="goToLogin()">
+        Accéder à la connexion
+      </button>
+
+      <button type="button" class="secondary" onclick="closeSuccessModal()">
+        Fermer
+      </button>
+    </div>
+
   </div>
+</div>
+  
 
   <script>
     const APP_BASE_URL = window.location.origin;
