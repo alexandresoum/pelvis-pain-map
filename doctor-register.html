@@ -531,12 +531,13 @@
 alert("3 après findAllowedByEmail");
 
 if (!allowedDoc) {
+  alert("3bis allowedDoc = null");
   showStatus("Cet e-mail n’est pas autorisé.", "error");
   return;
 }
 
 if (typeof allowedDoc.data !== "function") {
-  alert("allowedDoc invalide");
+  alert("3ter allowedDoc invalide");
   console.log("allowedDoc =", allowedDoc);
   return;
 }
