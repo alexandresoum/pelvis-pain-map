@@ -356,20 +356,11 @@
     }
 
     async function findAllowedByEmail(email){
-      const snap = await db.collection(ALLOWED_COLLECTION)
-        .where("email_lower", "==", email.toLowerCase())
-        .limit(1)
-        .get();
-
-      if (!snap.empty) return snap.docs[0];
-
-      const fallback = await db.collection(ALLOWED_COLLECTION)
-        .where("email", "==", email)
-        .limit(1)
-        .get();
-
-      return fallback.empty ? null : fallback.docs[0];
-    }
+  const doc = await db.collection(ALLOWED_COLLECTION).doc("alex").get();
+  console.log("doc alex exists =", doc.exists);
+  console.log("doc alex data =", doc.data());
+  return doc.exists ? doc : null;
+}
 
     async function loginExists(login){
       const snap = await db.collection(PRACTITIONER_COLLECTION)
