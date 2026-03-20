@@ -203,18 +203,18 @@
       </p>
 
       <div class="field">
-        <label for="name">Nom affiché</label>
-        <input id="name" type="text" placeholder="Ex : Alexandre Soum">
+        <label for="name">Nom affiché pour les patientes</label>
+        <input id="name" type="text" placeholder="">
       </div>
 
       <div class="field">
         <label for="email">E-mail autorisé</label>
-        <input id="email" type="email" placeholder="Ex : dr@email.fr" autocomplete="email">
+        <input id="email" type="email" placeholder="Ex : xxx@email.fr" autocomplete="email">
       </div>
 
       <div class="field">
         <label for="login">Identifiant de connexion</label>
-        <input id="login" type="text" placeholder="Ex : alexsoum">
+        <input id="login" type="text" placeholder="">
       </div>
 
       <div class="field">
@@ -543,7 +543,7 @@
 
         const loginAlreadyExists = await loginExists(login);
         if (loginAlreadyExists) {
-          showStatus("Cet identifiant est déjà utilisé. Choisis-en un autre.", "error");
+          showStatus("Cet identifiant est déjà utilisé. Choisissez-en un autre.", "error");
           return;
         }
 
@@ -579,7 +579,7 @@
 
       } catch (error) {
         console.error(error);
-        showStatus("Erreur lors de la création du compte. Regarde la console pour le détail.", "error");
+        showStatus("Erreur lors de la création du compte. Regardez la console pour le détail.", "error");
       }
     }
 
