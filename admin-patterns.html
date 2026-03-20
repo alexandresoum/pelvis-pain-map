@@ -1335,9 +1335,11 @@ function updateRocSection(allDocs, diagnosis){
   drawDistributionChart(roc);
 }
 
-function renderEnhancedAI(docs){
+  function renderEnhancedAI(docs, diagnosis){
   const box = document.getElementById("aiEnhancedBlock");
   if (!box) return;
+
+  const currentDiagnosis = diagnosis || document.getElementById("echoTarget")?.value || "Endométriose";
 
   if (!docs || docs.length === 0){
     box.innerHTML = `
@@ -1355,7 +1357,21 @@ function renderEnhancedAI(docs){
     return;
   }
 
-  let total = docs.length;
+  // On garde uniquement les dossiers ayant le diagnostic actuellement sélectionné
+  const positiveDocs = docs.filter(d => {
+    const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echo.includes(currentDiagnosis);
+  });
+
+  if (!positiveDocs.length){
+    box.innerHTML = `
+      <h2>🧠 Analyse IA avancée</h2>
+      <p class="muted">Aucun dossier avec le diagnostic « ${currentDiagnosis} » dans le sous-ensemble filtré.</p>
+    `;
+    return;
+  }
+
+  let total = positiveDocs.length;
   let top1OK = 0;
   let top2OK = 0;
   let mixed = 0;
@@ -1364,31 +1380,33 @@ function renderEnhancedAI(docs){
 
   const top1Counts = {};
 
-  docs.forEach(d => {
+  const mapLabel = (label) => {
+    const map = {
+      endometriose: "Endométriose",
+      adenomyose: "Adénomyose",
+      congestion: "Congestion pelvienne",
+      pudendal: "Névralgie pudendale",
+      opk: "OPK",
+      fibrome: "Fibrome",
+      hypersensibilisation: "Hypersensibilisation centrale"
+    };
+    return map[label] || label || "-";
+  };
+
+  positiveDocs.forEach(d => {
     const res = pelvisComputeV3(d);
 
     const top1 = res?.top1?.label || res?.top1?.key || "";
     const top2 = res?.top2?.label || res?.top2?.key || "";
-    const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-
-    const mapLabel = (label) => {
-      const map = {
-        endometriose: "Endométriose",
-        adenomyose: "Adénomyose",
-        congestion: "Congestion pelvienne",
-        pudendal: "Névralgie pudendale",
-        opk: "OPK",
-        fibrome: "Fibrome",
-        hypersensibilisation: "Hypersensibilisation centrale"
-      };
-      return map[label] || label || "-";
-    };
 
     const t1 = mapLabel(top1);
     const t2 = mapLabel(top2);
 
-    if (echo.includes(t1)) top1OK++;
-    if (echo.includes(t1) || echo.includes(t2)) top2OK++;
+    const top1Match = t1 === currentDiagnosis;
+    const top2Match = t1 === currentDiagnosis || t2 === currentDiagnosis;
+
+    if (top1Match) top1OK++;
+    if (top2Match) top2OK++;
     if (res?.flags?.mixedProfile) mixed++;
 
     if (typeof res?.confidence === "number" && !isNaN(res.confidence)) {
@@ -1409,7 +1427,7 @@ function renderEnhancedAI(docs){
   else if (confidenceRate >= 40) confidenceLabel = "modérée";
 
   const dominantTop1 = Object.entries(top1Counts)
-    .sort((a,b) => b[1] - a[1])[0]?.[0] || "-";
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
 
   let interpretation = "";
 
@@ -1438,7 +1456,7 @@ function renderEnhancedAI(docs){
   }
 
   box.innerHTML = `
-    <h2>🧠 Analyse IA avancée</h2>
+    <h2>🧠 Analyse IA avancée · ${currentDiagnosis}</h2>
 
     <div class="statsGrid" style="margin-top:16px;">
       <div class="statCard">
@@ -1476,9 +1494,9 @@ function renderEnhancedAI(docs){
     <div class="publicationBox" style="margin-top:16px;">
       <h3>Lecture clinique IA</h3>
       <div class="publicationText">
-Sur ${total} dossiers filtrés, l’IA retrouve le bon diagnostic en top 1 dans ${top1Rate}% des cas et dans le top 2 dans ${top2Rate}% des cas.
+Sur ${total} dossiers ayant le diagnostic « ${currentDiagnosis} », l’IA retrouve ce diagnostic en top 1 dans ${top1Rate}% des cas et dans le top 2 dans ${top2Rate}% des cas.
 
-La fréquence des profils mixtes est de ${mixedRate}%, ce qui renseigne sur le niveau d’intrication clinique de la cohorte filtrée.
+La fréquence des profils mixtes est de ${mixedRate}%, ce qui renseigne sur le niveau d’intrication clinique de ce sous-groupe.
 
 La confiance moyenne brute est de ${confidenceRate}%, correspondant ici à une confiance clinique ${confidenceLabel}.
 
@@ -1505,7 +1523,7 @@ function updateAll(){
   drawWeightChart(patternStats);
   drawTimelineChart(docs, allDocs);
   updateRocSection(allDocs, diagnosis);
-  renderEnhancedAI(allDocs);
+  renderEnhancedAI(docs, diagnosis);
 }
 
 function loadRows(){
