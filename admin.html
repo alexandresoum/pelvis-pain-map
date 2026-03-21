@@ -6,9 +6,9 @@
   <title>Admin Pelvis Pain Map</title>
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-app-compat.js&data=05%7C02%7C%7C4c50c310e15c4e741eb008de84b7005c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639094118675559144%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=hXn5zosBGOG%2FPtnyEG64l3X83kjmecPGLtzo%2BrwX5jA%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.gstatic.com%2Ffirebasejs%2F10.12.0%2Ffirebase-firestore-compat.js&data=05%7C02%7C%7C4c50c310e15c4e741eb008de84b7005c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639094118675595443%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=1rtq4e5ru%2B4%2FxDzgf68b4bbtnsl8IP1FVvbOyF6LRW4%3D&reserved=0"></script>
-  <script src="https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fcdn.jsdelivr.net%2Fnpm%2Fchart.js&data=05%7C02%7C%7C4c50c310e15c4e741eb008de84b7005c%7C84df9e7fe9f640afb435aaaaaaaaaaaa%7C1%7C0%7C639094118675617156%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=QdHeMecSpKandxruwah1gfbhgCTaahtWY3r8AB8r%2FyE%3D&reserved=0"></script>
+   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="firebase-config.js"></script>
   <script src="pelvis-ai-v2.js"></script>
   <script src="pelvis-ai-v3.js"></script>
@@ -733,6 +733,7 @@ let v3_mixed = 0;
 let totalConfidence = 0;
 let currentPatternResult = null;
 let currentPatternPatient = null;
+let allPractitionersSelected = false;
 
   console.log("V2 loaded:", typeof pelvisTrainAndSaveModel);
 console.log("V3 loaded:", typeof pelvisComputeV3);
@@ -842,7 +843,7 @@ async function loadPractitioners(){
   }
 
   if (!selectedPractitionerIds.size){
-    PRACTITIONERS.forEach(p => selectedPractitionerIds.add(p.id));
+    selectedPractitionerIds = new set();
   }
 
   renderPractitionerSelect();
@@ -866,6 +867,12 @@ function addPractitionerFromSelect(){
   const select = document.getElementById("practitionerSelect");
   const id = select.value;
   if (!id) return;
+
+  if (allPractitionersSelected) {
+    allPractitionersSelected = false;
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+  }
+
   selectedPractitionerIds.add(id);
   select.value = "";
   renderPractitionerPicker();
@@ -889,7 +896,9 @@ function renderPractitionerPicker(){
     p.id.toLowerCase().includes(q)
   ).slice(0, 24);
 
-  if (!selectedPractitionerIds.size){
+  if (allPractitionersSelected) {
+    selectedBox.innerHTML = `<div class="prEmpty">Tous les praticiens sont sélectionnés</div>`;
+  } else if (!selectedPractitionerIds.size) {
     selectedBox.innerHTML = `<div class="prEmpty">Aucun praticien sélectionné</div>`;
   } else {
     const selectedSorted = all.filter(p => selectedPractitionerIds.has(p.id));
@@ -905,10 +914,10 @@ function renderPractitionerPicker(){
     resultsBox.innerHTML = `<div class="prEmpty">Aucun résultat</div>`;
   } else {
     resultsBox.innerHTML = filtered.map(p => `
-      <div class="prResult ${selectedPractitionerIds.has(p.id) ? "selected" : ""}" onclick="togglePractitioner('${escapeJs(p.id)}')">
+      <div class="prResult ${allPractitionersSelected || selectedPractitionerIds.has(p.id) ? "selected" : ""}" onclick="togglePractitioner('${escapeJs(p.id)}')">
         <input
           type="checkbox"
-          ${selectedPractitionerIds.has(p.id) ? "checked" : ""}
+          ${(allPractitionersSelected || selectedPractitionerIds.has(p.id)) ? "checked" : ""}
           onclick="event.stopPropagation()"
           onchange="togglePractitioner('${escapeJs(p.id)}')"
         >
@@ -919,23 +928,36 @@ function renderPractitionerPicker(){
   }
 
   const total = all.length;
-  countInfo.textContent = `${selectedPractitionerIds.size} praticien(s) sélectionné(s) sur ${total}`;
+  const selectedCount = allPractitionersSelected ? total : selectedPractitionerIds.size;
+  countInfo.textContent = `${selectedCount} praticien(s) sélectionné(s) sur ${total}`;
 }
 
-function togglePractitioner(id){
+  function togglePractitioner(id){
+  if (allPractitionersSelected) {
+    allPractitionersSelected = false;
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+  }
+
   if (selectedPractitionerIds.has(id)) selectedPractitionerIds.delete(id);
   else selectedPractitionerIds.add(id);
+
   renderPractitionerPicker();
   updateAll();
 }
 
 function removePractitioner(id){
+  if (allPractitionersSelected) {
+    allPractitionersSelected = false;
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+  }
+
   selectedPractitionerIds.delete(id);
   renderPractitionerPicker();
   updateAll();
 }
 
 function selectAllPractitioners(){
+  allPractitionersSelected = true; 
   selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
   renderPractitionerPicker();
   updateAll();
@@ -946,14 +968,17 @@ function selectAllPractitioners(){
 }
   
 function clearAllPractitioners(){
+  allPractitionersSelected = false; 
   selectedPractitionerIds = new Set();
   renderPractitionerPicker();
   updateAll();
 }
 
 function selectedPractitioners(){
-  if (selectedPractitionerIds.size) return [...selectedPractitionerIds];
-  return PRACTITIONERS.filter(p => p.active).map(p => p.id);
+  if (allPractitionersSelected) {
+    return PRACTITIONERS.filter(p => p.active).map(p => p.id);
+  }
+  return [...selectedPractitionerIds];
 }
 
 function filteredDocs(){
