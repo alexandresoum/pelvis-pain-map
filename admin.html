@@ -851,18 +851,43 @@ async function loadPractitioners(){
 }
 
 function renderPractitionerSelect(){
+
   const select = document.getElementById("practitionerSelect");
-  if (!select) return;
+  if(!select) return;
 
   const options = PRACTITIONERS
-    .filter(p => p.active)
-    .sort((a,b) => a.name.localeCompare(b.name, "fr"))
-    .map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${escapeHtml(p.id)})</option>`)
+    .filter(p => p.active !== false)
+    .sort((a,b) => a.name.localeCompare(b.name,"fr"))
+    .map(p => `
+      <option value="${escapeHtml(p.id)}">
+        ${escapeHtml(p.name)} (${escapeHtml(p.id)})
+      </option>
+    `)
     .join("");
 
-  select.innerHTML = `<option value="">Choisir un praticien…</option>${options}`;
-}
+  select.innerHTML = `
+    <option value="">Choisir un praticien...</option>
+    ${options}
+  `;
 
+  // Quand on choisit un praticien dans la liste déroulante
+  select.onchange = () => {
+
+    const id = select.value;
+    if(!id) return;
+
+    if(!selectedPractitionerIds.has(id)){
+      selectedPractitionerIds.add(id);
+    }
+
+    renderPractitionerPicker();
+    updateStats();
+
+    // remet la liste sur "Choisir..."
+    select.value = "";
+  };
+
+}
 function addPractitionerFromSelect(){
   const select = document.getElementById("practitionerSelect");
   const id = select.value;
@@ -982,10 +1007,25 @@ function selectedPractitioners(){
 }
 
 function filteredDocs(){
-  const selected = new Set(selectedPractitioners());
+  const selectedIds = new Set(selectedPractitioners());
+
   return rows
     .map(r => r.data)
-    .filter(d => selected.has(d.practitionerId));
+    .filter(d => {
+      const practitionerId = String(d.practitionerId || "").trim();
+      const practitionerName = String(d.practitionerName || "").trim();
+
+      if (selectedIds.has(practitionerId)) return true;
+
+      for (const prId of selectedIds) {
+        const knownLabel = String(PRACTITIONER_LABELS[prId] || "").trim();
+        if (knownLabel && practitionerName && knownLabel === practitionerName) {
+          return true;
+        }
+      }
+
+      return false;
+    });
 }
 
 function ageFromDob(dob){
