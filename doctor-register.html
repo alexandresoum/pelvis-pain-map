@@ -10,6 +10,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+  emailjs.init("qJ8Ye3GQNIqRqR3OU");
+})();
+</script>
 
   <style>
     body{
@@ -573,6 +579,19 @@
         const doctorUrl = buildDoctorUrl(practitionerId);
 
         sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
+
+        emailjs.send("service_moiph55", "template_le9bmwe", {
+  email: email,
+  practitionerId: practitionerId,
+  login: login,
+  qrUrl: qrUrl
+})
+.then(function(response) {
+  console.log("EMAIL ENVOYÉ ✅", response);
+})
+.catch(function(error) {
+  console.log("ERREUR EMAIL ❌", error);
+});
 
         showStatus("Compte créé avec succès.", "success");
         showSuccessModal(practitionerId, login, qrUrl, doctorUrl);
