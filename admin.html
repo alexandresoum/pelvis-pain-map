@@ -884,7 +884,6 @@ function addPractitionerFromSelect(){
 function renderPractitionerPicker(){
   const q = (document.getElementById("practitionerSearch")?.value || "").toLowerCase().trim();
   const selectedBox = document.getElementById("selectedPractitionersBox");
-  const resultsBox = document.getElementById("practitionerResults");
   const countInfo = document.getElementById("practitionerCountInfo");
 
   const all = PRACTITIONERS
@@ -912,22 +911,7 @@ function renderPractitionerPicker(){
     `).join("");
   }
 
-  if (!filtered.length){
-    resultsBox.innerHTML = `<div class="prEmpty">Aucun résultat</div>`;
-  } else {
-    resultsBox.innerHTML = filtered.map(p => `
-      <div class="prResult ${(allPractitionersSelected || selectedPractitionerIds.has(p.id)) ? "selected" : ""}" onclick="togglePractitioner('${escapeJs(p.id)}')">
-        <input
-          type="checkbox"
-          ${(allPractitionersSelected || selectedPractitionerIds.has(p.id)) ? "checked" : ""}
-          onclick="event.stopPropagation()"
-          onchange="togglePractitioner('${escapeJs(p.id)}')"
-        >
-        <span>${escapeHtml(p.name)}</span>
-        <span class="muted">(${escapeHtml(p.id)})</span>
-      </div>
-    `).join("");
-  }
+ 
 
   const total = all.length;
   const selectedCount = allPractitionersSelected ? total : selectedPractitionerIds.size;
