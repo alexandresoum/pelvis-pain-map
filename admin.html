@@ -821,6 +821,7 @@ async function loadPractitioners(){
       const id = doc.id;
       const name = data.name || data.login || data.id || id;
       const login = data.login || id;
+
       return {
         id,
         name,
@@ -838,56 +839,33 @@ async function loadPractitioners(){
 
   if (!PRACTITIONERS.length){
     PRACTITIONERS = Object.entries(LEGACY_PRACTITIONER_LABELS).map(([id, name]) => ({
-      id, name, login:id, active:true
+      id,
+      name,
+      login: id,
+      active: true
     }));
   }
 
-  if (!selectedPractitionerIds.size){
-    selectedPractitionerIds = new set();
-  }
+  selectedPractitionerIds = new Set();
+  allPractitionersSelected = false;
 
   renderPractitionerSelect();
   renderPractitionerPicker();
 }
 
 function renderPractitionerSelect(){
-
   const select = document.getElementById("practitionerSelect");
-  if(!select) return;
+  if (!select) return;
 
   const options = PRACTITIONERS
     .filter(p => p.active !== false)
-    .sort((a,b) => a.name.localeCompare(b.name,"fr"))
-    .map(p => `
-      <option value="${escapeHtml(p.id)}">
-        ${escapeHtml(p.name)} (${escapeHtml(p.id)})
-      </option>
-    `)
+    .sort((a,b) => a.name.localeCompare(b.name, "fr"))
+    .map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} (${escapeHtml(p.id)})</option>`)
     .join("");
 
-  select.innerHTML = `
-    <option value="">Choisir un praticien...</option>
-    ${options}
-  `;
-
-  // Quand on choisit un praticien dans la liste déroulante
-  select.onchange = () => {
-
-    const id = select.value;
-    if(!id) return;
-
-    if(!selectedPractitionerIds.has(id)){
-      selectedPractitionerIds.add(id);
-    }
-
-    renderPractitionerPicker();
-    updateStats();
-
-    // remet la liste sur "Choisir..."
-    select.value = "";
-  };
-
+  select.innerHTML = `<option value="">Choisir un praticien…</option>${options}`;
 }
+
 function addPractitionerFromSelect(){
   const select = document.getElementById("practitionerSelect");
   const id = select.value;
@@ -895,7 +873,7 @@ function addPractitionerFromSelect(){
 
   if (allPractitionersSelected) {
     allPractitionersSelected = false;
-    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active !== false).map(p => p.id));
   }
 
   selectedPractitionerIds.add(id);
@@ -911,7 +889,7 @@ function renderPractitionerPicker(){
   const countInfo = document.getElementById("practitionerCountInfo");
 
   const all = PRACTITIONERS
-    .filter(p => p.active)
+    .filter(p => p.active !== false)
     .sort((a,b) => a.name.localeCompare(b.name, "fr"));
 
   const filtered = all.filter(p =>
@@ -939,7 +917,7 @@ function renderPractitionerPicker(){
     resultsBox.innerHTML = `<div class="prEmpty">Aucun résultat</div>`;
   } else {
     resultsBox.innerHTML = filtered.map(p => `
-      <div class="prResult ${allPractitionersSelected || selectedPractitionerIds.has(p.id) ? "selected" : ""}" onclick="togglePractitioner('${escapeJs(p.id)}')">
+      <div class="prResult ${(allPractitionersSelected || selectedPractitionerIds.has(p.id)) ? "selected" : ""}" onclick="togglePractitioner('${escapeJs(p.id)}')">
         <input
           type="checkbox"
           ${(allPractitionersSelected || selectedPractitionerIds.has(p.id)) ? "checked" : ""}
@@ -957,10 +935,10 @@ function renderPractitionerPicker(){
   countInfo.textContent = `${selectedCount} praticien(s) sélectionné(s) sur ${total}`;
 }
 
-  function togglePractitioner(id){
+function togglePractitioner(id){
   if (allPractitionersSelected) {
     allPractitionersSelected = false;
-    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active !== false).map(p => p.id));
   }
 
   if (selectedPractitionerIds.has(id)) selectedPractitionerIds.delete(id);
@@ -973,7 +951,7 @@ function renderPractitionerPicker(){
 function removePractitioner(id){
   if (allPractitionersSelected) {
     allPractitionersSelected = false;
-    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active !== false).map(p => p.id));
   }
 
   selectedPractitionerIds.delete(id);
@@ -982,18 +960,14 @@ function removePractitioner(id){
 }
 
 function selectAllPractitioners(){
-  allPractitionersSelected = true; 
-  selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active).map(p => p.id));
+  allPractitionersSelected = true;
+  selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active !== false).map(p => p.id));
   renderPractitionerPicker();
   updateAll();
 }
 
-  function openAdminPatterns(){
-  window.location.href = "admin-patterns.html";
-}
-  
 function clearAllPractitioners(){
-  allPractitionersSelected = false; 
+  allPractitionersSelected = false;
   selectedPractitionerIds = new Set();
   renderPractitionerPicker();
   updateAll();
@@ -1001,7 +975,7 @@ function clearAllPractitioners(){
 
 function selectedPractitioners(){
   if (allPractitionersSelected) {
-    return PRACTITIONERS.filter(p => p.active).map(p => p.id);
+    return PRACTITIONERS.filter(p => p.active !== false).map(p => p.id);
   }
   return [...selectedPractitionerIds];
 }
@@ -1027,7 +1001,6 @@ function filteredDocs(){
       return false;
     });
 }
-
 function ageFromDob(dob){
   if(!dob) return null;
   const b = new Date(dob);
