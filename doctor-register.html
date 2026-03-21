@@ -577,21 +577,25 @@
 
         const qrUrl = buildQrUrl(practitionerId);
         const doctorUrl = buildDoctorUrl(practitionerId);
+        const qrImageUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(qrUrl);
 
         sessionStorage.setItem("ppm_currentPractitioner", practitionerId);
 
-        emailjs.send("service_moiph55", "template_ie9bmwe", {
+       emailjs.send("service_moiph55", "template_ie9bmwe", {
   email: email,
   practitionerId: practitionerId,
   login: login,
   qrUrl: qrUrl,
-  doctorUrl: doctorUrl
+  doctorUrl: doctorUrl,
+  qrImageUrl: qrImageUrl
 })
 .then(function(response) {
   console.log("EMAIL ENVOYÉ ✅", response);
 })
 .catch(function(error) {
   console.log("ERREUR EMAIL ❌", error);
+  console.log("ERREUR EMAIL TEXTE ❌", error?.text);
+  console.log("ERREUR EMAIL MESSAGE ❌", error?.message);
 });
 
         showStatus("Compte créé avec succès.", "success");
