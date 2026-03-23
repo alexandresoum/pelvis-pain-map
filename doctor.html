@@ -300,6 +300,34 @@ function normalizeLevel(v) {
   };
 }
 
+  function getConfidenceInterpretation(d){
+
+  const profiles = [
+    Number(d.endometriose_pct || 0),
+    Number(d.adenomyose_pct || 0),
+    Number(d.pudendal_pct || 0),
+    Number(d.congestion_pct || 0),
+    Number(d.opk_pct || 0),
+    Number(d.hypersensibilisation_pct || 0)
+  ].sort((a,b)=>b-a);
+
+  const top1 = profiles[0] || 0;
+  const top2 = profiles[1] || 0;
+
+  const gap = top1 - top2;
+
+  const scoreTop = Math.min(40, top1 * 0.6);
+  const scoreGap = Math.min(40, gap * 1.2);
+
+  const total = Math.round(scoreTop + scoreGap);
+
+  let level = "faible";
+  if(total >= 70) level = "élevée";
+  else if(total >= 40) level = "intermédiaire";
+
+  return {score: total, level};
+}
+
 function badgeClass(label) {
   if (!label) return "soft";
   const x = String(label).toLowerCase();
@@ -550,6 +578,7 @@ function renderList(list) {
     const isOpen = openCardId === r.id;
     const hypothesis = getMainHypothesis(d);
     const hypothesisPct = getMainHypothesisPct(d);
+    const confidence = getConfidenceInterpretation(d);
 
     return `
       <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
@@ -610,6 +639,7 @@ function renderList(list) {
               <h3>Hypothèses et profils</h3>
               <div class="detailLine"><b>Hypothèse principale :</b> ${hypothesis}</div>
               <div class="detailLine"><b>Poids hypothèse :</b> ${hypothesisPct}</div>
+              <div class="detailLine"><b>Confiance clinique :</b> ${confidence.level} (${confidence.score}/100)</div>
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
 
