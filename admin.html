@@ -481,6 +481,45 @@
       </div>
     </div>
 
+<div class="card">
+  <h2>Lecture clinique de la cohorte</h2>
+  <p class="muted">Répartition des dossiers selon le niveau de confiance de l’hypothèse principale.</p>
+
+  <div class="statsGrid" style="margin-top:16px;">
+    <div class="statCard">
+      <div class="statLabel">Profils forts</div>
+      <div class="statValue big" id="cohortStrong">0%</div>
+      <div class="statSub" id="cohortStrongDetail">0 / 0</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Profils probables</div>
+      <div class="statValue big" id="cohortProbable">0%</div>
+      <div class="statSub" id="cohortProbableDetail">0 / 0</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Profils possibles</div>
+      <div class="statValue big" id="cohortPossible">0%</div>
+      <div class="statSub" id="cohortPossibleDetail">0 / 0</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Profils non concluants</div>
+      <div class="statValue big" id="cohortNonConclusive">0%</div>
+      <div class="statSub" id="cohortNonConclusiveDetail">0 / 0</div>
+    </div>
+  </div>
+
+  <div class="statsGrid" style="margin-top:4px;">
+    <div class="statCard">
+      <div class="statLabel">Discordance profil / écho</div>
+      <div class="statValue big" id="cohortDiscordance">0%</div>
+      <div class="statSub" id="cohortDiscordanceDetail">0 / 0 profils forts/probables avec écho normal</div>
+    </div>
+  </div>
+</div>
+    
     <div class="kpiBox">
   <h3>IA V3</h3>
   <p>Total dossiers : <span id="v3_total">0</span></p>
@@ -718,6 +757,7 @@ const PATIENT_COLLECTION = "patients";
   probable: 60
 };
 
+  
 const LEGACY_PRACTITIONER_LABELS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
@@ -1228,6 +1268,55 @@ function getHypothesisInterpretation(d){
     pct,
     level: "fort"
   };
+}
+
+  function updateCohortClinicalReading(docs){
+  let strong = 0;
+  let probable = 0;
+  let possible = 0;
+  let nonConclusive = 0;
+
+  let discordantCount = 0;
+  let discordantDenominator = 0;
+
+  docs.forEach(d => {
+    const h = getHypothesisInterpretation(d);
+
+    if (h.level === "fort") strong++;
+    else if (h.level === "probable") probable++;
+    else if (h.level === "possible") possible++;
+    else nonConclusive++;
+
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    const hasNormal = echos.includes("Normal");
+    const hasPositiveEcho = echos.some(x => x && x !== "Normal" && x !== "Non contributif" && x !== "Autre");
+
+    if (h.level === "fort" || h.level === "probable"){
+      discordantDenominator++;
+
+      if (hasNormal && !hasPositiveEcho){
+        discordantCount++;
+      }
+    }
+  });
+
+  const total = docs.length;
+
+  document.getElementById("cohortStrong").innerText = total ? Math.round((strong / total) * 100) + "%" : "0%";
+  document.getElementById("cohortProbable").innerText = total ? Math.round((probable / total) * 100) + "%" : "0%";
+  document.getElementById("cohortPossible").innerText = total ? Math.round((possible / total) * 100) + "%" : "0%";
+  document.getElementById("cohortNonConclusive").innerText = total ? Math.round((nonConclusive / total) * 100) + "%" : "0%";
+
+  document.getElementById("cohortStrongDetail").innerText = `${strong} / ${total}`;
+  document.getElementById("cohortProbableDetail").innerText = `${probable} / ${total}`;
+  document.getElementById("cohortPossibleDetail").innerText = `${possible} / ${total}`;
+  document.getElementById("cohortNonConclusiveDetail").innerText = `${nonConclusive} / ${total}`;
+
+  document.getElementById("cohortDiscordance").innerText =
+    discordantDenominator ? Math.round((discordantCount / discordantDenominator) * 100) + "%" : "0%";
+
+  document.getElementById("cohortDiscordanceDetail").innerText =
+    `${discordantCount} / ${discordantDenominator} profils forts/probables avec écho normal`;
 }
   
   function buildRocData(docs, pathology){
@@ -1858,6 +1947,7 @@ function updateAll(){
 
   updateKpis(docs);
   updateV3Stats(docs);
+  updateCohortClinicalReading(docs);
   updateRoc(docs);
   updateCalibration(docs);
   updateLearningCurve(docs);
