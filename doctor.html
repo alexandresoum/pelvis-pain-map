@@ -151,6 +151,12 @@ const ECHOS = [
 
 const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
 
+  const HYPOTHESIS_THRESHOLDS = {
+  nonConcluant: 30,
+  possible: 45,
+  probable: 60
+};
+
 let currentPractitioner = null;
 let rows = [];
 let openCardId = null;
@@ -246,6 +252,54 @@ function normalizeLevel(v) {
   return v;
 }
 
+  function getHypothesisInterpretation(d){
+  const label = d.hypothesisPrimary || d.lesionPrimary || "-";
+  const pct = Number(d.hypothesisPrimaryPct || 0);
+
+  if (!label || pct <= 0){
+    return {
+      label: "Profil non concluant",
+      pct: 0,
+      level: "non_concluant",
+      displayPct: "-"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.nonConcluant){
+    return {
+      label: "Profil non concluant",
+      pct,
+      level: "non_concluant",
+      displayPct: `${pct}%`
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.possible){
+    return {
+      label,
+      pct,
+      level: "possible",
+      displayPct: `${pct}%`
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.probable){
+    return {
+      label,
+      pct,
+      level: "probable",
+      displayPct: `${pct}%`
+    };
+  }
+
+  return {
+    label,
+    pct,
+    level: "fort",
+    displayPct: `${pct}%`
+  };
+}
+
 function badgeClass(label) {
   if (!label) return "soft";
   const x = String(label).toLowerCase();
@@ -269,13 +323,16 @@ function pillsFromList(arr){
 }
 
 function getMainHypothesis(d){
-  return d.hypothesisPrimary || d.lesionPrimary || "-";
+  return getHypothesisInterpretation(d).label;
 }
 
 function getMainHypothesisPct(d){
-  return (d.hypothesisPrimaryPct !== undefined && d.hypothesisPrimaryPct !== null && d.hypothesisPrimaryPct !== "")
-    ? `${d.hypothesisPrimaryPct}%`
-    : "-";
+  const h = getHypothesisInterpretation(d);
+
+  if (h.level === "non_concluant") return h.displayPct === "-" ? "-" : `${h.displayPct} · non concluant`;
+  if (h.level === "possible") return `${h.displayPct} · possible`;
+  if (h.level === "probable") return `${h.displayPct} · probable`;
+  return `${h.displayPct} · fort`;
 }
 
 function buildSymptomsSummary(d){
