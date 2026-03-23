@@ -88,6 +88,42 @@
   </div>
 </div>
 
+  <div class="card" id="doctorAccessCard">
+  <h2>Accès patientes</h2>
+  <p class="muted">Retrouvez ici votre lien questionnaire et votre QR code personnel.</p>
+
+  <div style="margin-top:14px;">
+    <label style="display:block;font-weight:600;margin-bottom:8px;">Lien questionnaire patientes</label>
+    <a
+      id="doctorQrUrl"
+      href="#"
+      target="_blank"
+      rel="noopener noreferrer"
+      style="display:block;word-break:break-all;background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;color:#24324a;text-decoration:none;font-weight:600;"
+    ></a>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+    <button type="button" class="primary" onclick="copyDoctorQrUrl()">Copier le lien</button>
+    <button type="button" class="ghostButton" onclick="downloadDoctorQr()">Télécharger le QR code</button>
+  </div>
+
+  <div style="margin-top:18px;">
+    <label style="display:block;font-weight:600;margin-bottom:8px;">QR code patientes</label>
+    <div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px;display:inline-block;">
+      <img
+        id="doctorQrImage"
+        alt="QR code questionnaire patientes"
+        style="width:220px;max-width:100%;height:auto;display:block;"
+      >
+    </div>
+  </div>
+
+  <div style="margin-top:14px;">
+    <div class="muted" id="doctorAccessStatus"></div>
+  </div>
+</div>
+
 <script>
 
 
@@ -115,6 +151,8 @@ let currentPractitioner = null;
 let rows = [];
 let openCardId = null;
 let currentDisplayedList = [];
+  let currentDoctorQrUrl = "";
+let currentDoctorQrImageUrl = "";
 
 async function checkPin() {
   const p = document.getElementById("practitionerLogin").value.trim();
@@ -151,6 +189,8 @@ async function checkPin() {
     document.getElementById("pinOverlay").style.display = "none";
     document.getElementById("content").style.display = "block";
     document.getElementById("subtitle").textContent = data.name || p;
+
+    enderDoctorAccessBox(p);
 
     loadRows();
 
@@ -593,6 +633,75 @@ window.onload = () => {
     document.getElementById("pinError").textContent = "Lien invalide (pas de praticien).";
   }
 };
+
+ function renderDoctorAccessBox(practitionerId){
+  if (!practitionerId) return;
+
+  const qrUrl = `${window.location.origin}/index.html?doc=${encodeURIComponent(practitionerId)}`;
+  const qrImageUrl =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+    encodeURIComponent(qrUrl);
+
+  const linkEl = document.getElementById("doctorQrUrl");
+  const imgEl = document.getElementById("doctorQrImage");
+  const statusEl = document.getElementById("doctorAccessStatus");
+
+  if (linkEl){
+    linkEl.href = qrUrl;
+    linkEl.textContent = qrUrl;
+  }
+
+  if (imgEl){
+    imgEl.src = qrImageUrl;
+  }
+
+  if (statusEl){
+    statusEl.textContent = `Identifiant praticien : ${practitionerId}`;
+  }
+
+  currentDoctorQrUrl = qrUrl;
+  currentDoctorQrImageUrl = qrImageUrl;
+}
+
+async function copyDoctorQrUrl(){
+  try{
+    if (!currentDoctorQrUrl) {
+      alert("Lien indisponible.");
+      return;
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(currentDoctorQrUrl);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = currentDoctorQrUrl;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+
+    const statusEl = document.getElementById("doctorAccessStatus");
+    if (statusEl) statusEl.textContent = "Lien copié avec succès.";
+  }catch(e){
+    console.error(e);
+    alert("Impossible de copier le lien.");
+  }
+}
+
+function downloadDoctorQr(){
+  if (!currentDoctorQrImageUrl) {
+    alert("QR code indisponible.");
+    return;
+  }
+
+  const a = document.createElement("a");
+  a.href = currentDoctorQrImageUrl;
+  a.download = "qr-code-pelvis-pain-map.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
 </script>
 </body>
 </html>
