@@ -69,27 +69,11 @@
     <h1>Patientes</h1>
     <p class="info" id="subtitle"></p>
   </header>
+  
 
   <div class="container wide">
-    <div class="toolbar toolbarTop">
-      <input type="text" id="searchInput" class="searchInput" placeholder="Rechercher..." oninput="applyFiltersAndSort()">
-      <select id="sortSelect" class="sortSelect" onchange="applyFiltersAndSort()">
-        <option value="date_desc">Trier par date ↓</option>
-        <option value="date_asc">Trier par date ↑</option>
-        <option value="pain_desc">Trier par intensité ↓</option>
-        <option value="pain_asc">Trier par intensité ↑</option>
-        <option value="nom_asc">Trier par nom A → Z</option>
-        <option value="nom_desc">Trier par nom Z → A</option>
-      </select>
-      <button class="statsBtn" onclick="openStats()">Stats</button>
-    </div>
-
-    <div id="patientList" class="patientList"></div>
-  </div>
-</div>
-
-  <div class="card" id="doctorAccessCard">
-  <h2>Accès patientes</h2>
+      <div class="card" id="doctorAccessCard">
+  <h2>Liens utiles</h2>
   <p class="muted">Retrouvez ici votre lien questionnaire et votre QR code personnel.</p>
 
   <div style="margin-top:14px;">
@@ -123,6 +107,26 @@
     <div class="muted" id="doctorAccessStatus"></div>
   </div>
 </div>
+    <div class="toolbar toolbarTop">
+      <input type="text" id="searchInput" class="searchInput" placeholder="Rechercher..." oninput="applyFiltersAndSort()">
+      <select id="sortSelect" class="sortSelect" onchange="applyFiltersAndSort()">
+        <option value="date_desc">Trier par date ↓</option>
+        <option value="date_asc">Trier par date ↑</option>
+        <option value="pain_desc">Trier par intensité ↓</option>
+        <option value="pain_asc">Trier par intensité ↑</option>
+        <option value="nom_asc">Trier par nom A → Z</option>
+        <option value="nom_desc">Trier par nom Z → A</option>
+      </select>
+      <button class="statsBtn" onclick="openStats()">Stats</button>
+    </div>
+
+    
+
+    <div id="patientList" class="patientList"></div>
+  </div>
+</div>
+
+
 
 <script>
 
@@ -190,7 +194,7 @@ async function checkPin() {
     document.getElementById("content").style.display = "block";
     document.getElementById("subtitle").textContent = data.name || p;
 
-    enderDoctorAccessBox(p);
+    renderDoctorAccessBox(p);
 
     loadRows();
 
