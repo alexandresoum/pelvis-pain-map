@@ -514,6 +514,25 @@
   <div class="statsGrid" style="margin-top:4px;">
     <div class="statCard">
       <div class="statLabel">Discordance profil / écho</div>
+      <div class="statsGrid" style="margin-top:4px;">
+  <div class="statCard">
+    <div class="statLabel">Confiance élevée</div>
+    <div class="statValue big" id="cohortConfidenceHigh">0%</div>
+    <div class="statSub" id="cohortConfidenceHighDetail">0 / 0</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Confiance intermédiaire</div>
+    <div class="statValue big" id="cohortConfidenceMid">0%</div>
+    <div class="statSub" id="cohortConfidenceMidDetail">0 / 0</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Confiance faible</div>
+    <div class="statValue big" id="cohortConfidenceLow">0%</div>
+    <div class="statSub" id="cohortConfidenceLowDetail">0 / 0</div>
+  </div>
+</div>
       <div class="statValue big" id="cohortDiscordance">0%</div>
       <div class="statSub" id="cohortDiscordanceDetail">0 / 0 profils forts/probables avec écho normal</div>
     </div>
@@ -882,6 +901,34 @@ function normalizeLevel(v){
     pct,
     level: "fort"
   };
+}
+
+  function getConfidenceInterpretation(d){
+
+  const profiles = [
+    Number(d.endometriose_pct || 0),
+    Number(d.adenomyose_pct || 0),
+    Number(d.pudendal_pct || 0),
+    Number(d.congestion_pct || 0),
+    Number(d.opk_pct || 0),
+    Number(d.hypersensibilisation_pct || 0)
+  ].sort((a,b)=>b-a);
+
+  const top1 = profiles[0] || 0;
+  const top2 = profiles[1] || 0;
+
+  const gap = top1 - top2;
+
+  const scoreTop = Math.min(40, top1 * 0.6);
+  const scoreGap = Math.min(40, gap * 1.2);
+
+  const total = Math.round(scoreTop + scoreGap);
+
+  let level = "faible";
+  if (total >= 70) level = "élevée";
+  else if (total >= 40) level = "intermédiaire";
+
+  return { score: total, level };
 }
 
 function checkPin(){
@@ -1276,16 +1323,25 @@ function getHypothesisInterpretation(d){
   let possible = 0;
   let nonConclusive = 0;
 
+  let confidenceHigh = 0;
+  let confidenceMid = 0;
+  let confidenceLow = 0;
+
   let discordantCount = 0;
   let discordantDenominator = 0;
 
   docs.forEach(d => {
     const h = getHypothesisInterpretation(d);
+    const conf = getConfidenceInterpretation(d);
 
     if (h.level === "fort") strong++;
     else if (h.level === "probable") probable++;
     else if (h.level === "possible") possible++;
     else nonConclusive++;
+
+    if (conf.level === "élevée") confidenceHigh++;
+    else if (conf.level === "intermédiaire") confidenceMid++;
+    else confidenceLow++;
 
     const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
     const hasNormal = echos.includes("Normal");
@@ -1293,7 +1349,6 @@ function getHypothesisInterpretation(d){
 
     if (h.level === "fort" || h.level === "probable"){
       discordantDenominator++;
-
       if (hasNormal && !hasPositiveEcho){
         discordantCount++;
       }
@@ -1302,10 +1357,14 @@ function getHypothesisInterpretation(d){
 
   const total = docs.length;
 
-  document.getElementById("cohortStrong").innerText = total ? Math.round((strong / total) * 100) + "%" : "0%";
-  document.getElementById("cohortProbable").innerText = total ? Math.round((probable / total) * 100) + "%" : "0%";
-  document.getElementById("cohortPossible").innerText = total ? Math.round((possible / total) * 100) + "%" : "0%";
-  document.getElementById("cohortNonConclusive").innerText = total ? Math.round((nonConclusive / total) * 100) + "%" : "0%";
+  document.getElementById("cohortStrong").innerText =
+    total ? Math.round((strong / total) * 100) + "%" : "0%";
+  document.getElementById("cohortProbable").innerText =
+    total ? Math.round((probable / total) * 100) + "%" : "0%";
+  document.getElementById("cohortPossible").innerText =
+    total ? Math.round((possible / total) * 100) + "%" : "0%";
+  document.getElementById("cohortNonConclusive").innerText =
+    total ? Math.round((nonConclusive / total) * 100) + "%" : "0%";
 
   document.getElementById("cohortStrongDetail").innerText = `${strong} / ${total}`;
   document.getElementById("cohortProbableDetail").innerText = `${probable} / ${total}`;
@@ -1314,9 +1373,19 @@ function getHypothesisInterpretation(d){
 
   document.getElementById("cohortDiscordance").innerText =
     discordantDenominator ? Math.round((discordantCount / discordantDenominator) * 100) + "%" : "0%";
-
   document.getElementById("cohortDiscordanceDetail").innerText =
     `${discordantCount} / ${discordantDenominator} profils forts/probables avec écho normal`;
+
+  document.getElementById("cohortConfidenceHigh").innerText =
+    total ? Math.round((confidenceHigh / total) * 100) + "%" : "0%";
+  document.getElementById("cohortConfidenceMid").innerText =
+    total ? Math.round((confidenceMid / total) * 100) + "%" : "0%";
+  document.getElementById("cohortConfidenceLow").innerText =
+    total ? Math.round((confidenceLow / total) * 100) + "%" : "0%";
+
+  document.getElementById("cohortConfidenceHighDetail").innerText = `${confidenceHigh} / ${total}`;
+  document.getElementById("cohortConfidenceMidDetail").innerText = `${confidenceMid} / ${total}`;
+  document.getElementById("cohortConfidenceLowDetail").innerText = `${confidenceLow} / ${total}`;
 }
   
   function buildRocData(docs, pathology){
