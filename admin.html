@@ -712,11 +712,21 @@ const ADMIN_PIN = atob("MTYxMg==");
 const PRACTITIONER_COLLECTION = "pratitioners";
 const PATIENT_COLLECTION = "patients";
 
+   const HYPOTHESIS_THRESHOLDS = {
+  nonConcluant: 30,
+  possible: 45,
+  probable: 60
+};
+
 const LEGACY_PRACTITIONER_LABELS = {
   alexandre_soum: "Alexandre Soum",
   praticien_2: "Dr Jean-Marc Levaillant",
   praticien_3: "Anne-Laure Siraga"
 };
+
+ 
+
+  
 
 let PRACTITIONER_LABELS = {};
 let PRACTITIONERS = [];
@@ -789,6 +799,49 @@ function normalizeLevel(v){
   if (!v) return "";
   if (v === "possible") return "modéré";
   return v;
+}
+
+  function getHypothesisInterpretation(d){
+  const label = d.hypothesisPrimary || d.lesionPrimary || "-";
+  const pct = Number(d.hypothesisPrimaryPct || 0);
+
+  if (!label || pct <= 0){
+    return {
+      label: "Profil non concluant",
+      pct: 0,
+      level: "non_concluant"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.nonConcluant){
+    return {
+      label: "Profil non concluant",
+      pct,
+      level: "non_concluant"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.possible){
+    return {
+      label,
+      pct,
+      level: "possible"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.probable){
+    return {
+      label,
+      pct,
+      level: "probable"
+    };
+  }
+
+  return {
+    label,
+    pct,
+    level: "fort"
+  };
 }
 
 function checkPin(){
@@ -1134,7 +1187,50 @@ function computeDiagnosticMetrics(docs, pathology, thresholdMode){
   };
 }
 
-function buildRocData(docs, pathology){
+function getHypothesisInterpretation(d){
+  const label = d.hypothesisPrimary || d.lesionPrimary || "-";
+  const pct = Number(d.hypothesisPrimaryPct || 0);
+
+  if (!label || pct <= 0){
+    return {
+      label: "Profil non concluant",
+      pct: 0,
+      level: "non_concluant"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.nonConcluant){
+    return {
+      label: "Profil non concluant",
+      pct,
+      level: "non_concluant"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.possible){
+    return {
+      label,
+      pct,
+      level: "possible"
+    };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.probable){
+    return {
+      label,
+      pct,
+      level: "probable"
+    };
+  }
+
+  return {
+    label,
+    pct,
+    level: "fort"
+  };
+}
+  
+  function buildRocData(docs, pathology){
   const usable = docs.filter(d => {
     const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
     return echos.some(x => x && x !== "Non contributif");
