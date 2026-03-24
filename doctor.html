@@ -157,6 +157,17 @@ const CERTS = ["Non renseigné","Suspect","Compatible","Confirmé"];
   probable: 60
 };
 
+   const ECHO_SCORE_LEVELS = ["", "possible", "probable", "fort"];
+
+const ECHO_STRUCTURED_DIAGNOSES = [
+  "Endométriose",
+  "Adénomyose",
+  "Congestion pelvienne",
+  "Névralgie pudendale",
+  "OPK",
+  "Fibrome"
+];
+
 let currentPractitioner = null;
 let rows = [];
 let openCardId = null;
@@ -519,6 +530,26 @@ async function updateEcho(id) {
   await db.collection("patients").doc(id).update({ diagnostic_echo: selectedEcho(id) });
 }
 
+async function updateEchoScore(id, diag, level){
+
+  const ref = db.collection("patients").doc(id);
+
+  const doc = await ref.get();
+  const data = doc.data() || {};
+
+  const scores = data.echoScores || {};
+
+  scores[diag] = level;
+
+  const diagnostic_echo = Object.keys(scores).filter(k => scores[k]);
+
+  await ref.update({
+    echoScores: scores,
+    diagnostic_echo: diagnostic_echo
+  });
+
+}  
+
 async function updateCert(id, value) {
   await db.collection("patients").doc(id).update({ echoCertainty: value });
 }
@@ -532,11 +563,39 @@ async function delRow(id, name) {
   await db.collection("patients").doc(id).delete();
 }
 
-function echoBox(id, sel) {
-  const cur = Array.isArray(sel) ? sel : [];
-  return `<div class="echo-group" data-id="${id}">
-    ${ECHOS.map(o => `<label class="echoItem"><input type="checkbox" value="${o}" ${cur.includes(o) ? "checked" : ""} onclick="event.stopPropagation()" onchange="updateEcho('${id}')"> ${o}</label>`).join("")}
-  </div>`;
+function echoBox(id, data) {
+
+  const scores = data.echoScores || {};
+
+  return `
+  <div class="echo-group" data-id="${id}">
+    ${ECHO_STRUCTURED_DIAGNOSES.map(diag => {
+
+      const value = scores[diag] || "";
+
+      return `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <div style="width:180px;">${diag}</div>
+
+        <select
+          class="miniSelect"
+          onclick="event.stopPropagation()"
+          onchange="updateEchoScore('${id}','${diag}', this.value)"
+        >
+
+          ${ECHO_SCORE_LEVELS.map(level =>
+            `<option value="${level}" ${level === value ? "selected" : ""}>
+              ${level || "—"}
+            </option>`
+          ).join("")}
+
+        </select>
+
+      </div>
+      `;
+    }).join("")}
+  </div>
+  `;
 }
 
 function certSel(id, sel) {
@@ -648,7 +707,7 @@ function renderList(list) {
 
             <div class="detailBox">
               <h3>Résultats écho</h3>
-              ${echoBox(r.id, d.diagnostic_echo)}
+              ${echoBox(r.id, d)}
               <div class="boxSectionTitle">Déjà cochés</div>
               <div>${pillsFromList(d.diagnostic_echo)}</div>
 
