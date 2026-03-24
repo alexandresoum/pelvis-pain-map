@@ -671,7 +671,9 @@ function loadRows(){
       rows = [];
       s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
       updateStats();
+       updateDoctorConcordanceStats();
     });
+ 
 }
 
 loadRows();
