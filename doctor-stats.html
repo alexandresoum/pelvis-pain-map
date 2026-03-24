@@ -50,15 +50,15 @@
       font-size:13px;
       color:#6b7280;
     }
-    .chartGrid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    .chartGr{
+      display:gr;
+      gr-template-columns:repeat(auto-fit,minmax(320px,1fr));
       gap:18px;
       margin-top:18px;
     }
     .card{
       background:#fff;
-      border:1px solid #e5e7eb;
+      border:1px sol #e5e7eb;
       border-radius:14px;
       padding:18px;
       box-shadow:0 2px 10px rgba(0,0,0,.06);
@@ -76,14 +76,14 @@
       margin:12px 0 8px 0;
     }
     .toolbar select,.toolbar input{
-      min-width:180px;
+      min-wth:180px;
     }
     .muted{
       color:#6b7280;
       font-size:14px;
     }
     canvas{
-      max-width:100%;
+      max-wth:100%;
       min-height:280px;
     }
   </style>
@@ -661,6 +661,110 @@ function updateStats(){
   draw("digestiveChart", "pie", Object.keys(digestif), Object.values(digestif));
   draw("echoChart", "doughnut", Object.keys(echos), Object.values(echos));
   draw("contraceptionChart", "bar", Object.keys(contraception), Object.values(contraception));
+}
+
+  function levelToScore(level){
+  if (level === "fort" || level === "élevé") return 3;
+  if (level === "probable") return 2;
+  if (level === "possible" || level === "modéré") return 1;
+  return 0;
+}
+
+function concordanceScore(questionLevel, echoLevel){
+  const q = levelToScore(questionLevel);
+  const e = levelToScore(echoLevel);
+  return Math.max(0, 3 - Math.abs(q - e));
+}
+
+function patientConcordance(data){
+
+  const diagnostics = [
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
+    { questionKey: "opk", echoKey: "OPK" },
+    { questionKey: "fibrome", echoKey: "Fibrome" }
+  ];
+
+  let total = 0;
+  const max = diagnostics.length * 3;
+
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+    const questionLevel = normalizeLevel(data[questionKey] || "");
+
+    let echoLevel = data.echoScores?.[echoKey] || "";
+
+    if (!echoLevel) {
+      const oldEcho = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+      if (oldEcho.includes(echoKey)) {
+        echoLevel = "fort";
+      }
+    }
+
+    total += concordanceScore(questionLevel, echoLevel);
+  });
+
+  return Math.round((total / max) * 100);
+}
+
+function concordanceLabel(score){
+  if (score >= 80) return "excellente";
+  if (score >= 60) return "bonne";
+  if (score >= 40) return "modérée";
+  return "faible";
+}
+
+function concordanceByPathology(docs, questionKey, echoKey){
+  if (!docs || !docs.length) return 0;
+
+  let total = 0;
+  let max = 0;
+
+  docs.forEach(d => {
+    const q = normalizeLevel(d[questionKey] || "");
+
+    let e = d.echoScores?.[echoKey] || "";
+
+    if (!e) {
+      const oldEcho = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+      if (oldEcho.includes(echoKey)) {
+        e = "fort";
+      }
+    }
+
+    total += concordanceScore(q, e);
+    max += 3;
+  });
+
+  return max ? Math.round((total / max) * 100) : 0;
+}
+
+function updateDoctorConcordanceStats(){
+  if (!rows || !rows.length) return;
+
+  const docs = rows.map(r => r.data);
+
+  const globalScore = Math.round(
+    docs.reduce((sum, d) => sum + patientConcordance(d), 0) / docs.length
+  );
+
+  const endo = concordanceByPathology(docs, "endometriose", "Endométriose");
+  const adeno = concordanceByPathology(docs, "adenomyose", "Adénomyose");
+  const cong = concordanceByPathology(docs, "congestion", "Congestion pelvienne");
+  const pud = concordanceByPathology(docs, "pudendal", "Névralgie pudendale");
+  const opk = concordanceByPathology(docs, "opk", "OPK");
+  const fib = concordanceByPathology(docs, "fibrome", "Fibrome");
+
+  document.getElementById("doctorConcordance").innerText = globalScore + "%";
+  document.getElementById("doctorConcordanceLabel").innerText = concordanceLabel(globalScore);
+
+  document.getElementById("doctorEndo").innerText = endo + "%";
+  document.getElementById("doctorAdeno").innerText = adeno + "%";
+  document.getElementById("doctorCong").innerText = cong + "%";
+  document.getElementById("doctorPud").innerText = pud + "%";
+  document.getElementById("doctorOpk").innerText = opk + "%";
+  document.getElementById("doctorFib").innerText = fib + "%";
 }
 
 function loadRows(){
