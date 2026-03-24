@@ -548,6 +548,30 @@ async function updateEchoScore(id, diag, level){
     echoScores: scores,
     diagnostic_echo: diagnostic_echo
   });
+
+  learnFromEcho({...data, echoScores: scores});
+}
+
+  async function learnFromEcho(data){
+
+  if(!data.echoScores) return;
+
+  const strong = Object.entries(data.echoScores)
+    .filter(([k,v]) => v === "fort")
+    .map(([k]) => k);
+
+  if(!strong.length) return;
+
+  const learnData = {
+    topo: data.topo || [],
+    time: data.time || [],
+    digestif: data.digestif || [],
+    pain: data.pain || 0,
+    diagnoses: strong
+  };
+
+  await db.collection("learning").add(learnData);
+
 }
   async function toggleEchoSpecial(id, label, checked){
 
