@@ -306,6 +306,7 @@
             <option value="Congestion pelvienne">Congestion pelvienne</option>
             <option value="Névralgie pudendale">Névralgie pudendale</option>
             <option value="OPK">OPK</option>
+            <option value="Fibrome">Fibrome</option>
             <option value="Normal">Normal</option>
             <option value="Non contributif">Non contributif</option>
             <option value="Autre">Autre</option>
@@ -511,6 +512,7 @@ const MAIN_DIAGNOSES = [
   "Congestion pelvienne",
   "Névralgie pudendale",
   "OPK",
+  "Fibrome",
   "Normal",
   "Non contributif",
   "Autre"
@@ -567,6 +569,9 @@ const ITEM_DEFS = [
   { key: "opk1", label: "Profil · acné / hyperandrogénie", test: d => !!d.opk1 },
   { key: "opk2", label: "Profil · pilosité excessive", test: d => !!d.opk2 },
   { key: "cycle_irregulier", label: "Contexte · cycles irréguliers", test: d => String(d.cycleRegularity || "") === "Irréguliers" },
+
+  { key: "fib1", label: "Profil · ménorragies fibrome", test: d => !!d.fib1 },
+{ key: "fib2", label: "Profil · sensation de masse pelvienne", test: d => !!d.fib2 },
 
   { key: "consultation_oui", label: "Contexte · consultation antérieure oui", test: d => String(d.consultation || "") === "Oui" },
   { key: "diag_evoque_oui", label: "Contexte · diagnostic déjà évoqué", test: d => truthyText(d.previousDiagnosis) },
@@ -806,7 +811,8 @@ function getPathologyPct(d, pathology){
     "Adénomyose": Number(d.adenomyose_pct || 0),
     "Congestion pelvienne": Number(d.congestion_pct || 0),
     "Névralgie pudendale": Number(d.pudendal_pct || 0),
-    "OPK": Number(d.opk_pct || 0)
+    "OPK": Number(d.opk_pct || 0),
+     "Fibrome": Number(d.fibrome_pct || 0)
   };
   return map[pathology] || 0;
 }
@@ -1315,7 +1321,7 @@ function drawDistributionChart(roc){
 }
 
 function updateRocSection(allDocs, diagnosis){
-  const allowed = ["Endométriose", "Adénomyose", "Congestion pelvienne", "Névralgie pudendale", "OPK"];
+  const allowed = ["Endométriose", "Adénomyose", "Congestion pelvienne", "Névralgie pudendale", "OPK", "Fibrome"];
 
   if (!allowed.includes(diagnosis)) {
     document.getElementById("rocAucValue").innerText = "0.00";
@@ -1358,9 +1364,7 @@ function updateRocSection(allDocs, diagnosis){
   }
 
   // On garde uniquement les dossiers ayant le diagnostic actuellement sélectionné
-  const positiveDocs = docs.filter(d => {
-    const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-    return echo.includes(currentDiagnosis);
+  const positiveDocs = docs;
   });
 
   if (!positiveDocs.length){
@@ -1387,8 +1391,7 @@ function updateRocSection(allDocs, diagnosis){
       congestion: "Congestion pelvienne",
       pudendal: "Névralgie pudendale",
       opk: "OPK",
-      fibrome: "Fibrome",
-      hypersensibilisation: "Hypersensibilisation centrale"
+      fibrome: "Fibrome"
     };
     return map[label] || label || "-";
   };
