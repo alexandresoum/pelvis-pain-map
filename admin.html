@@ -538,6 +538,49 @@
     </div>
   </div>
 </div>
+
+    <div class="card">
+  <h2>Concordance questionnaire ↔ échographie</h2>
+  <p class="muted">Score moyen de cohérence entre hypothèses questionnaire et résultats échographiques.</p>
+
+  <div class="statsGrid" style="margin-top:16px;">
+    <div class="statCard">
+      <div class="statLabel">Concordance globale</div>
+      <div class="statValue big" id="cohortConcordance">0%</div>
+      <div class="statSub" id="cohortConcordanceDetail">-</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Endométriose</div>
+      <div class="statValue big" id="concordanceEndo">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Adénomyose</div>
+      <div class="statValue big" id="concordanceAdeno">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Congestion pelvienne</div>
+      <div class="statValue big" id="concordanceCong">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Névralgie pudendale</div>
+      <div class="statValue big" id="concordancePud">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">OPK</div>
+      <div class="statValue big" id="concordanceOpk">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Fibrome</div>
+      <div class="statValue big" id="concordanceFib">0%</div>
+    </div>
+  </div>
+</div>
     
     <div class="kpiBox">
   <h3>IA V3</h3>
@@ -2016,6 +2059,7 @@ function updateAll(){
   updateKpis(docs);
   updateV3Stats(docs);
   updateCohortClinicalReading(docs);
+  updateConcordanceStats(docs);
   updateRoc(docs);
   updateCalibration(docs);
   updateLearningCurve(docs);
@@ -2392,66 +2436,108 @@ document.addEventListener("keydown", e => {
   window.location.href = "admin-patterns.html";
 }
 
-  function levelToScore(level){
-
-  if(level === "fort") return 3;
-  if(level === "probable") return 2;
-  if(level === "possible") return 1;
-
+ 
+function levelToScore(level){
+  if (level === "fort" || level === "élevé") return 3;
+  if (level === "probable") return 2;
+  if (level === "possible" || level === "modéré") return 1;
   return 0;
-
 }
-  function concordanceScore(questionLevel, echoLevel){
 
+function concordanceScore(questionLevel, echoLevel){
   const q = levelToScore(questionLevel);
   const e = levelToScore(echoLevel);
-
   return Math.max(0, 3 - Math.abs(q - e));
-
 }
 
-  function patientConcordance(data){
+function patientConcordance(data){
 
   const diagnostics = [
-    "Endométriose",
-    "Adénomyose",
-    "Congestion pelvienne",
-    "Névralgie pudendale",
-    "OPK",
-    "Fibrome"
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
+    { questionKey: "opk", echoKey: "OPK" },
+    { questionKey: "fibrome", echoKey: "Fibrome" }
   ];
 
   let total = 0;
-  let max = diagnostics.length * 3;
+  const max = diagnostics.length * 3;
 
-  diagnostics.forEach(diag => {
-
-    const questionLevel = data[diag.toLowerCase()] || "";
-    const echoLevel = data.echoScores?.[diag] || "";
-
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+    const questionLevel = normalizeLevel(data[questionKey] || "");
+    const echoLevel = data.echoScores?.[echoKey] || "";
     total += concordanceScore(questionLevel, echoLevel);
-
   });
 
   return Math.round((total / max) * 100);
-
 }
 
-  function cohortConcordance(docs){
+function cohortConcordance(docs){
+  if (!docs || !docs.length) return 0;
 
   let sum = 0;
 
   docs.forEach(d => {
-
     sum += patientConcordance(d);
+  });
 
-     return Math.round(sum / docs.length);
-
+  return Math.round(sum / docs.length);
 }
 
-    
+function concordanceLabel(score){
+  if(score >= 80) return "excellente";
+  if(score >= 60) return "bonne";
+  if(score >= 40) return "modérée";
+  return "faible";
+}
 
+  function concordanceByPathology(docs, questionKey, echoKey){
+  if (!docs || !docs.length) return 0;
+
+  let total = 0;
+  let max = 0;
+
+  docs.forEach(d => {
+    const q = normalizeLevel(d[questionKey] || "");
+    const e = d.echoScores?.[echoKey] || "";
+    total += concordanceScore(q, e);
+    max += 3;
   });
+
+  return max ? Math.round((total / max) * 100) : 0;
+}
+
+function updateConcordanceStats(docs){
+  const globalScore = cohortConcordance(docs);
+
+  const endo = concordanceByPathology(docs, "endometriose", "Endométriose");
+  const adeno = concordanceByPathology(docs, "adenomyose", "Adénomyose");
+  const cong = concordanceByPathology(docs, "congestion", "Congestion pelvienne");
+  const pud = concordanceByPathology(docs, "pudendal", "Névralgie pudendale");
+  const opk = concordanceByPathology(docs, "opk", "OPK");
+  const fib = concordanceByPathology(docs, "fibrome", "Fibrome");
+
+  const globalEl = document.getElementById("cohortConcordance");
+  const globalDetailEl = document.getElementById("cohortConcordanceDetail");
+
+  const endoEl = document.getElementById("concordanceEndo");
+  const adenoEl = document.getElementById("concordanceAdeno");
+  const congEl = document.getElementById("concordanceCong");
+  const pudEl = document.getElementById("concordancePud");
+  const opkEl = document.getElementById("concordanceOpk");
+  const fibEl = document.getElementById("concordanceFib");
+
+  if (globalEl) globalEl.innerText = globalScore + "%";
+  if (globalDetailEl) globalDetailEl.innerText = concordanceLabel(globalScore);
+
+  if (endoEl) endoEl.innerText = endo + "%";
+  if (adenoEl) adenoEl.innerText = adeno + "%";
+  if (congEl) congEl.innerText = cong + "%";
+  if (pudEl) pudEl.innerText = pud + "%";
+  if (opkEl) opkEl.innerText = opk + "%";
+  if (fibEl) fibEl.innerText = fib + "%";
+}
 
  
 </script>
