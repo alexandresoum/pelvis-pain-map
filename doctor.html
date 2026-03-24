@@ -612,27 +612,39 @@ function echoBox(id, data) {
       `;
     }).join("")}
 
-    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
-      <label class="echoItem">
-        <input
-          type="checkbox"
-          ${isNormal ? "checked" : ""}
-          onclick="event.stopPropagation()"
-          onchange="toggleEchoSpecial('${id}','Normal', this.checked)"
-        >
-        Normal
-      </label>
+   <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
 
-      <label class="echoItem">
-        <input
-          type="checkbox"
-          ${isNonContributif ? "checked" : ""}
-          onclick="event.stopPropagation()"
-          onchange="toggleEchoSpecial('${id}','Non contributif', this.checked)"
-        >
-        Non contributif
-      </label>
-    </div>
+<label class="echoItem">
+<input
+type="checkbox"
+${isNormal ? "checked" : ""}
+onclick="event.stopPropagation()"
+onchange="toggleEchoSpecial('${id}','Normal', this.checked)"
+>
+Normal
+</label>
+
+<label class="echoItem">
+<input
+type="checkbox"
+${isNonContributif ? "checked" : ""}
+onclick="event.stopPropagation()"
+onchange="toggleEchoSpecial('${id}','Non contributif', this.checked)"
+>
+Non contributif
+</label>
+
+<label class="echoItem">
+<input
+type="checkbox"
+${currentEcho.includes("Autre") ? "checked" : ""}
+onclick="event.stopPropagation()"
+onchange="toggleEchoSpecial('${id}','Autre', this.checked)"
+>
+Autre
+</label>
+
+</div>
   </div>
   `;
 }
