@@ -533,22 +533,46 @@ async function updateEcho(id) {
 async function updateEchoScore(id, diag, level){
 
   const ref = db.collection("patients").doc(id);
-
   const doc = await ref.get();
   const data = doc.data() || {};
 
   const scores = data.echoScores || {};
-
   scores[diag] = level;
 
-  const diagnostic_echo = Object.keys(scores).filter(k => scores[k]);
+  const oldEcho = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const keepSpecial = oldEcho.filter(x => x === "Normal" || x === "Non contributif");
+
+  const structured = Object.keys(scores).filter(k => scores[k]);
+  const diagnostic_echo = [...structured, ...keepSpecial];
 
   await ref.update({
     echoScores: scores,
     diagnostic_echo: diagnostic_echo
   });
+}
+  async function toggleEchoSpecial(id, label, checked){
 
-}  
+  const ref = db.collection("patients").doc(id);
+  const doc = await ref.get();
+  const data = doc.data() || {};
+
+  const scores = data.echoScores || {};
+  let diagnostic_echo = Array.isArray(data.diagnostic_echo) ? [...data.diagnostic_echo] : [];
+
+  // On reconstruit d'abord les diagnostics issus des menus
+  const structured = Object.keys(scores).filter(k => scores[k]);
+
+  diagnostic_echo = [...structured];
+
+  if (checked) {
+    if (!diagnostic_echo.includes(label)) diagnostic_echo.push(label);
+  }
+
+  await ref.update({
+    echoScores: scores,
+    diagnostic_echo: diagnostic_echo
+  });
+}
 
 async function updateCert(id, value) {
   await db.collection("patients").doc(id).update({ echoCertainty: value });
@@ -566,38 +590,56 @@ async function delRow(id, name) {
 function echoBox(id, data) {
 
   const scores = data.echoScores || {};
+  const currentEcho = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
+  const isNormal = currentEcho.includes("Normal");
+  const isNonContributif = currentEcho.includes("Non contributif");
 
   return `
   <div class="echo-group" data-id="${id}">
     ${ECHO_STRUCTURED_DIAGNOSES.map(diag => {
-
       const value = scores[diag] || "";
 
       return `
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
         <div style="width:180px;">${diag}</div>
-
         <select
           class="miniSelect"
           onclick="event.stopPropagation()"
           onchange="updateEchoScore('${id}','${diag}', this.value)"
         >
-
           ${ECHO_SCORE_LEVELS.map(level =>
-            `<option value="${level}" ${level === value ? "selected" : ""}>
-              ${level || "—"}
-            </option>`
+            `<option value="${level}" ${level === value ? "selected" : ""}>${level || "—"}</option>`
           ).join("")}
-
         </select>
-
       </div>
       `;
     }).join("")}
+
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+      <label class="echoItem">
+        <input
+          type="checkbox"
+          ${isNormal ? "checked" : ""}
+          onclick="event.stopPropagation()"
+          onchange="toggleEchoSpecial('${id}','Normal', this.checked)"
+        >
+        Normal
+      </label>
+
+      <label class="echoItem">
+        <input
+          type="checkbox"
+          ${isNonContributif ? "checked" : ""}
+          onclick="event.stopPropagation()"
+          onchange="toggleEchoSpecial('${id}','Non contributif', this.checked)"
+        >
+        Non contributif
+      </label>
+    </div>
   </div>
   `;
 }
-
 function certSel(id, sel) {
   return `<select class="miniSelect" onclick="event.stopPropagation()" onchange="updateCert('${id}', this.value)">
     ${CERTS.map(o => `<option value="${o}" ${o === (sel || "Non renseigné") ? "selected" : ""}>${o}</option>`).join("")}
