@@ -180,6 +180,51 @@
     </div>
 
     <div class="card">
+  <h2>Concordance questionnaire ↔ échographie</h2>
+  <p class="muted">Cohérence entre hypothèses questionnaire et résultats échographiques.</p>
+
+  <div class="statsGrid" style="margin-top:16px;">
+
+    <div class="statCard">
+      <div class="statLabel">Concordance globale</div>
+      <div class="statValue big" id="doctorConcordance">0%</div>
+      <div class="statSub" id="doctorConcordanceLabel">-</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Endométriose</div>
+      <div class="statValue big" id="doctorEndo">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Adénomyose</div>
+      <div class="statValue big" id="doctorAdeno">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Congestion pelvienne</div>
+      <div class="statValue big" id="doctorCong">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Névralgie pudendale</div>
+      <div class="statValue big" id="doctorPud">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">OPK</div>
+      <div class="statValue big" id="doctorOpk">0%</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Fibrome</div>
+      <div class="statValue big" id="doctorFib">0%</div>
+    </div>
+
+  </div>
+</div>
+
+    <div class="card">
       <h2>Validation diagnostique paramétrable</h2>
       <p class="muted">Le test correspond au questionnaire. La référence correspond au diagnostic écho.</p>
 
@@ -467,6 +512,33 @@ function computeDiagnosticMetrics(docs, pathology, thresholdMode){
   };
 }
 
+  function updateDoctorConcordanceStats(){
+
+  const docs = filteredDocs()
+
+  if(!docs.length) return
+
+  const globalScore = cohortConcordance(docs)
+
+  const endo = concordanceByPathology(docs,"endometriose","Endométriose")
+  const adeno = concordanceByPathology(docs,"adenomyose","Adénomyose")
+  const cong = concordanceByPathology(docs,"congestion","Congestion pelvienne")
+  const pud = concordanceByPathology(docs,"pudendal","Névralgie pudendale")
+  const opk = concordanceByPathology(docs,"opk","OPK")
+  const fib = concordanceByPathology(docs,"fibrome","Fibrome")
+
+  document.getElementById("doctorConcordance").innerText = globalScore + "%"
+  document.getElementById("doctorConcordanceLabel").innerText = concordanceLabel(globalScore)
+
+  document.getElementById("doctorEndo").innerText = endo + "%"
+  document.getElementById("doctorAdeno").innerText = adeno + "%"
+  document.getElementById("doctorCong").innerText = cong + "%"
+  document.getElementById("doctorPud").innerText = pud + "%"
+  document.getElementById("doctorOpk").innerText = opk + "%"
+  document.getElementById("doctorFib").innerText = fib + "%"
+
+}
+
 function updateDiagnosticMetrics(docs){
   const pathology = document.getElementById("metricPathology").value;
   const thresholdMode = document.getElementById("metricThreshold").value;
@@ -487,6 +559,8 @@ function updateDiagnosticMetrics(docs){
   document.getElementById("metricFN").innerText = m.FN;
   document.getElementById("metricTN").innerText = m.TN;
 }
+
+  
 
 function draw(id, type, labels, data){
   const el = document.getElementById(id);
