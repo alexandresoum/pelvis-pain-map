@@ -337,6 +337,52 @@ function normalizeLevel(v) {
   return {score: total, level};
 }
 
+
+  function concordanceLabel(score){
+
+  if(score >= 80) return "excellente";
+  if(score >= 60) return "bonne";
+  if(score >= 40) return "modérée";
+
+  return "faible";
+
+}
+
+  function levelToScore(level){
+  if(level === "fort") return 3;
+  if(level === "probable") return 2;
+  if(level === "possible") return 1;
+  return 0;
+}
+
+function concordanceScore(questionLevel, echoLevel){
+  const q = levelToScore(questionLevel);
+  const e = levelToScore(echoLevel);
+  return Math.max(0, 3 - Math.abs(q - e));
+}
+
+function patientConcordance(data){
+  const diagnostics = [
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
+    { questionKey: "opk", echoKey: "OPK" },
+    { questionKey: "fibrome", echoKey: "Fibrome" }
+  ];
+
+  let total = 0;
+  const max = diagnostics.length * 3;
+
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+    const q = data[questionKey] || "";
+    const e = data.echoScores?.[echoKey] || "";
+    total += concordanceScore(q, e);
+  });
+
+  return Math.round((total / max) * 100);
+}
+  
 function badgeClass(label) {
   if (!label) return "soft";
   const x = String(label).toLowerCase();
@@ -706,6 +752,7 @@ function renderList(list) {
     const hypothesis = getMainHypothesis(d);
     const hypothesisPct = getMainHypothesisPct(d);
     const confidence = getConfidenceInterpretation(d);
+    const score = patientConcordance(d);
 
     return `
       <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
@@ -741,6 +788,8 @@ function renderList(list) {
             <div>
               <div class="summaryCellTitle">Résultat écho</div>
               <div class="summaryCellValue resultBadges">${pillsFromList(d.diagnostic_echo)}</div>
+              <div class="summaryCellTitle">Concordance</div>
+            <div class="summaryCellValue">${score}% (${concordanceLabel(score)})</div>
             </div>
           </div>
         </div>
