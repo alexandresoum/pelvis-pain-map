@@ -382,6 +382,8 @@ function patientConcordance(data){
 
   return Math.round((total / max) * 100);
 }
+
+
   
 function badgeClass(label) {
   if (!label) return "soft";
@@ -788,8 +790,10 @@ function renderList(list) {
             <div>
               <div class="summaryCellTitle">Résultat écho</div>
               <div class="summaryCellValue resultBadges">${pillsFromList(d.diagnostic_echo)}</div>
+             ${d.diagnostic_echo && d.diagnostic_echo.length > 0 ? `
               <div class="summaryCellTitle">Concordance</div>
-            <div class="summaryCellValue">${score}% (${concordanceLabel(score)})</div>
+              <div class="summaryCellValue">${patientConcordance(d)}% (${concordanceLabel(patientConcordance(d))}) </div>
+              ` : ""}
             </div>
           </div>
         </div>
