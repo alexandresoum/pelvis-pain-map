@@ -481,7 +481,15 @@ async function submitForm() {
   const topo = checkedValues(".topo");
   const time = checkedValues(".time");
   const type = checkedValues(".type");
-  const digestif = checkedValues(".digestif");
+const digestif = checkedValues(".digestif");
+
+if (ballonnementsChecked) {
+  if (ballonnementsMoment === "soir") {
+    digestif.unshift("Ballonnements surtout le soir");
+  } else {
+    digestif.unshift("Ballonnements");
+  }
+}
   const pain = document.getElementById("pain").value;
   const contraceptionType = document.getElementById("contraceptionType").value;
   const pillContinuous = document.getElementById("pillContinuous").value;
@@ -490,24 +498,28 @@ async function submitForm() {
   const previousDiagnosis = document.getElementById("previousDiagnosis").value;
   const cycleRegularity = radioValue("cycleRegularity");
 
-  const flags = {
-    endo1: document.getElementById("endo1").checked,
-    aden1: document.getElementById("aden1").checked,
-    aden2: document.getElementById("aden2").checked,
-    fib1: document.getElementById("fib1").checked,
-    endo2: document.getElementById("endo2").checked,
-    endo3: document.getElementById("endo3").checked,
-    endo4: document.getElementById("endo4").checked,
-    cong1: document.getElementById("cong1").checked,
-    cong2: document.getElementById("cong2").checked,
-    pud1: document.getElementById("pud1").checked,
-    pud2: document.getElementById("pud2").checked,
-    pud3: document.getElementById("pud3").checked,
-    uri1: document.getElementById("uri1").checked,
-    opk1: document.getElementById("opk1").checked,
-    opk2: document.getElementById("opk2").checked,
-    bloatingEvening: document.getElementById("bloatingEvening").checked
-  };
+ const ballonnementsChecked = document.getElementById("digestif_ballonnements")?.checked || false;
+const ballonnementsMoment = document.querySelector('input[name="ballonnements_moment"]:checked')?.value || "";
+
+const flags = {
+  endo1: document.getElementById("endo1").checked,
+  aden1: document.getElementById("aden1").checked,
+  aden2: document.getElementById("aden2").checked,
+  fib1: document.getElementById("fib1").checked,
+  endo2: document.getElementById("endo2").checked,
+  endo3: document.getElementById("endo3").checked,
+  endo4: document.getElementById("endo4").checked,
+  cong1: document.getElementById("cong1").checked,
+  cong2: document.getElementById("cong2").checked,
+  pud1: document.getElementById("pud1").checked,
+  pud2: document.getElementById("pud2").checked,
+  pud3: document.getElementById("pud3").checked,
+  uri1: document.getElementById("uri1").checked,
+  opk1: document.getElementById("opk1").checked,
+  opk2: document.getElementById("opk2").checked,
+  bloatingEvening: ballonnementsChecked && ballonnementsMoment === "soir",
+  bloatingGeneral: ballonnementsChecked && ballonnementsMoment === "sans_moment"
+};
 
   const profileData = {
     topo,
@@ -590,6 +602,8 @@ async function submitForm() {
     phenotype: computePhenotype(type),
 
     ballonnementsSoir: flags.bloatingEvening ? "Oui" : "Non",
+ballonnements: ballonnementsChecked ? "Oui" : "Non",
+ballonnementsMoment: ballonnementsMoment || "",
 
     endo1: flags.endo1,
     aden1: flags.aden1,
