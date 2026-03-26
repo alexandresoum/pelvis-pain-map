@@ -120,7 +120,25 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
   <div class="card">
     <h2>6. Signes digestifs associés</h2>
     <div class="choices columns2">
-      <label><input type="checkbox" class="digestif" value="Ballonnements le soir" id="bloatingEvening"> Ballonnements surtout le soir</label>
+      <div>
+  <label>
+    <input type="checkbox" id="digestif_ballonnements">
+    Ballonnements
+  </label>
+
+  <div id="ballonnements_submenu" style="margin-left:20px; margin-top:6px; display:none;">
+    <label>
+      <input type="radio" name="ballonnements_moment" value="sans_moment">
+      sans moment précis
+    </label>
+    <br>
+
+    <label>
+      <input type="radio" name="ballonnements_moment" value="soir">
+      surtout le soir
+    </label>
+  </div>
+</div>
       <label><input type="checkbox" class="digestif" value="Diarrhée"> Diarrhée</label>
       <label><input type="checkbox" class="digestif" value="Constipation"> Constipation</label>
       <label><input type="checkbox" class="digestif" value="Alternance diarrhée / constipation"> Alternance diarrhée / constipation</label>
@@ -672,6 +690,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   await initPractitioner();
   autoSelectCycleNA();
   togglePillOptions();
+});
+
+  document.addEventListener("DOMContentLoaded", function(){
+
+  const checkbox = document.getElementById("digestif_ballonnements");
+  const submenu = document.getElementById("ballonnements_submenu");
+
+  checkbox.addEventListener("change", function(){
+
+    if (this.checked) {
+      submenu.style.display = "block";
+    } else {
+      submenu.style.display = "none";
+
+      document
+        .querySelectorAll('input[name="ballonnements_moment"]')
+        .forEach(el => el.checked = false);
+    }
+
+  });
+
 });
 </script>
 </body>
