@@ -58,6 +58,185 @@ function normalizePatientData(d) {
   };
 }
 
+// -------- FEATURE VECTOR IA --------
+function hasValue(arr, value) {
+  return Array.isArray(arr) && arr.includes(value);
+}
+
+function buildFeatureVector(d) {
+  return {
+    // Topographie
+    topo_bas_ventre_centre: hasValue(d.topo, "Bas du ventre (centre)") ? 1 : 0,
+    topo_droite: hasValue(d.topo, "Côté droit du bas du ventre") ? 1 : 0,
+    topo_gauche: hasValue(d.topo, "Côté gauche du bas du ventre") ? 1 : 0,
+    topo_bassin_profond: hasValue(d.topo, "Douleur profonde dans le bassin") ? 1 : 0,
+    topo_vagin: hasValue(d.topo, "Vagin") ? 1 : 0,
+    topo_vulve: hasValue(d.topo, "Vulve") ? 1 : 0,
+    topo_perinee: hasValue(d.topo, "Périnée") ? 1 : 0,
+    topo_sacrum: hasValue(d.topo, "Bas du dos / sacrum") ? 1 : 0,
+    topo_cuisse_droite: hasValue(d.topo, "Cuisse droite") ? 1 : 0,
+    topo_cuisse_gauche: hasValue(d.topo, "Cuisse gauche") ? 1 : 0,
+
+    // Temporalité
+    time_regles: hasValue(d.time, "Pendant les règles") ? 1 : 0,
+    time_rapports: hasValue(d.time, "Pendant les rapports sexuels") ? 1 : 0,
+    time_post_rapports: hasValue(d.time, "Après les rapports sexuels") ? 1 : 0,
+    time_ovulation: hasValue(d.time, "Douleur à l'ovulation") ? 1 : 0,
+    time_uriner: hasValue(d.time, "En urinant") ? 1 : 0,
+    time_selle: hasValue(d.time, "En allant à la selle") ? 1 : 0,
+    time_assise: hasValue(d.time, "En position assise") ? 1 : 0,
+    time_debout: hasValue(d.time, "En restant debout longtemps") ? 1 : 0,
+    time_sans_raison: hasValue(d.time, "Sans raison particulière") ? 1 : 0,
+
+    // Digestif
+    digestif_ballonnements: hasValue(d.digestif, "Ballonnements") ? 1 : 0,
+    digestif_ballonnements_soir: hasValue(d.digestif, "Ballonnements surtout le soir") ? 1 : 0,
+    digestif_diarrhee: hasValue(d.digestif, "Diarrhée") ? 1 : 0,
+    digestif_constipation: hasValue(d.digestif, "Constipation") ? 1 : 0,
+    digestif_alternance: hasValue(d.digestif, "Alternance diarrhée / constipation") ? 1 : 0,
+    digestif_defecation: hasValue(d.digestif, "Douleur à la défécation") ? 1 : 0,
+
+    // Items cliniques directs
+    endo1: d.endo1 ? 1 : 0,
+    endo2: d.endo2 ? 1 : 0,
+    endo3: d.endo3 ? 1 : 0,
+    endo4: d.endo4 ? 1 : 0,
+    aden1: d.aden1 ? 1 : 0,
+    aden2: d.aden2 ? 1 : 0,
+    cong1: d.cong1 ? 1 : 0,
+    cong2: d.cong2 ? 1 : 0,
+    pud1: d.pud1 ? 1 : 0,
+    pud2: d.pud2 ? 1 : 0,
+    pud3: d.pud3 ? 1 : 0,
+    opk1: d.opk1 ? 1 : 0,
+    opk2: d.opk2 ? 1 : 0,
+    fib1: d.fib1 ? 1 : 0,
+    fib2: d.fib2 ? 1 : 0,
+    bloatingEvening: d.bloatingEvening ? 1 : 0,
+
+    // Intensité
+    pain: Number(d.pain || 0)
+  };
+}
+
+function buildLabelVector(d) {
+  const echo = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+
+  return {
+    endometriose: echo.includes("Endométriose") ? 1 : 0,
+    adenomyose: echo.includes("Adénomyose") ? 1 : 0,
+    congestion: echo.includes("Congestion pelvienne") ? 1 : 0,
+    pudendal: echo.includes("Névralgie pudendale") ? 1 : 0,
+    opk: echo.includes("OPK") ? 1 : 0,
+    fibrome: echo.includes("Fibrome") ? 1 : 0
+  };
+}
+
+function buildLearningMatrix(docs) {
+  return (docs || []).map(raw => {
+    const d = normalizePatientData(raw);
+    return {
+      features: buildFeatureVector(d),
+      labels: buildLabelVector(d),
+      raw
+    };
+  });
+}
+
+function emptyFeatureWeights() {
+  return {
+    endometriose: {},
+    adenomyose: {},
+    congestion: {},
+    pudendal: {},
+    opk: {},
+    fibrome: {}
+  };
+}
+
+function trainFeatureWeights(docs) {
+  const matrix = buildLearningMatrix(docs);
+  const model = emptyFeatureWeights();
+
+  if (!matrix.length) {
+    return {
+      totalCases: 0,
+      featureWeights: model
+    };
+  }
+
+  const diagnoses = ["endometriose", "adenomyose", "congestion", "pudendal", "opk", "fibrome"];
+  const featureNames = Object.keys(matrix[0].features);
+
+  diagnoses.forEach(diag => {
+    const positiveRows = matrix.filter(row => row.labels[diag] === 1);
+    const negativeRows = matrix.filter(row => row.labels[diag] === 0);
+
+    featureNames.forEach(feature => {
+      const posRate = positiveRows.length
+        ? positiveRows.reduce((s, row) => s + Number(row.features[feature] || 0), 0) / positiveRows.length
+        : 0;
+
+      const negRate = negativeRows.length
+        ? negativeRows.reduce((s, row) => s + Number(row.features[feature] || 0), 0) / negativeRows.length
+        : 0;
+
+      model[diag][feature] = Number((posRate - negRate).toFixed(4));
+    });
+  });
+
+  return {
+    totalCases: matrix.length,
+    featureWeights: model
+  };
+}
+
+const PELVIS_V3_WEIGHTS_KEY = "pelvis_v3_feature_weights";
+
+function saveFeatureWeightsModel(model) {
+  try {
+    localStorage.setItem(PELVIS_V3_WEIGHTS_KEY, JSON.stringify(model));
+  } catch (e) {
+    console.warn("Impossible d’enregistrer les poids V3 :", e);
+  }
+}
+
+function loadFeatureWeightsModel() {
+  try {
+    const raw = localStorage.getItem(PELVIS_V3_WEIGHTS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    console.warn("Impossible de charger les poids V3 :", e);
+    return null;
+  }
+}
+
+function computeLearnedScores(d) {
+  const model = loadFeatureWeightsModel();
+  const features = buildFeatureVector(d);
+
+  const base = {
+    endometriose: 0,
+    adenomyose: 0,
+    congestion: 0,
+    pudendal: 0,
+    opk: 0,
+    fibrome: 0
+  };
+
+  if (!model || !model.featureWeights) return base;
+
+  Object.keys(base).forEach(diag => {
+    const weights = model.featureWeights[diag] || {};
+
+    Object.entries(features).forEach(([feature, value]) => {
+      base[diag] += Number(value || 0) * Number(weights[feature] || 0);
+    });
+  });
+
+  return base;
+}
+
 // -------- FEATURES --------
 function computeDerivedFeatures(d) {
   const sum = (...args) => args.filter(Boolean).length;
@@ -320,7 +499,17 @@ function pelvisComputeV3(raw) {
   const d = normalizePatientData(raw);
   const f = computeDerivedFeatures(d);
   const s = computeExpertScores(d, f);
-  const scores = mergeScores(d, s);
+ const expertScores = mergeScores(d, s);
+const learnedScores = computeLearnedScores(d);
+
+const scores = {
+  endometriose: expertScores.endometriose + learnedScores.endometriose,
+  adenomyose: expertScores.adenomyose + learnedScores.adenomyose,
+  congestion: expertScores.congestion + learnedScores.congestion,
+  pudendal: expertScores.pudendal + learnedScores.pudendal,
+  opk: expertScores.opk + learnedScores.opk,
+  fibrome: expertScores.fibrome + learnedScores.fibrome
+};
   const ranking = buildRanking(scores);
  const uncertainty = computeUncertainty(ranking);
 const uncertaintyScore = uncertaintyToScore(uncertainty);
@@ -401,8 +590,16 @@ confidence_v2: v2Confidence,
     }
   };
 }
-function pelvisRetrainV31(docs) {
-  return rebuildLearningStatsFromDataset(docs || []);
+unction pelvisRetrainV31(docs) {
+  const cleanDocs = docs || [];
+  const stats = rebuildLearningStatsFromDataset(cleanDocs);
+  const learnedModel = trainFeatureWeights(cleanDocs);
+  saveFeatureWeightsModel(learnedModel);
+
+  return {
+    stats,
+    learnedModel
+  };
 }
 
 function pelvisGetV31Stats() {
