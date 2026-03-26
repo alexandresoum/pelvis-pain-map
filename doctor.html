@@ -361,28 +361,48 @@ function concordanceScore(questionLevel, echoLevel){
   return Math.max(0, 3 - Math.abs(q - e));
 }
 
-function patientConcordance(data){
-  const diagnostics = [
-    { questionKey: "endometriose", echoKey: "Endométriose" },
-    { questionKey: "adenomyose", echoKey: "Adénomyose" },
-    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
-    { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
-    { questionKey: "opk", echoKey: "OPK" },
-    { questionKey: "fibrome", echoKey: "Fibrome" }
-  ];
+  function patientConcordance(data){
 
-  let total = 0;
-  const max = diagnostics.length * 3;
+ const diagnostics = [
+  { questionKey: "endometriose", echoKey: "Endométriose" },
+  { questionKey: "adenomyose", echoKey: "Adénomyose" },
+  { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+  { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
+  { questionKey: "opk", echoKey: "OPK" },
+  { questionKey: "fibrome", echoKey: "Fibrome" }
+ ];
 
-  diagnostics.forEach(({ questionKey, echoKey }) => {
-    const q = data[questionKey] || "";
-    const e = data.echoScores?.[echoKey] || "";
-    total += concordanceScore(q, e);
-  });
+ let total = 0;
+ const max = diagnostics.length * 3;
 
-  return Math.round((total / max) * 100);
+ diagnostics.forEach(({ questionKey, echoKey }) => {
+
+  const q = data[questionKey] || "";
+  const e = data.echoScores?.[echoKey] || "";
+
+  total += concordanceScore(q, e);
+
+ });
+
+ let score = Math.round((total / max) * 100);
+
+ const hypo = getHypothesisInterpretation(data).label;
+ const echos = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
+ const mainMatch =
+  hypo &&
+  hypo !== "Profil non concluant" &&
+  echos.includes(hypo);
+
+ if (!mainMatch) {
+  score = Math.min(score, 60);
+ }
+
+ return score;
 }
 
+
+ 
 
   
 function badgeClass(label) {
