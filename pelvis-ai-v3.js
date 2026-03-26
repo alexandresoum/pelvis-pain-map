@@ -590,7 +590,7 @@ confidence_v2: v2Confidence,
     }
   };
 }
-unction pelvisRetrainV31(docs) {
+function pelvisRetrainV31(docs) {
   const cleanDocs = docs || [];
   const stats = rebuildLearningStatsFromDataset(cleanDocs);
   const learnedModel = trainFeatureWeights(cleanDocs);
