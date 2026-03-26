@@ -481,6 +481,12 @@ async function submitForm() {
   const topo = checkedValues(".topo");
   const time = checkedValues(".time");
   const type = checkedValues(".type");
+const ballonnementsChecked =
+document.getElementById("digestif_ballonnements")?.checked || false;
+
+const ballonnementsMoment =
+document.querySelector('input[name="ballonnements_moment"]:checked')?.value || "";
+
 const digestif = checkedValues(".digestif");
 
 if (ballonnementsChecked) {
