@@ -606,6 +606,14 @@ function pelvisGetV31Stats() {
   return loadLearningStats();
 }
 
+function pelvisGetLearnedWeights() {
+  const model = loadFeatureWeightsModel();
+  if (!model || !model.featureWeights) return null;
+  return model.featureWeights;
+}
+
+window.pelvisGetLearnedWeights = pelvisGetLearnedWeights;
+
 window.pelvisComputeV3 = pelvisComputeV3;
 window.pelvisRetrainV31 = pelvisRetrainV31;
 window.pelvisGetV31Stats = pelvisGetV31Stats;
