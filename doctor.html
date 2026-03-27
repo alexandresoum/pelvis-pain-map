@@ -346,9 +346,11 @@ function normalizeLevel(v) {
 }
 
 function levelToScore(level){
-  if(level === "fort") return 3;
-  if(level === "probable") return 2;
-  if(level === "possible") return 1;
+  const v = String(level || "").toLowerCase().trim();
+
+  if (v === "fort" || v === "élevé" || v === "eleve") return 3;
+  if (v === "probable" || v === "modéré" || v === "modere") return 2;
+  if (v === "possible" || v === "faible") return 1;
   return 0;
 }
 
@@ -373,13 +375,21 @@ const SECONDARY_PUDENDAL_DIAGNOSTIC = {
 
 function patientMainConcordance(data){
   let total = 0;
-  const max = MAIN_CONCORDANCE_DIAGNOSTICS.length * 3;
+  let max = 0;
 
   MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
     const q = data[questionKey] || "";
     const e = data.echoScores?.[echoKey] || "";
-    total += concordanceScore(q, e);
+
+    const qScore = levelToScore(q);
+
+    if (qScore > 0) {
+      total += concordanceScore(q, e);
+      max += 3;
+    }
   });
+
+  if (max === 0) return 0;
 
   let score = Math.round((total / max) * 100);
 
@@ -399,8 +409,7 @@ function patientMainConcordance(data){
     hypo !== "Profil non concluant" &&
     structuredMainHypotheses.includes(hypo);
 
-  const mainMatch =
-    shouldCheckMainMatch ? echos.includes(hypo) : true;
+  const mainMatch = shouldCheckMainMatch ? echos.includes(hypo) : true;
 
   if (!mainMatch) {
     score = Math.min(score, 60);
@@ -409,7 +418,7 @@ function patientMainConcordance(data){
   return score;
 }
 
-function patientPudendalConcordance(data){
+  function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
   const e = data.echoScores?.[SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey] || "";
 
@@ -422,7 +431,6 @@ function patientPudendalConcordance(data){
 
   return Math.round((concordanceScore(q, e) / 3) * 100);
 }
-
 
  
 
