@@ -339,16 +339,13 @@ function normalizeLevel(v) {
 
 
   function concordanceLabel(score){
-
   if(score >= 80) return "excellente";
   if(score >= 60) return "bonne";
   if(score >= 40) return "modérée";
-
   return "faible";
-
 }
 
-  function levelToScore(level){
+function levelToScore(level){
   if(level === "fort") return 3;
   if(level === "probable") return 2;
   if(level === "possible") return 1;
@@ -361,44 +358,69 @@ function concordanceScore(questionLevel, echoLevel){
   return Math.max(0, 3 - Math.abs(q - e));
 }
 
-  function patientConcordance(data){
-
- const diagnostics = [
+const MAIN_CONCORDANCE_DIAGNOSTICS = [
   { questionKey: "endometriose", echoKey: "Endométriose" },
   { questionKey: "adenomyose", echoKey: "Adénomyose" },
   { questionKey: "congestion", echoKey: "Congestion pelvienne" },
-  { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
   { questionKey: "opk", echoKey: "OPK" },
   { questionKey: "fibrome", echoKey: "Fibrome" }
- ];
+];
 
- let total = 0;
- const max = diagnostics.length * 3;
+const SECONDARY_PUDENDAL_DIAGNOSTIC = {
+  questionKey: "pudendal",
+  echoKey: "Névralgie pudendale"
+};
 
- diagnostics.forEach(({ questionKey, echoKey }) => {
+function patientMainConcordance(data){
+  let total = 0;
+  const max = MAIN_CONCORDANCE_DIAGNOSTICS.length * 3;
 
-  const q = data[questionKey] || "";
-  const e = data.echoScores?.[echoKey] || "";
+  MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
+    const q = data[questionKey] || "";
+    const e = data.echoScores?.[echoKey] || "";
+    total += concordanceScore(q, e);
+  });
 
-  total += concordanceScore(q, e);
+  let score = Math.round((total / max) * 100);
 
- });
+  const hypo = getHypothesisInterpretation(data).label;
+  const echos = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
 
- let score = Math.round((total / max) * 100);
+  const structuredMainHypotheses = [
+    "Endométriose",
+    "Adénomyose",
+    "Congestion pelvienne",
+    "OPK",
+    "Fibrome"
+  ];
 
- const hypo = getHypothesisInterpretation(data).label;
- const echos = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const shouldCheckMainMatch =
+    hypo &&
+    hypo !== "Profil non concluant" &&
+    structuredMainHypotheses.includes(hypo);
 
- const mainMatch =
-  hypo &&
-  hypo !== "Profil non concluant" &&
-  echos.includes(hypo);
+  const mainMatch =
+    shouldCheckMainMatch ? echos.includes(hypo) : true;
 
- if (!mainMatch) {
-  score = Math.min(score, 60);
- }
+  if (!mainMatch) {
+    score = Math.min(score, 60);
+  }
 
- return score;
+  return score;
+}
+
+function patientPudendalConcordance(data){
+  const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
+  const e = data.echoScores?.[SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey] || "";
+
+  const qScore = levelToScore(q);
+  const eScore = levelToScore(e);
+
+  if (qScore === 0 && eScore === 0) {
+    return null;
+  }
+
+  return Math.round((concordanceScore(q, e) / 3) * 100);
 }
 
 
@@ -535,6 +557,8 @@ function pdfData(d) {
     doctorComment: d.doctorComment || "",
     symptoms: buildSymptomsSummary(d),
     digestifSummary: buildDigestiveSummary(d)
+    mainConcordance: patientMainConcordance(d),
+pudendalConcordance: patientPudendalConcordance(d),
   };
 }
 
@@ -575,6 +599,8 @@ function buildPdf(doc, d) {
     "Orientation échographique principale : " + (d.echoPrimary || "-"),
     "Profils compatibles : " + (compatible.length ? compatible.join(", ") : "-"),
     "Profils détaillés : " + (allProfiles.length ? allProfiles.join(", ") : "-"),
+    "Concordance clinico-écho : " + (d.mainConcordance !== undefined ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")" : "-"),
+"Score secondaire pudendal : " + (d.pudendalConcordance !== null && d.pudendalConcordance !== undefined ? d.pudendalConcordance + "% (" + concordanceLabel(d.pudendalConcordance) + ")" : "-"),
     "Résultats écho : " + safeList(d.diagnostic_echo),
     "Certitude : " + (d.echoCertainty || "Non renseigné"),
     "Commentaire praticien : " + (d.doctorComment || "")
@@ -774,7 +800,8 @@ function renderList(list) {
     const hypothesis = getMainHypothesis(d);
     const hypothesisPct = getMainHypothesisPct(d);
     const confidence = getConfidenceInterpretation(d);
-    const score = patientConcordance(d);
+    const mainScore = patientMainConcordance(d);
+const pudendalScore = patientPudendalConcordance(d);
 
     return `
       <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
@@ -810,10 +837,14 @@ function renderList(list) {
             <div>
               <div class="summaryCellTitle">Résultat écho</div>
               <div class="summaryCellValue resultBadges">${pillsFromList(d.diagnostic_echo)}</div>
-             ${d.diagnostic_echo && d.diagnostic_echo.length > 0 ? `
-              <div class="summaryCellTitle">Concordance</div>
-              <div class="summaryCellValue">${patientConcordance(d)}% (${concordanceLabel(patientConcordance(d))}) </div>
-              ` : ""}
+            ${d.diagnostic_echo && d.diagnostic_echo.length > 0 ? `
+  <div class="summaryCellTitle">Concordance</div>
+  <div class="summaryCellValue">${mainScore}% (${concordanceLabel(mainScore)})</div>
+  ${pudendalScore !== null ? `
+    <div class="summaryCellTitle">Pudendal</div>
+    <div class="summaryCellValue">${pudendalScore}% (${concordanceLabel(pudendalScore)})</div>
+  ` : ""}
+` : ""}
             </div>
           </div>
         </div>
@@ -842,6 +873,8 @@ function renderList(list) {
               <div class="detailLine"><b>Confiance clinique :</b> ${confidence.level} (${confidence.score}/100)</div>
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
+              <div class="detailLine"><b>Concordance clinico-écho :</b> ${mainScore}% (${concordanceLabel(mainScore)})</div>
+<div class="detailLine"><b>Score secondaire pudendal :</b> ${pudendalScore !== null ? `${pudendalScore}% (${concordanceLabel(pudendalScore)})` : "-"}</div>
 
               <div class="boxSectionTitle">Profils détaillés</div>
               <div>${allProfilesAsPills(d)}</div>
