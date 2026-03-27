@@ -365,7 +365,6 @@ const MAIN_CONCORDANCE_DIAGNOSTICS = [
   { questionKey: "adenomyose", echoKey: "Adénomyose" },
   { questionKey: "congestion", echoKey: "Congestion pelvienne" },
   { questionKey: "opk", echoKey: "OPK" },
-  { questionKey: "fibrome", echoKey: "Fibrome" }
 ];
 
 const SECONDARY_PUDENDAL_DIAGNOSTIC = {
@@ -443,6 +442,22 @@ function patientMainConcordance(data){
   }
 
   return Math.round((concordanceScore(q, e) / 3) * 100);
+}
+
+  function pudendalStatus(data){
+
+  const q = levelToScore(data.pudendal || "");
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const e = echoList.includes("Névralgie pudendale");
+
+  if(q === 0 && !e) return "non évoqué";
+
+  if(q > 0 && !e) return "discordant";
+
+  if(q === 0 && e) return "découverte échographique";
+
+  return "compatible";
+
 }
 
  
@@ -861,10 +876,8 @@ const pudendalScore = patientPudendalConcordance(d);
             ${d.diagnostic_echo && d.diagnostic_echo.length > 0 ? `
   <div class="summaryCellTitle">Concordance</div>
   <div class="summaryCellValue">${mainScore}% (${concordanceLabel(mainScore)})</div>
-  ${pudendalScore !== null ? `
-    <div class="summaryCellTitle">Pudendal</div>
-    <div class="summaryCellValue">${pudendalScore}% (${concordanceLabel(pudendalScore)})</div>
-  ` : ""}
+  <div class="summaryCellTitle">Profil pudendal</div>
+<div class="summaryCellValue">${pudendalStatus(d)}</div>
 ` : ""}
             </div>
           </div>
@@ -895,7 +908,7 @@ const pudendalScore = patientPudendalConcordance(d);
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
               <div class="detailLine"><b>Concordance clinico-écho :</b> ${mainScore}% (${concordanceLabel(mainScore)})</div>
-<div class="detailLine"><b>Score secondaire pudendal :</b> ${pudendalScore !== null ? `${pudendalScore}% (${concordanceLabel(pudendalScore)})` : "-"}</div>
+              <div class="detailLine"><b>Profil pudendal :</b> ${pudendalStatus(d)}</div>
 
               <div class="boxSectionTitle">Profils détaillés</div>
               <div>${allProfilesAsPills(d)}</div>
