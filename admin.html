@@ -489,10 +489,11 @@ min-height:auto;
 
   <div class="statsGrid" style="margin-top:16px;">
     <div class="statCard">
-  <div class="statLabel">Âge moyen</div>
-  <div class="statValue big" id="cohortMeanAge">-</div>
-  <div class="statSub" id="cohortMeanAgeDetail">0 patientes</div>
-</div>
+      <div class="statLabel">Âge moyen</div>
+      <div class="statValue big" id="cohortMeanAge">-</div>
+      <div class="statSub" id="cohortMeanAgeDetail">0 patientes</div>
+    </div>
+
     <div class="statCard">
       <div class="statLabel">Profils forts</div>
       <div class="statValue big" id="cohortStrong">0%</div>
@@ -518,42 +519,40 @@ min-height:auto;
     </div>
   </div>
 
-  <div class="statsGrid" style="margin-top:4px;">
+  <div class="statsGrid" style="margin-top:16px;">
+    <div class="statCard">
+      <div class="statLabel">Discordance clinique majeure</div>
+      <div class="statValue big" id="cohortMajorDiscordance">0%</div>
+      <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0 profils forts</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Confiance élevée</div>
+      <div class="statValue big" id="cohortConfidenceHigh">0%</div>
+      <div class="statSub" id="cohortConfidenceHighDetail">0 / 0</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Confiance intermédiaire</div>
+      <div class="statValue big" id="cohortConfidenceMid">0%</div>
+      <div class="statSub" id="cohortConfidenceMidDetail">0 / 0</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Confiance faible</div>
+      <div class="statValue big" id="cohortConfidenceLow">0%</div>
+      <div class="statSub" id="cohortConfidenceLowDetail">0 / 0</div>
+    </div>
+
     <div class="statCard">
       <div class="statLabel">Discordance profil / écho</div>
-      <div class="statsGrid" style="margin-top:16px;">
-  <div class="statCard">
-    <div class="statLabel">Discordance clinique majeure</div>
-    <div class="statValue big" id="cohortMajorDiscordance">0%</div>
-    <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0</div>
-  </div>
-</div>
-      <div class="statsGrid" style="margin-top:4px;">
-  <div class="statCard">
-    <div class="statLabel">Confiance élevée</div>
-    <div class="statValue big" id="cohortConfidenceHigh">0%</div>
-    <div class="statSub" id="cohortConfidenceHighDetail">0 / 0</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Confiance intermédiaire</div>
-    <div class="statValue big" id="cohortConfidenceMid">0%</div>
-    <div class="statSub" id="cohortConfidenceMidDetail">0 / 0</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Confiance faible</div>
-    <div class="statValue big" id="cohortConfidenceLow">0%</div>
-    <div class="statSub" id="cohortConfidenceLowDetail">0 / 0</div>
-  </div>
-</div>
       <div class="statValue big" id="cohortDiscordance">0%</div>
       <div class="statSub" id="cohortDiscordanceDetail">0 / 0 profils forts/probables avec écho normal</div>
     </div>
   </div>
 </div>
 
-    <div class="card">
+<div class="card">
   <h2>Concordance questionnaire ↔ échographie</h2>
   <p class="muted">Score moyen de cohérence entre hypothèses questionnaire et résultats échographiques.</p>
 
@@ -564,56 +563,20 @@ min-height:auto;
       <div class="statSub" id="cohortConcordanceDetail">-</div>
     </div>
 
-    <div class="statsGrid" style="margin-top:16px;">
-  <div class="statCard">
-    <div class="statLabel">Concordance globale</div>
-    <div class="statValue big" id="cohortConcordance">0%</div>
-    <div class="statSub" id="cohortConcordanceDetail">-</div>
+    <div class="statCard">
+      <div class="statLabel">Concordance des profils forts</div>
+      <div class="statValue big" id="cohortStrongConcordance">0%</div>
+      <div class="statSub" id="cohortStrongConcordanceDetail">0 profils forts</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Discordance clinique majeure</div>
+      <div class="statValue big" id="cohortMajorDiscordance">0%</div>
+      <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0 profils forts</div>
+    </div>
   </div>
 
-  <div class="statCard">
-    <div class="statLabel">Concordance des profils forts</div>
-    <div class="statValue big" id="cohortStrongConcordance">0%</div>
-    <div class="statSub" id="cohortStrongConcordanceDetail">0 profils forts</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Discordance clinique majeure</div>
-    <div class="statValue big" id="cohortMajorDiscordance">0%</div>
-    <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0 profils forts</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Endométriose</div>
-    <div class="statValue big" id="concordanceEndo">0%</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Adénomyose</div>
-    <div class="statValue big" id="concordanceAdeno">0%</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Congestion pelvienne</div>
-    <div class="statValue big" id="concordanceCong">0%</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Névralgie pudendale</div>
-    <div class="statValue big" id="concordancePud">0%</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">OPK</div>
-    <div class="statValue big" id="concordanceOpk">0%</div>
-  </div>
-
-  <div class="statCard">
-    <div class="statLabel">Fibrome</div>
-    <div class="statValue big" id="concordanceFib">hors score</div>
-  </div>
-</div>
-
+  <div class="statsGrid" style="margin-top:16px;">
     <div class="statCard">
       <div class="statLabel">Endométriose</div>
       <div class="statValue big" id="concordanceEndo">0%</div>
@@ -641,10 +604,11 @@ min-height:auto;
 
     <div class="statCard">
       <div class="statLabel">Fibrome</div>
-      <div class="statValue big" id="concordanceFib">0%</div>
+      <div class="statValue big" id="concordanceFib">hors score</div>
     </div>
   </div>
 </div>
+
     
     <div class="kpiBox">
   <h3>IA V3</h3>
@@ -1085,20 +1049,19 @@ async function initDashboard(){
   loadRows();
 }
 
-  function computeMeanAge(docs){
+ function computeMeanAge(docs){
   if (!docs || !docs.length) return { mean: 0, count: 0 };
 
   const ages = docs
-    .map(d => Number(d.age))
-    .filter(a => !isNaN(a) && a > 0);
+    .map(d => ageFromDob(d.dob))
+    .filter(a => a !== null && !isNaN(a) && a > 0);
 
   if (!ages.length) return { mean: 0, count: 0 };
 
   const sum = ages.reduce((a, b) => a + b, 0);
-  const mean = Math.round(sum / ages.length);
 
   return {
-    mean,
+    mean: Math.round(sum / ages.length),
     count: ages.length
   };
 }
