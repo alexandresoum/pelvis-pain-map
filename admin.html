@@ -2535,17 +2535,37 @@ function concordanceLabel(score){
   return "faible";
 }
 
+function getQuestionnaireWeight(data, questionKey){
+  const pctMap = {
+    endometriose: Number(data.endometriose_pct || 0),
+    adenomyose: Number(data.adenomyose_pct || 0),
+    congestion: Number(data.congestion_pct || 0),
+    pudendal: Number(data.pudendal_pct || 0),
+    opk: Number(data.opk_pct || 0),
+    fibrome: Number(data.fibrome_pct || 0)
+  };
+
+  const pct = pctMap[questionKey] || 0;
+
+  if (pct >= 80) return 1.0;
+  if (pct >= 60) return 0.8;
+  if (pct >= 40) return 0.6;
+  if (pct >= 20) return 0.3;
+  return 0;
+}
+
 function patientMainConcordance(data){
-  let total = 0;
-  let max = 0;
+  let weightedTotal = 0;
+  let weightedMax = 0;
 
   const diagnosticEchoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
 
   MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
     const q = data[questionKey] || "";
     const qScore = levelToScore(q);
+    const qWeight = getQuestionnaireWeight(data, questionKey);
 
-    if (qScore === 0) return;
+    if (qScore === 0 || qWeight === 0) return;
 
     let e = data.echoScores?.[echoKey] || "";
 
@@ -2553,13 +2573,15 @@ function patientMainConcordance(data){
       e = "probable";
     }
 
-    total += concordanceScore(q, e);
-    max += 3;
+    const rawScore = concordanceScore(q, e);
+
+    weightedTotal += rawScore * qWeight;
+    weightedMax += 3 * qWeight;
   });
 
-  if (max === 0) return 0;
+  if (weightedMax === 0) return 0;
 
-  let score = Math.round((total / max) * 100);
+  let score = Math.round((weightedTotal / weightedMax) * 100);
 
   const hypo = getHypothesisInterpretation(data).label;
 
@@ -2631,14 +2653,15 @@ function cohortMainConcordance(docs){
 function concordanceByPathology(docs, questionKey, echoKey){
   if (!docs || !docs.length) return 0;
 
-  let total = 0;
-  let max = 0;
+  let weightedTotal = 0;
+  let weightedMax = 0;
 
   docs.forEach(d => {
     const q = d[questionKey] || "";
     const qScore = levelToScore(q);
+    const qWeight = getQuestionnaireWeight(d, questionKey);
 
-    if (qScore === 0) return;
+    if (qScore === 0 || qWeight === 0) return;
 
     const diagnosticEchoList = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
     let e = d.echoScores?.[echoKey] || "";
@@ -2647,12 +2670,13 @@ function concordanceByPathology(docs, questionKey, echoKey){
       e = "probable";
     }
 
-    total += concordanceScore(q, e);
-    max += 3;
+    weightedTotal += concordanceScore(q, e) * qWeight;
+    weightedMax += 3 * qWeight;
   });
 
-  return max ? Math.round((total / max) * 100) : 0;
+  return weightedMax ? Math.round((weightedTotal / weightedMax) * 100) : 0;
 }
+
 function updateConcordanceStats(docs){
   const globalScore = cohortMainConcordance(docs);
 
