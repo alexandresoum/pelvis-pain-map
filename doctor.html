@@ -444,23 +444,34 @@ function patientMainConcordance(data){
   return Math.round((concordanceScore(q, e) / 3) * 100);
 }
 
-  function pudendalStatus(data){
+ function pudendalStatus(data){
 
-  const q = levelToScore(data.pudendal || "");
+  const pudPct = Number(data.pudendal_pct || 0);
   const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
-  const e = echoList.includes("Névralgie pudendale");
+  const echoPresent = echoList.includes("Névralgie pudendale");
 
-  if(q === 0 && !e) return "non évoqué";
+  // Hypothèse forte (>80%) mais écho négatif
+  if(pudPct >= 80 && !echoPresent){
+    return "discordant";
+  }
 
-  if(q > 0 && !e) return "discordant";
+  // Hypothèse forte confirmée
+  if(pudPct >= 80 && echoPresent){
+    return "compatible";
+  }
 
-  if(q === 0 && e) return "découverte échographique";
+  // Hypothèse faible mais découverte écho
+  if(pudPct < 40 && echoPresent){
+    return "découverte échographique";
+  }
 
-  return "compatible";
+  // Hypothèse intermédiaire
+  if(pudPct >= 40){
+    return "profil possible";
+  }
 
+  return "non évoqué";
 }
-
- 
 
   
 function badgeClass(label) {
