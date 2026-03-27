@@ -377,16 +377,24 @@ function patientMainConcordance(data){
   let total = 0;
   let max = 0;
 
+  const diagnosticEchoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
   MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
     const q = data[questionKey] || "";
-    const e = data.echoScores?.[echoKey] || "";
-
     const qScore = levelToScore(q);
 
-    if (qScore > 0) {
-      total += concordanceScore(q, e);
-      max += 3;
+    if (qScore === 0) return;
+
+    let e = data.echoScores?.[echoKey] || "";
+
+    // Si aucun niveau structuré n'est choisi mais que le diagnostic est bien coché,
+    // on considère une présence échographique "probable"
+    if (!e && diagnosticEchoList.includes(echoKey)) {
+      e = "probable";
     }
+
+    total += concordanceScore(q, e);
+    max += 3;
   });
 
   if (max === 0) return 0;
@@ -394,7 +402,6 @@ function patientMainConcordance(data){
   let score = Math.round((total / max) * 100);
 
   const hypo = getHypothesisInterpretation(data).label;
-  const echos = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
 
   const structuredMainHypotheses = [
     "Endométriose",
@@ -409,7 +416,7 @@ function patientMainConcordance(data){
     hypo !== "Profil non concluant" &&
     structuredMainHypotheses.includes(hypo);
 
-  const mainMatch = shouldCheckMainMatch ? echos.includes(hypo) : true;
+  const mainMatch = shouldCheckMainMatch ? diagnosticEchoList.includes(hypo) : true;
 
   if (!mainMatch) {
     score = Math.min(score, 60);
@@ -420,9 +427,15 @@ function patientMainConcordance(data){
 
   function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
-  const e = data.echoScores?.[SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey] || "";
-
   const qScore = levelToScore(q);
+
+  let e = data.echoScores?.[SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey] || "";
+  const diagnosticEchoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
+  if (!e && diagnosticEchoList.includes(SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey)) {
+    e = "probable";
+  }
+
   const eScore = levelToScore(e);
 
   if (qScore === 0 && eScore === 0) {
