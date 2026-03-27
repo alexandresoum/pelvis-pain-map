@@ -557,6 +557,56 @@
       <div class="statSub" id="cohortConcordanceDetail">-</div>
     </div>
 
+    <div class="statsGrid" style="margin-top:16px;">
+  <div class="statCard">
+    <div class="statLabel">Concordance globale</div>
+    <div class="statValue big" id="cohortConcordance">0%</div>
+    <div class="statSub" id="cohortConcordanceDetail">-</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Concordance des profils forts</div>
+    <div class="statValue big" id="cohortStrongConcordance">0%</div>
+    <div class="statSub" id="cohortStrongConcordanceDetail">0 profils forts</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Discordance clinique majeure</div>
+    <div class="statValue big" id="cohortMajorDiscordance">0%</div>
+    <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0 profils forts</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Endométriose</div>
+    <div class="statValue big" id="concordanceEndo">0%</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Adénomyose</div>
+    <div class="statValue big" id="concordanceAdeno">0%</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Congestion pelvienne</div>
+    <div class="statValue big" id="concordanceCong">0%</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Névralgie pudendale</div>
+    <div class="statValue big" id="concordancePud">0%</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">OPK</div>
+    <div class="statValue big" id="concordanceOpk">0%</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statLabel">Fibrome</div>
+    <div class="statValue big" id="concordanceFib">hors score</div>
+  </div>
+</div>
+
     <div class="statCard">
       <div class="statLabel">Endométriose</div>
       <div class="statValue big" id="concordanceEndo">0%</div>
@@ -2535,23 +2585,7 @@ function concordanceLabel(score){
   return "faible";
 }
 
-function getQuestionnaireWeight(data, questionKey){
-  const pctMap = {
-    endometriose: Number(data.endometriose_pct || 0),
-    adenomyose: Number(data.adenomyose_pct || 0),
-    congestion: Number(data.congestion_pct || 0),
-    pudendal: Number(data.pudendal_pct || 0),
-    opk: Number(data.opk_pct || 0),
-    fibrome: Number(data.fibrome_pct || 0)
-  };
-
-  const pct = pctMap[questionKey] || 0;
-
-  if (pct < 20) return 0;
-  return Math.min(1, Math.max(0.5, pct / 100));
-}
-
-  function getQuestionnaireLevelFromPct(data, questionKey){
+function getQuestionnaireLevelFromPct(data, questionKey){
   const pctMap = {
     endometriose: Number(data.endometriose_pct || 0),
     adenomyose: Number(data.adenomyose_pct || 0),
@@ -2619,7 +2653,7 @@ function patientMainConcordance(data){
 }
 
 function patientPudendalConcordance(data){
-  const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
+  const q = getQuestionnaireLevelFromPct(data, SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey);
   const qScore = levelToScore(q);
 
   let e = data.echoScores?.[SECONDARY_PUDENDAL_DIAGNOSTIC.echoKey] || "";
@@ -2662,6 +2696,53 @@ function cohortMainConcordance(docs){
   return Math.round(scored.reduce((a, b) => a + b, 0) / scored.length);
 }
 
+function cohortStrongProfileConcordance(docs){
+  const strongDocs = (docs || []).filter(
+    d => getHypothesisInterpretation(d).level === "fort"
+  );
+
+  if (!strongDocs.length) return 0;
+
+  const scores = strongDocs
+    .map(d => patientMainConcordance(d))
+    .filter(v => typeof v === "number" && !isNaN(v));
+
+  if (!scores.length) return 0;
+
+  return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+}
+
+function isMajorClinicalDiscordance(d){
+  const h = getHypothesisInterpretation(d);
+  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+
+  if (h.level !== "fort") return false;
+
+  const usableEchos = echos.filter(x =>
+    x &&
+    x !== "Autre"
+  );
+
+  const morphologicHypotheses = [
+    "Endométriose",
+    "Adénomyose",
+    "Congestion pelvienne",
+    "OPK"
+  ];
+
+  const isMorphologicHypothesis = morphologicHypotheses.includes(h.label);
+
+  const hasNoUsefulEcho =
+    !usableEchos.length ||
+    usableEchos.every(x => x === "Normal" || x === "Non contributif");
+
+  if (hasNoUsefulEcho) return true;
+
+  if (isMorphologicHypothesis && !usableEchos.includes(h.label)) return true;
+
+  return false;
+}
+
 function concordanceByPathology(docs, questionKey, echoKey){
   if (!docs || !docs.length) return 0;
 
@@ -2690,6 +2771,16 @@ function concordanceByPathology(docs, questionKey, echoKey){
 
 function updateConcordanceStats(docs){
   const globalScore = cohortMainConcordance(docs);
+  const strongScore = cohortStrongProfileConcordance(docs);
+
+  const strongDocs = (docs || []).filter(
+    d => getHypothesisInterpretation(d).level === "fort"
+  );
+
+  const majorDiscordanceCount = strongDocs.filter(d => isMajorClinicalDiscordance(d)).length;
+  const majorDiscordancePct = strongDocs.length
+    ? Math.round((majorDiscordanceCount / strongDocs.length) * 100)
+    : 0;
 
   const endo = concordanceByPathology(docs, "endometriose", "Endométriose");
   const adeno = concordanceByPathology(docs, "adenomyose", "Adénomyose");
@@ -2700,6 +2791,12 @@ function updateConcordanceStats(docs){
   const globalEl = document.getElementById("cohortConcordance");
   const globalDetailEl = document.getElementById("cohortConcordanceDetail");
 
+  const strongEl = document.getElementById("cohortStrongConcordance");
+  const strongDetailEl = document.getElementById("cohortStrongConcordanceDetail");
+
+  const majorEl = document.getElementById("cohortMajorDiscordance");
+  const majorDetailEl = document.getElementById("cohortMajorDiscordanceDetail");
+
   const endoEl = document.getElementById("concordanceEndo");
   const adenoEl = document.getElementById("concordanceAdeno");
   const congEl = document.getElementById("concordanceCong");
@@ -2709,6 +2806,12 @@ function updateConcordanceStats(docs){
 
   if (globalEl) globalEl.innerText = globalScore + "%";
   if (globalDetailEl) globalDetailEl.innerText = `Concordance morphologique ${concordanceLabel(globalScore)}`;
+
+  if (strongEl) strongEl.innerText = strongScore + "%";
+  if (strongDetailEl) strongDetailEl.innerText = `${strongDocs.length} profils forts`;
+
+  if (majorEl) majorEl.innerText = majorDiscordancePct + "%";
+  if (majorDetailEl) majorDetailEl.innerText = `${majorDiscordanceCount} / ${strongDocs.length} profils forts`;
 
   if (endoEl) endoEl.innerText = endo + "%";
   if (adenoEl) adenoEl.innerText = adeno + "%";
