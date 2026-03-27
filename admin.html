@@ -487,6 +487,11 @@
 
   <div class="statsGrid" style="margin-top:16px;">
     <div class="statCard">
+  <div class="statLabel">Âge moyen</div>
+  <div class="statValue big" id="cohortMeanAge">-</div>
+  <div class="statSub" id="cohortMeanAgeDetail">0 patientes</div>
+</div>
+    <div class="statCard">
       <div class="statLabel">Profils forts</div>
       <div class="statValue big" id="cohortStrong">0%</div>
       <div class="statSub" id="cohortStrongDetail">0 / 0</div>
@@ -1076,6 +1081,24 @@ function checkPin(){
 async function initDashboard(){
   await loadPractitioners();
   loadRows();
+}
+
+  function computeMeanAge(docs){
+  if (!docs || !docs.length) return { mean: 0, count: 0 };
+
+  const ages = docs
+    .map(d => Number(d.age))
+    .filter(a => !isNaN(a) && a > 0);
+
+  if (!ages.length) return { mean: 0, count: 0 };
+
+  const sum = ages.reduce((a, b) => a + b, 0);
+  const mean = Math.round(sum / ages.length);
+
+  return {
+    mean,
+    count: ages.length
+  };
 }
 
 async function loadPractitioners(){
@@ -1708,26 +1731,50 @@ function buildLearningCurve(docs, mode){
 }
 
 function updateAdminMetrics(docs){
+
   const pathology = document.getElementById("metricPathologyAdmin").value;
   const thresholdMode = document.getElementById("metricThresholdAdmin").value;
+
   const m = computeDiagnosticMetrics(docs, pathology, thresholdMode);
 
-  document.getElementById("metricSensitivityAdmin").innerText = m.sensitivity + "%";
-  document.getElementById("metricSpecificityAdmin").innerText = m.specificity + "%";
-  document.getElementById("metricPPVAdmin").innerText = m.ppv + "%";
-  document.getElementById("metricNPVAdmin").innerText = m.npv + "%";
+  const ageStats = computeMeanAge(docs);
 
-  document.getElementById("metricSensitivitySubAdmin").innerText = m.TP + " / " + (m.TP + m.FN);
-  document.getElementById("metricSpecificitySubAdmin").innerText = m.TN + " / " + (m.TN + m.FP);
-  document.getElementById("metricPPVSubAdmin").innerText = m.TP + " / " + (m.TP + m.FP);
-  document.getElementById("metricNPVSubAdmin").innerText = m.TN + " / " + (m.TN + m.FN);
+  const ageEl = document.getElementById("cohortMeanAge");
+  const ageDetailEl = document.getElementById("cohortMeanAgeDetail");
 
-  document.getElementById("metricTPAdmin").innerText = m.TP;
-  document.getElementById("metricFPAdmin").innerText = m.FP;
-  document.getElementById("metricFNAdmin").innerText = m.FN;
-  document.getElementById("metricTNAdmin").innerText = m.TN;
+  if (ageEl) ageEl.innerText = ageStats.mean + " ans";
+  if (ageDetailEl) ageDetailEl.innerText = ageStats.count + " patientes";
+
+  const sens = document.getElementById("metricSensitivityAdmin");
+  const spec = document.getElementById("metricSpecificityAdmin");
+  const ppv = document.getElementById("metricPPVAdmin");
+  const npv = document.getElementById("metricNPVAdmin");
+
+  if (sens) sens.innerText = m.sensitivity + "%";
+  if (spec) spec.innerText = m.specificity + "%";
+  if (ppv) ppv.innerText = m.ppv + "%";
+  if (npv) npv.innerText = m.npv + "%";
+
+  const sensSub = document.getElementById("metricSensitivitySubAdmin");
+  const specSub = document.getElementById("metricSpecificitySubAdmin");
+  const ppvSub = document.getElementById("metricPPVSubAdmin");
+  const npvSub = document.getElementById("metricNPVSubAdmin");
+
+  if (sensSub) sensSub.innerText = m.TP + " / " + (m.TP + m.FN);
+  if (specSub) specSub.innerText = m.TN + " / " + (m.TN + m.FP);
+  if (ppvSub) ppvSub.innerText = m.TP + " / " + (m.TP + m.FP);
+  if (npvSub) npvSub.innerText = m.TN + " / " + (m.TN + m.FN);
+
+  const TP = document.getElementById("metricTPAdmin");
+  const FP = document.getElementById("metricFPAdmin");
+  const FN = document.getElementById("metricFNAdmin");
+  const TN = document.getElementById("metricTNAdmin");
+
+  if (TP) TP.innerText = m.TP;
+  if (FP) FP.innerText = m.FP;
+  if (FN) FN.innerText = m.FN;
+  if (TN) TN.innerText = m.TN;
 }
-
 function renderByPractitionerTable(docs){
   const pathology = document.getElementById("metricPathologyAdmin").value;
   const thresholdMode = document.getElementById("metricThresholdAdmin").value;
