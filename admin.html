@@ -2547,11 +2547,8 @@ function getQuestionnaireWeight(data, questionKey){
 
   const pct = pctMap[questionKey] || 0;
 
-  if (pct >= 80) return 1.0;
-  if (pct >= 60) return 0.8;
-  if (pct >= 40) return 0.6;
-  if (pct >= 20) return 0.3;
-  return 0;
+  if (pct < 20) return 0;
+  return Math.min(1, Math.max(0.5, pct / 100));
 }
 
 function patientMainConcordance(data){
