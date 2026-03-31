@@ -2652,6 +2652,14 @@ function getPathologyConcordancePoints(data, questionKey, echoKey){
   return 3;                    // concordance forte
 }
 
+  function isActiveDiagnostic(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+
+  return pct >= 20 || echoPositive;
+}
 
 // 3️⃣ concordance patient
 function patientMainConcordance(data){
@@ -2666,13 +2674,38 @@ function patientMainConcordance(data){
   let max = 0;
 
   diagnostics.forEach(({ questionKey, echoKey }) => {
+    if (!isActiveDiagnostic(data, questionKey, echoKey)) return;
+
     total += getPathologyConcordancePoints(data, questionKey, echoKey);
     max += 3;
   });
 
-  return max ? Math.round((total / max) * 100) : 0;
-}
+  // Cas particulier : aucun diagnostic actif au questionnaire
+  // et aucun diagnostic morphologique à l’écho => concordance normale
+  if (max === 0) {
+    const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
 
+    const hasMorphologicEcho = echoList.some(x =>
+      x === "Endométriose" ||
+      x === "Adénomyose" ||
+      x === "Congestion pelvienne" ||
+      x === "OPK"
+    );
+
+    const isNormalEcho =
+      echoList.includes("Normal") ||
+      echoList.includes("Non contributif") ||
+      echoList.length === 0;
+
+    if (!hasMorphologicEcho && isNormalEcho) {
+      return 100;
+    }
+
+    return 0;
+  }
+
+  return Math.round((total / max) * 100);
+}
 
 // 4️⃣ concordance cohorte
 function cohortMainConcordance(docs){
@@ -2685,54 +2718,6 @@ function cohortMainConcordance(docs){
     : 0;
 }
 
-function patientMainConcordance(data){
-  let total = 0;
-  let max = 0;
-
-  const diagnosticEchoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
-
-  MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
-    const q = getQuestionnaireLevelFromPct(data, questionKey);
-    const qScore = levelToScore(q);
-
-    if (qScore === 0) return;
-
-    let e = data.echoScores?.[echoKey] || "";
-
-    if (!e && diagnosticEchoList.includes(echoKey)) {
-      e = "probable";
-    }
-
-    total += concordanceScore(q, e);
-    max += 3;
-  });
-
-  if (max === 0) return 0;
-
-  let score = Math.round((total / max) * 100);
-
-  const hypo = getHypothesisInterpretation(data).label;
-
-  const structuredMainHypotheses = [
-    "Endométriose",
-    "Adénomyose",
-    "Congestion pelvienne",
-    "OPK"
-  ];
-
-  const shouldCheckMainMatch =
-    hypo &&
-    hypo !== "Profil non concluant" &&
-    structuredMainHypotheses.includes(hypo);
-
-  const mainMatch = shouldCheckMainMatch ? diagnosticEchoList.includes(hypo) : true;
-
-  if (!mainMatch) {
-    score = Math.min(score, 60);
-  }
-
-  return score;
-}
 
 function patientPudendalConcordance(data){
   const q = getQuestionnaireLevelFromPct(data, SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey);
