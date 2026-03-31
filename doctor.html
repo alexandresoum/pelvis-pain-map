@@ -422,6 +422,15 @@ const SECONDARY_PUDENDAL_DIAGNOSTIC = {
   echoKey: "Névralgie pudendale"
 };
 
+  function isActiveDiagnostic(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+
+  return pct >= 20 || echoPositive;
+}
+
 function patientMainConcordance(data){
   const diagnostics = [
     { questionKey: "endometriose", echoKey: "Endométriose" },
@@ -434,12 +443,15 @@ function patientMainConcordance(data){
   let max = 0;
 
   diagnostics.forEach(({ questionKey, echoKey }) => {
+    if (!isActiveDiagnostic(data, questionKey, echoKey)) return;
+
     total += getPathologyConcordancePoints(data, questionKey, echoKey);
     max += 3;
   });
 
   return max ? Math.round((total / max) * 100) : 0;
 }
+  
   function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
   const qScore = levelToScore(q);
