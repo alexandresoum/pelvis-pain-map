@@ -449,9 +449,32 @@ function patientMainConcordance(data){
     max += 3;
   });
 
-  return max ? Math.round((total / max) * 100) : 0;
+  // Cas particulier : aucun diagnostic actif au questionnaire
+  // et aucun diagnostic morphologique à l’écho => concordance normale
+  if (max === 0) {
+    const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
+    const hasMorphologicEcho = echoList.some(x =>
+      x === "Endométriose" ||
+      x === "Adénomyose" ||
+      x === "Congestion pelvienne" ||
+      x === "OPK"
+    );
+
+    const isNormalEcho =
+      echoList.includes("Normal") ||
+      echoList.includes("Non contributif") ||
+      echoList.length === 0;
+
+    if (!hasMorphologicEcho && isNormalEcho) {
+      return 100;
+    }
+
+    return 0;
+  }
+
+  return Math.round((total / max) * 100);
 }
-  
   function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
   const qScore = levelToScore(q);
