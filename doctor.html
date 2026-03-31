@@ -381,18 +381,20 @@ function normalizeLevel(v) {
   const echoLevel = data.echoScores?.[echoKey] || "";
   const echoPositive = echoList.includes(echoKey) || !!echoLevel;
 
+  // Écho négative
   if (!echoPositive) {
     if (pct >= 60) return 0;   // forte suspicion non confirmée
     if (pct >= 20) return 1;   // suspicion partielle non confirmée
-    return 3;                  // normal : questionnaire bas et écho négative
+    if (pct > 0) return 1;     // faible suspicion non confirmée
+    return 0;                  // non évoqué et non retrouvé
   }
 
+  // Écho positive
   if (pct === 0) return 0;     // discordance majeure
   if (pct < 20) return 0;      // discordance
   if (pct < 60) return 2;      // concordance modérée
   return 3;                    // concordance forte
 }
-
 function levelToScore(level){
   const v = String(level || "").toLowerCase().trim();
 
