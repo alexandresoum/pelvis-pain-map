@@ -2615,6 +2615,76 @@ function getQuestionnaireLevelFromPct(data, questionKey){
   return "";
 }
 
+  // 1️⃣ lecture du % questionnaire
+function getPctForPathology(data, questionKey){
+  const pctMap = {
+    endometriose: Number(data.endometriose_pct || 0),
+    adenomyose: Number(data.adenomyose_pct || 0),
+    congestion: Number(data.congestion_pct || 0),
+    pudendal: Number(data.pudendal_pct || 0),
+    opk: Number(data.opk_pct || 0),
+    fibrome: Number(data.fibrome_pct || 0)
+  };
+
+  return pctMap[questionKey] || 0;
+}
+
+
+// 2️⃣ points de concordance
+function getPathologyConcordancePoints(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+
+  // Écho négative
+  if (!echoPositive) {
+    if (pct >= 60) return 0;   // forte suspicion non confirmée
+    if (pct >= 20) return 1;   // suspicion partielle non confirmée
+    if (pct > 0) return 1;     // faible suspicion non confirmée
+    return 0;                  // non évoqué et non retrouvé
+  }
+
+  // Écho positive
+  if (pct === 0) return 0;     // discordance majeure
+  if (pct < 20) return 0;      // discordance
+  if (pct < 60) return 2;      // concordance modérée
+  return 3;                    // concordance forte
+}
+
+
+// 3️⃣ concordance patient
+function patientMainConcordance(data){
+  const diagnostics = [
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "opk", echoKey: "OPK" }
+  ];
+
+  let total = 0;
+  let max = 0;
+
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+    total += getPathologyConcordancePoints(data, questionKey, echoKey);
+    max += 3;
+  });
+
+  return max ? Math.round((total / max) * 100) : 0;
+}
+
+
+// 4️⃣ concordance cohorte
+function cohortMainConcordance(docs){
+  if (!docs || !docs.length) return 0;
+
+  const scores = docs.map(d => patientMainConcordance(d));
+
+  return scores.length
+    ? Math.round(scores.reduce((a,b) => a + b, 0) / scores.length)
+    : 0;
+}
+
 function patientMainConcordance(data){
   let total = 0;
   let max = 0;
@@ -2699,13 +2769,10 @@ function pudendalStatus(data){
 function cohortMainConcordance(docs){
   if (!docs || !docs.length) return 0;
 
-  const scored = docs
-    .map(d => patientMainConcordance(d))
-    .filter(v => typeof v === "number" && !isNaN(v));
-
-  if (!scored.length) return 0;
-
-  return Math.round(scored.reduce((a, b) => a + b, 0) / scored.length);
+  const scores = docs.map(d => patientMainConcordance(d));
+  return scores.length
+    ? Math.round(scores.reduce((a,b) => a + b, 0) / scores.length)
+    : 0;
 }
 
 function cohortStrongProfileConcordance(docs){
@@ -2762,25 +2829,12 @@ function concordanceByPathology(docs, questionKey, echoKey){
   let max = 0;
 
   docs.forEach(d => {
-    const q = getQuestionnaireLevelFromPct(d, questionKey);
-    const qScore = levelToScore(q);
-
-    if (qScore === 0) return;
-
-    const diagnosticEchoList = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-    let e = d.echoScores?.[echoKey] || "";
-
-    if (!e && diagnosticEchoList.includes(echoKey)) {
-      e = "probable";
-    }
-
-    total += concordanceScore(q, e);
+    total += getPathologyConcordancePoints(d, questionKey, echoKey);
     max += 3;
   });
 
   return max ? Math.round((total / max) * 100) : 0;
 }
-
 function updateConcordanceStats(docs){
   const globalScore = cohortMainConcordance(docs);
   const strongScore = cohortStrongProfileConcordance(docs);
