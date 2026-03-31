@@ -345,6 +345,54 @@ function normalizeLevel(v) {
   return "faible";
 }
 
+  function getPctForPathology(data, questionKey){
+  const pctMap = {
+    endometriose: Number(data.endometriose_pct || 0),
+    adenomyose: Number(data.adenomyose_pct || 0),
+    congestion: Number(data.congestion_pct || 0),
+    pudendal: Number(data.pudendal_pct || 0),
+    opk: Number(data.opk_pct || 0),
+    fibrome: Number(data.fibrome_pct || 0)
+  };
+
+  return pctMap[questionKey] || 0;
+}
+  function getPathologyConcordanceStatus(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+
+  if (!echoPositive) {
+    if (pct >= 60) return "forte suspicion non confirmée";
+    if (pct >= 20) return "suspicion non confirmée";
+    return "non concordant négatif";
+  }
+
+  if (pct === 0) return "discordance majeure";
+  if (pct < 20) return "discordance";
+  if (pct < 60) return "concordance modérée";
+  return "concordance forte";
+}
+
+  function getPathologyConcordancePoints(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+
+  if (!echoPositive) {
+    if (pct >= 60) return 0;   // forte suspicion non confirmée
+    if (pct >= 20) return 1;   // suspicion partielle non confirmée
+    return 3;                  // normal : questionnaire bas et écho négative
+  }
+
+  if (pct === 0) return 0;     // discordance majeure
+  if (pct < 20) return 0;      // discordance
+  if (pct < 60) return 2;      // concordance modérée
+  return 3;                    // concordance forte
+}
+
 function levelToScore(level){
   const v = String(level || "").toLowerCase().trim();
 
@@ -373,57 +421,23 @@ const SECONDARY_PUDENDAL_DIAGNOSTIC = {
 };
 
 function patientMainConcordance(data){
+  const diagnostics = [
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "opk", echoKey: "OPK" }
+  ];
+
   let total = 0;
   let max = 0;
 
-  const diagnosticEchoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
-
-  MAIN_CONCORDANCE_DIAGNOSTICS.forEach(({ questionKey, echoKey }) => {
-    const q = data[questionKey] || "";
-    const qScore = levelToScore(q);
-
-    if (qScore === 0) return;
-
-    let e = data.echoScores?.[echoKey] || "";
-
-    // Si aucun niveau structuré n'est choisi mais que le diagnostic est bien coché,
-    // on considère une présence échographique "probable"
-    if (!e && diagnosticEchoList.includes(echoKey)) {
-      e = "probable";
-    }
-
-    total += concordanceScore(q, e);
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+    total += getPathologyConcordancePoints(data, questionKey, echoKey);
     max += 3;
   });
 
-  if (max === 0) return 0;
-
-  let score = Math.round((total / max) * 100);
-
-  const hypo = getHypothesisInterpretation(data).label;
-
-  const structuredMainHypotheses = [
-    "Endométriose",
-    "Adénomyose",
-    "Congestion pelvienne",
-    "OPK",
-    "Fibrome"
-  ];
-
-  const shouldCheckMainMatch =
-    hypo &&
-    hypo !== "Profil non concluant" &&
-    structuredMainHypotheses.includes(hypo);
-
-  const mainMatch = shouldCheckMainMatch ? diagnosticEchoList.includes(hypo) : true;
-
-  if (!mainMatch) {
-    score = Math.min(score, 60);
-  }
-
-  return score;
+  return max ? Math.round((total / max) * 100) : 0;
 }
-
   function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
   const qScore = levelToScore(q);
@@ -471,6 +485,25 @@ function patientMainConcordance(data){
   }
 
   return "non évoqué";
+}
+
+  function isMainHypothesisMajorDiscordance(data){
+  const hypothesisMap = {
+    "Endométriose": "endometriose",
+    "Adénomyose": "adenomyose",
+    "Congestion pelvienne": "congestion",
+    "OPK": "opk"
+  };
+
+  const hypo = getHypothesisInterpretation(data).label;
+  const questionKey = hypothesisMap[hypo];
+
+  if (!questionKey) return false;
+
+  const echoKey = hypo;
+  const status = getPathologyConcordanceStatus(data, questionKey, echoKey);
+
+  return status === "discordance majeure";
 }
 
   
@@ -850,6 +883,21 @@ function renderList(list) {
     const mainScore = patientMainConcordance(d);
 const pudendalScore = patientPudendalConcordance(d);
 
+    const hypothesisMap = {
+  "Endométriose": { questionKey: "endometriose", echoKey: "Endométriose" },
+  "Adénomyose": { questionKey: "adenomyose", echoKey: "Adénomyose" },
+  "Congestion pelvienne": { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+  "OPK": { questionKey: "opk", echoKey: "OPK" }
+};
+
+const mainStatus = hypothesisMap[hypothesis]
+  ? getPathologyConcordanceStatus(
+      d,
+      hypothesisMap[hypothesis].questionKey,
+      hypothesisMap[hypothesis].echoKey
+    )
+  : "-";
+
     return `
       <div class="patientCard ${isOpen ? "open" : ""}" id="card-${r.id}">
         <div class="patientSummary" onclick="toggleCard('${r.id}')">
@@ -906,6 +954,7 @@ const pudendalScore = patientPudendalConcordance(d);
               <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
               <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
               <div class="detailLine"><b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}</div>
+              <div class="detailLine"><b>Statut clinique principal :</b> ${mainStatus}</div>
 
               <div class="boxSectionTitle">Profils compatibles</div>
               <div>${compatibleProfilesPills(d)}</div>
