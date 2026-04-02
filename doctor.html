@@ -748,11 +748,15 @@ function buildPdf(doc, d) {
 ].forEach(line);
 }
 
-function generateDoctorPDF(payload) {
-  const d = JSON.parse(decodeURIComponent(payload));
+function generateDoctorPDF(data) {
+
+  const d = pdfData(data);
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+
   buildPdf(doc, d);
+
   doc.save("pelvis_pain_map_" + (d.prenom || "") + "_" + (d.nom || "patiente") + ".pdf");
 }
 
@@ -936,7 +940,6 @@ function renderList(list) {
   container.innerHTML = list.map(r => {
     const d = r.data;
     const age = ageFromDob(d.dob);
-    const p = encodeURIComponent(JSON.stringify(pdfData(d)));
     const isOpen = openCardId === r.id;
     const hypothesis = getMainHypothesis(d);
     const hypothesisPct = getMainHypothesisPct(d);
@@ -1061,7 +1064,7 @@ const mainStatus = hypothesisMap[hypothesis]
               <h3>Commentaire praticien</h3>
               ${commentBox(r.id, d.doctorComment)}
               <div class="actionsRow">
-                <button class="miniBtn" onclick='event.stopPropagation(); generateDoctorPDF("${p}")'>PDF</button>
+                <button class="miniBtn" onclick='event.stopPropagation(); generateDoctorPDF(rows.find(x => x.id === "${r.id}").data)'>PDF</button>
                 <button class="dangerBtn" onclick='event.stopPropagation(); delRow("${r.id}", "${(d.prenom || "") + " " + (d.nom || "")}")'>Supprimer</button>
               </div>
             </div>
