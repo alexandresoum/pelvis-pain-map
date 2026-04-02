@@ -421,8 +421,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
 
       <!-- PAGE 10 -->
       <section class="page" data-step="10">
-        <h2>Congestion pelvienne</h2>
-        <p class="subtitle">Certaines douleurs pelviennes sont plus liées à une pesanteur et à la position.</p>
+        <h2>Certaines douleurs pelviennes sont plus liées à une pesanteur et à la position</h2>
+        
 
         <div class="checks">
           <label class="check"><input type="checkbox" name="cong1"> <span>Sensation de pesanteur dans le bassin</span></label>
@@ -436,8 +436,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
 
       <!-- PAGE 11 -->
       <section class="page" data-step="11">
-        <h2>Douleur neuropathique / pudendale</h2>
-        <p class="subtitle">Merci de cocher ce qui vous correspond.</p>
+        <h2>Merci de cocher ce qui vous correspond.</h2>
+        
 
         <div class="checks">
           <label class="check"><input type="checkbox" name="pud1"> <span>Douleur aggravée en position assise</span></label>
@@ -457,9 +457,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
 
       <!-- PAGE 12 -->
       <section class="page" data-step="12">
-        <h2>Cycle / OPK</h2>
-        <p class="subtitle">Merci de cocher ce qui vous correspond.</p>
-
+        <h2>Régularité du cycle</h2>
+      
         <div class="checks">
           <label class="check"><input type="checkbox" name="opk1"> <span>Cycles irréguliers</span></label>
           <label class="check"><input type="checkbox" name="opk2"> <span>Acné persistante ou pilosité excessive</span></label>
@@ -527,15 +526,7 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       <div class="error" id="formError"></div>
     </form>
 
-    <div class="card thankYou hidden" id="thankYouCard">
-      <h2>Merci pour votre participation</h2>
-      <p class="muted">
-        Vos réponses ont bien été enregistrées et seront utilisées pour préparer votre consultation.
-      </p>
-      <p class="muted">
-        Si vous avez déjà réalisé une échographie ou d’autres examens, pensez à les apporter lors de votre rendez-vous.
-      </p>
-    </div>
+  
   </div>
 
   <script>
@@ -948,6 +939,21 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       };
     }
 
+    function showThankYouScreen(practitionerName) {
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6fb;padding:20px;font-family:Arial, Helvetica, sans-serif;">
+      <div style="max-width:700px;width:100%;background:white;padding:40px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);text-align:center;">
+        <div style="font-size:54px; margin-bottom:10px;">✅</div>
+        <h1 style="margin-top:0;color:#24324a;">Merci</h1>
+        <p style="font-size:18px;color:#374151;line-height:1.6;">Merci pour votre participation à ce questionnaire.</p>
+        <p style="font-size:18px;color:#374151;line-height:1.6;">Vos réponses ont bien été transmises à :</p>
+        <p style="font-size:22px;font-weight:bold;color:#6c63ff;">${practitionerName}</p>
+        <p style="margin-top:24px;color:#6b7280;">Vous pouvez maintenant fermer cette page.</p>
+      </div>
+    </div>
+  `;
+}
+
     async function submitForm(){
       try{
         formError.textContent = "";
@@ -1000,10 +1006,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
 
         await db.collection("patients").add(payload);
 
-        form.classList.add("hidden");
-        document.querySelector(".hero").classList.add("hidden");
-        thankYouCard.classList.remove("hidden");
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        showThankYouScreen(practitionerName);
+window.scrollTo({ top: 0, behavior: "smooth" });
 
       }catch(err){
         console.error(err);
