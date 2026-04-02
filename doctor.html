@@ -586,11 +586,15 @@ function buildSymptomsSummary(d){
   if (d.aden2) items.push("Caillots pendant les règles");
   if (d.endo2) items.push("Douleur pendant les rapports profonds");
   if (d.endo3) items.push("Douleur à la selle pendant les règles");
-  if (d.endo4) items.push("Douleur à l'ovulation");
-  if (d.cong1) items.push("Sensation de lourdeur dans le bassin");
-  if (d.cong2) items.push("Douleur après les rapports");
+  if (d.endo4) items.push("Douleur pelvienne entre les règles");
+  if (d.cong1) items.push("Sensation de pesanteur dans le bassin");
+  if (d.congEvening) items.push("Pesanteur plus marquée le soir");
+  if (d.cong2 || d.cong5) items.push("Douleur après les rapports");
   if (d.pud1) items.push("Douleur aggravée en position assise");
-  if (d.uri1) items.push("Brûlures / pollakiurie / dysurie");
+  if (d.pud2) items.push("Douleur améliorée debout ou allongée");
+  if (d.pud3) items.push("Brûlure / décharge / picotements");
+  if (d.pud4) items.push("Douleur périnéale / vulvaire / anale");
+  if (d.varices) items.push("Antécédents de varices des membres inférieurs");
   return items.length ? items.join(", ") : "-";
 }
 
@@ -608,11 +612,12 @@ function profileEntries(d){
     { label: "Adénomyose", level: normalizeLevel(d.adenomyose), pct: d.adenomyose_pct },
     { label: "Névralgie pudendale", level: normalizeLevel(d.pudendal), pct: d.pudendal_pct },
     { label: "Congestion pelvienne", level: normalizeLevel(d.congestion), pct: d.congestion_pct },
+    { label: "Fibrome", level: normalizeLevel(d.fibrome), pct: d.fibrome_pct },
     { label: "OPK", level: normalizeLevel(d.opk), pct: d.opk_pct },
     { label: "Hypersensibilisation centrale", level: normalizeLevel(d.hypersensibilisation), pct: d.hypersensibilisation_pct }
   ].filter(x => x.level);
 }
-
+  
 function profileLabel(entry){
   const hasPct = entry.pct !== undefined && entry.pct !== null && entry.pct !== "";
   return `${entry.label} (${entry.level}${hasPct ? " – " + entry.pct + "%" : ""})`;
@@ -647,6 +652,8 @@ function pdfData(d) {
     topo: d.topo || [],
     time: d.time || [],
     digestif: d.digestif || [],
+    painDuration: d.painDuration || "",
+    functionalImpact: d.functionalImpact || [],
     contraceptionType: d.contraceptionType || "",
     pillContinuous: d.pillContinuous || "",
     consultation: d.consultation || "",
@@ -654,6 +661,9 @@ function pdfData(d) {
     cycleRegularity: d.cycleRegularity || "",
     hypothesisPrimary: getMainHypothesis(d),
     hypothesisPrimaryPct: d.hypothesisPrimaryPct || "",
+    hypothesisSecondary: d.hypothesisSecondary || "",
+    hypothesisSecondaryPct: d.hypothesisSecondaryPct || "",
+    clinicalConclusion: d.clinicalConclusion || "",
     lesionPrimary: d.lesionPrimary || "",
     painTypePrimary: d.painTypePrimary || "",
     echoPrimary: d.echoPrimary || "",
@@ -665,20 +675,25 @@ function pdfData(d) {
     pudendal_pct: d.pudendal_pct || "",
     congestion: normalizeLevel(d.congestion) || "",
     congestion_pct: d.congestion_pct || "",
+    fibrome: normalizeLevel(d.fibrome) || "",
+    fibrome_pct: d.fibrome_pct || "",
     opk: normalizeLevel(d.opk) || "",
     opk_pct: d.opk_pct || "",
     hypersensibilisation: normalizeLevel(d.hypersensibilisation) || "",
     hypersensibilisation_pct: d.hypersensibilisation_pct || "",
+    congEvening: !!d.congEvening,
+    varices: !!d.varices,
+    pudNight: d.pudNight || "",
     diagnostic_echo: d.diagnostic_echo || [],
     echoCertainty: d.echoCertainty || "Non renseigné",
     doctorComment: d.doctorComment || "",
     symptoms: buildSymptomsSummary(d),
     digestifSummary: buildDigestiveSummary(d),
     mainConcordance: patientMainConcordance(d),
-pudendalConcordance: patientPudendalConcordance(d),
+    pudendalConcordance: patientPudendalConcordance(d),
   };
 }
-
+  
 function buildPdf(doc, d) {
   let y = 18;
   const line = (t) => {
@@ -696,32 +711,40 @@ function buildPdf(doc, d) {
   doc.setFontSize(11);
 
   [
-    "Date : " + d.dateText,
-    "Praticien : " + d.practitionerName,
-    "Patiente : " + d.prenom + " " + d.nom,
-    "Date de naissance : " + (d.dob || "Non renseignée"),
-    "Âge : " + (ageFromDob(d.dob) || "Non renseigné"),
-    "Intensité : " + d.pain + "/10",
-    "Localisation : " + safeList(d.topo),
-    "Quand : " + safeList(d.time),
-    "Symptômes associés : " + (d.symptoms || "-"),
-    "Digestif : " + (d.digestifSummary || "-"),
-    "Contraception : " + (d.contraceptionType || "-") + (d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""),
-    "Cycles hors contraception : " + (d.cycleRegularity || "-"),
-    "Consultation antérieure : " + (d.consultation || "-"),
-    "Diagnostic évoqué : " + (d.previousDiagnosis || "-"),
-    "Hypothèse principale : " + (d.hypothesisPrimary || "-"),
-    "Poids hypothèse : " + (d.hypothesisPrimaryPct ? d.hypothesisPrimaryPct + "%" : "-"),
-    "Type de douleur dominant : " + (d.painTypePrimary || "-"),
-    "Orientation échographique principale : " + (d.echoPrimary || "-"),
-    "Profils compatibles : " + (compatible.length ? compatible.join(", ") : "-"),
-    "Profils détaillés : " + (allProfiles.length ? allProfiles.join(", ") : "-"),
-    "Concordance clinico-écho : " + (d.mainConcordance !== undefined ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")" : "-"),
-"Score secondaire pudendal : " + (d.pudendalConcordance !== null && d.pudendalConcordance !== undefined ? d.pudendalConcordance + "% (" + concordanceLabel(d.pudendalConcordance) + ")" : "-"),
-    "Résultats écho : " + safeList(d.diagnostic_echo),
-    "Certitude : " + (d.echoCertainty || "Non renseigné"),
-    "Commentaire praticien : " + (d.doctorComment || "")
-  ].forEach(line);
+  "Date : " + d.dateText,
+  "Praticien : " + d.practitionerName,
+  "Patiente : " + d.prenom + " " + d.nom,
+  "Date de naissance : " + (d.dob || "Non renseignée"),
+  "Âge : " + (ageFromDob(d.dob) || "Non renseigné"),
+  "Intensité : " + d.pain + "/10",
+  "Localisation : " + safeList(d.topo),
+  "Quand : " + safeList(d.time),
+  "Depuis quand : " + (d.painDuration || "-"),
+  "Impact fonctionnel : " + safeList(d.functionalImpact),
+  "Symptômes associés : " + (d.symptoms || "-"),
+  "Digestif : " + (d.digestifSummary || "-"),
+  "Contraception : " + (d.contraceptionType || "-") + (d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""),
+  "Cycles hors contraception : " + (d.cycleRegularity || "-"),
+  "Consultation antérieure : " + (d.consultation || "-"),
+  "Diagnostic évoqué : " + (d.previousDiagnosis || "-"),
+  "Hypothèse principale : " + (d.hypothesisPrimary || "-"),
+  "Poids hypothèse : " + (d.hypothesisPrimaryPct ? d.hypothesisPrimaryPct + "%" : "-"),
+  "Hypothèse secondaire : " + (d.hypothesisSecondary || "-"),
+  "Poids hypothèse secondaire : " + (d.hypothesisSecondaryPct ? d.hypothesisSecondaryPct + "%" : "-"),
+  "Conclusion clinique : " + (d.clinicalConclusion || "-"),
+  "Type de douleur dominant : " + (d.painTypePrimary || "-"),
+  "Orientation échographique principale : " + (d.echoPrimary || "-"),
+  "Congestion plus marquée le soir : " + (d.congEvening ? "Oui" : "Non"),
+  "Varices des membres inférieurs : " + (d.varices ? "Oui" : "Non"),
+  "Douleur nocturne (pudendal) : " + (d.pudNight || "-"),
+  "Profils compatibles : " + (compatible.length ? compatible.join(", ") : "-"),
+  "Profils détaillés : " + (allProfiles.length ? allProfiles.join(", ") : "-"),
+  "Concordance clinico-écho : " + (d.mainConcordance !== undefined ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")" : "-"),
+  "Score secondaire pudendal : " + (d.pudendalConcordance !== null && d.pudendalConcordance !== undefined ? d.pudendalConcordance + "% (" + concordanceLabel(d.pudendalConcordance) + ")" : "-"),
+  "Résultats écho : " + safeList(d.diagnostic_echo),
+  "Certitude : " + (d.echoCertainty || "Non renseigné"),
+  "Commentaire praticien : " + (d.doctorComment || "")
+].forEach(line);
 }
 
 function generateDoctorPDF(payload) {
@@ -919,6 +942,11 @@ function renderList(list) {
     const confidence = getConfidenceInterpretation(d);
     const mainScore = patientMainConcordance(d);
 const pudendalScore = patientPudendalConcordance(d);
+    const secondaryHypothesis = d.hypothesisSecondary || "-";
+const secondaryHypothesisPct = d.hypothesisSecondaryPct ? `${d.hypothesisSecondaryPct}%` : "-";
+const clinicalConclusion = d.clinicalConclusion || "-";
+const painDuration = d.painDuration || "-";
+const functionalImpact = safeList(d.functionalImpact);
 
     const hypothesisMap = {
   "Endométriose": { questionKey: "endometriose", echoKey: "Endométriose" },
@@ -985,8 +1013,13 @@ const mainStatus = hypothesisMap[hypothesis]
               <h3>Questionnaire</h3>
               <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
               <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
+              <div class="detailLine"><b>Depuis quand :</b> ${painDuration}</div>
+<div class="detailLine"><b>Impact fonctionnel :</b> ${functionalImpact}</div>
               <div class="detailLine"><b>Symptômes associés :</b> ${buildSymptomsSummary(d)}</div>
               <div class="detailLine"><b>Digestif :</b> ${buildDigestiveSummary(d)}</div>
+              <div class="detailLine"><b>Pesanteur plus marquée le soir :</b> ${d.congEvening ? "Oui" : "Non"}</div>
+<div class="detailLine"><b>Varices des membres inférieurs :</b> ${d.varices ? "Oui" : "Non"}</div>
+<div class="detailLine"><b>Douleur nocturne :</b> ${d.pudNight || "-"}</div>
               <div class="detailLine"><b>Cycles hors contraception :</b> ${d.cycleRegularity || "-"}</div>
               <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
               <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
@@ -1001,6 +1034,9 @@ const mainStatus = hypothesisMap[hypothesis]
               <h3>Hypothèses et profils</h3>
               <div class="detailLine"><b>Hypothèse principale :</b> ${hypothesis}</div>
               <div class="detailLine"><b>Poids hypothèse :</b> ${hypothesisPct}</div>
+              <div class="detailLine"><b>Hypothèse secondaire :</b> ${secondaryHypothesis}</div>
+<div class="detailLine"><b>Poids hypothèse secondaire :</b> ${secondaryHypothesisPct}</div>
+<div class="detailLine"><b>Conclusion clinique :</b> ${clinicalConclusion}</div>
               <div class="detailLine"><b>Confiance clinique :</b> ${confidence.level} (${confidence.score}/100)</div>
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
