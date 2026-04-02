@@ -627,6 +627,10 @@ min-height:auto;
       <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue big" id="statAge">0</div></div>
       <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue big" id="statPain">0/10</div></div>
       <div class="statCard"><div class="statLabel">Digestif présent</div><div class="statValue big" id="statDigestif">0</div></div>
+      <div class="statCard"><div class="statLabel">Douleur &gt; 3 ans</div><div class="statValue big" id="statLongPain">0</div></div>
+<div class="statCard"><div class="statLabel">Absentéisme</div><div class="statValue big" id="statAbsenteeism">0</div></div>
+<div class="statCard"><div class="statLabel">Pesanteur le soir</div><div class="statValue big" id="statEveningHeaviness">0</div></div>
+<div class="statCard"><div class="statLabel">Varices MI</div><div class="statValue big" id="statVarices">0</div></div>
       <div class="statCard"><div class="statLabel">Top temporalité</div><div class="statValue small" id="statTopTime">-</div></div>
       <div class="statCard"><div class="statLabel">Endométriose compatible</div><div class="statValue big" id="statEndo">0</div></div>
       <div class="statCard"><div class="statLabel">Congestion compatible</div><div class="statValue big" id="statCong">0</div></div>
@@ -923,6 +927,16 @@ const VARIABLE_DEFS = {
 
   fib1: { label:"Item · ménorragies (fibrome)", extractor:d => [d.fib1 ? "Oui" : "Non"] },
   fib2: { label:"Item · sensation de masse pelvienne", extractor:d => [d.fib2 ? "Oui" : "Non"] }
+  formVersion: { label:"Version questionnaire", extractor:d => [d.formVersion || "Non renseignée"] },
+  painDuration: { label:"Ancienneté de la douleur", extractor:d => [d.painDuration || "Non renseignée"] },
+  functionalImpact: { label:"Impact fonctionnel", extractor:d => Array.isArray(d.functionalImpact) && d.functionalImpact.length ? d.functionalImpact : ["Non renseigné"] },
+  hypothesisSecondary: { label:"Hypothèse secondaire", extractor:d => [d.hypothesisSecondary || "Non renseignée"] },
+  hypothesisSecondaryPct: { label:"Poids hypothèse secondaire", extractor:d => [d.hypothesisSecondaryPct !== undefined && d.hypothesisSecondaryPct !== null && d.hypothesisSecondaryPct !== "" ? String(d.hypothesisSecondaryPct) + "%" : "Non renseigné"] },
+  clinicalConclusion: { label:"Conclusion clinique", extractor:d => [d.clinicalConclusion || "Non renseignée"] },
+  mixedProfile: { label:"Profil mixte", extractor:d => [d.mixedProfile ? "Oui" : "Non"] },
+  varices: { label:"Varices membres inférieurs", extractor:d => [d.varices ? "Oui" : "Non"] },
+  congEvening: { label:"Pesanteur plus marquée le soir", extractor:d => [d.congEvening ? "Oui" : "Non"] },
+  pudNight: { label:"Douleur réveille la nuit", extractor:d => [d.pudNight || "Non renseigné"] },
 };
 
 function normalizeLevel(v){
@@ -931,80 +945,9 @@ function normalizeLevel(v){
   return v;
 }
 
-  function getHypothesisInterpretation(d){
-  const label = d.hypothesisPrimary || d.lesionPrimary || "-";
-  const pct = Number(d.hypothesisPrimaryPct || 0);
+  
 
-  if (!label || pct <= 0){
-    return {
-      label: "Profil non concluant",
-      pct: 0,
-      level: "non_concluant"
-    };
-  }
-
-  if (pct < HYPOTHESIS_THRESHOLDS.nonConcluant){
-    return {
-      label: "Profil non concluant",
-      pct,
-      level: "non_concluant"
-    };
-  }
-
-  if (pct < HYPOTHESIS_THRESHOLDS.possible){
-    return {
-      label,
-      pct,
-      level: "possible"
-    };
-  }
-
-  if (pct < HYPOTHESIS_THRESHOLDS.probable){
-    return {
-      label,
-      pct,
-      level: "probable"
-    };
-  }
-
-  return {
-    label,
-    pct,
-    level: "fort"
-  };
-}
-
-  function isMajorClinicalDiscordance(d){
-  const h = getHypothesisInterpretation(d);
-  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
-
-  if (h.level !== "fort") return false;
-
-  const usableEchos = echos.filter(x =>
-    x &&
-    x !== "Autre"
-  );
-
-  const morphologicHypotheses = [
-    "Endométriose",
-    "Adénomyose",
-    "Congestion pelvienne",
-    "OPK"
-  ];
-
-  const isMorphologicHypothesis = morphologicHypotheses.includes(h.label);
-
-  const hasNoUsefulEcho =
-    !usableEchos.length ||
-    usableEchos.every(x => x === "Normal" || x === "Non contributif");
-
-  if (hasNoUsefulEcho) return true;
-
-  if (isMorphologicHypothesis && !usableEchos.includes(h.label)) return true;
-
-  return false;
-}
-
+ 
   function getConfidenceInterpretation(d){
 
   const profiles = [
@@ -1013,6 +956,7 @@ function normalizeLevel(v){
     Number(d.pudendal_pct || 0),
     Number(d.congestion_pct || 0),
     Number(d.opk_pct || 0),
+    Number(d.fibrome_pct || 0),
   ].sort((a,b)=>b-a);
 
   const top1 = profiles[0] || 0;
@@ -1928,6 +1872,14 @@ function updateKpis(docs){
   const congCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.congestion))).length;
   const opkCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.opk))).length;
   const fibromeCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.fibrome))).length;
+  const longPain = docs.filter(d => d.painDuration === "plus de 3 ans").length;
+const absenteeism = docs.filter(d =>
+  Array.isArray(d.functionalImpact) &&
+  d.functionalImpact.includes("manquer le travail / les études")
+).length;
+const eveningHeaviness = docs.filter(d => !!d.congEvening).length;
+const legVarices = docs.filter(d => !!d.varices).length;
+  
 
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
@@ -1937,6 +1889,10 @@ function updateKpis(docs){
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b) => a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statDigestif").innerText = digestifPresent;
+  document.getElementById("statLongPain").innerText = longPain;
+document.getElementById("statAbsenteeism").innerText = absenteeism;
+document.getElementById("statEveningHeaviness").innerText = eveningHeaviness;
+document.getElementById("statVarices").innerText = legVarices;
   document.getElementById("statTopTime").innerText = topLabel(times);
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
@@ -2663,12 +2619,13 @@ function getPathologyConcordancePoints(data, questionKey, echoKey){
 
 // 3️⃣ concordance patient
 function patientMainConcordance(data){
-  const diagnostics = [
-    { questionKey: "endometriose", echoKey: "Endométriose" },
-    { questionKey: "adenomyose", echoKey: "Adénomyose" },
-    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
-    { questionKey: "opk", echoKey: "OPK" }
-  ];
+ const diagnostics = [
+  { questionKey: "endometriose", echoKey: "Endométriose" },
+  { questionKey: "adenomyose", echoKey: "Adénomyose" },
+  { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+  { questionKey: "opk", echoKey: "OPK" },
+  { questionKey: "fibrome", echoKey: "Fibrome" }
+];
 
   let total = 0;
   let max = 0;
@@ -2689,7 +2646,8 @@ function patientMainConcordance(data){
       x === "Endométriose" ||
       x === "Adénomyose" ||
       x === "Congestion pelvienne" ||
-      x === "OPK"
+      x === "OPK" ||
+      x === "Fibrome"
     );
 
     const isNormalEcho =
@@ -2708,15 +2666,6 @@ function patientMainConcordance(data){
 }
 
 // 4️⃣ concordance cohorte
-function cohortMainConcordance(docs){
-  if (!docs || !docs.length) return 0;
-
-  const scores = docs.map(d => patientMainConcordance(d));
-
-  return scores.length
-    ? Math.round(scores.reduce((a,b) => a + b, 0) / scores.length)
-    : 0;
-}
 
 
 function patientPudendalConcordance(data){
@@ -2791,7 +2740,8 @@ function isMajorClinicalDiscordance(d){
     "Endométriose",
     "Adénomyose",
     "Congestion pelvienne",
-    "OPK"
+    "OPK",
+    "Fibrome"
   ];
 
   const isMorphologicHypothesis = morphologicHypotheses.includes(h.label);
@@ -2838,6 +2788,7 @@ function updateConcordanceStats(docs){
   const cong = concordanceByPathology(docs, "congestion", "Congestion pelvienne");
   const pud = concordanceByPathology(docs, "pudendal", "Névralgie pudendale");
   const opk = concordanceByPathology(docs, "opk", "OPK");
+  const fib = concordanceByPathology(docs, "fibrome", "Fibrome");
 
   const globalEl = document.getElementById("cohortConcordance");
   const globalDetailEl = document.getElementById("cohortConcordanceDetail");
@@ -2869,7 +2820,7 @@ function updateConcordanceStats(docs){
   if (congEl) congEl.innerText = cong + "%";
   if (pudEl) pudEl.innerText = pud + "%";
   if (opkEl) opkEl.innerText = opk + "%";
-  if (fibEl) fibEl.innerText = "hors score";
+  if (fibEl) fibEl.innerText = fib + "%";
 }
  
 </script>
