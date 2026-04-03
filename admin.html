@@ -926,7 +926,7 @@ const VARIABLE_DEFS = {
   bloatingEvening: { label:"Item · ballonnements surtout le soir", extractor:d => [d.bloatingEvening ? "Oui" : "Non"] },
 
   fib1: { label:"Item · ménorragies (fibrome)", extractor:d => [d.fib1 ? "Oui" : "Non"] },
-  fib2: { label:"Item · sensation de masse pelvienne", extractor:d => [d.fib2 ? "Oui" : "Non"] }
+  fib2: { label:"Item · sensation de masse pelvienne", extractor:d => [d.fib2 ? "Oui" : "Non"] },
   formVersion: { label:"Version questionnaire", extractor:d => [d.formVersion || "Non renseignée"] },
   painDuration: { label:"Ancienneté de la douleur", extractor:d => [d.painDuration || "Non renseignée"] },
   functionalImpact: { label:"Impact fonctionnel", extractor:d => Array.isArray(d.functionalImpact) && d.functionalImpact.length ? d.functionalImpact : ["Non renseigné"] },
