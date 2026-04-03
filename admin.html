@@ -938,6 +938,7 @@ const VARIABLE_DEFS = {
   fib2: { label:"Item · sensation de masse pelvienne", extractor:d => [d.fib2 ? "Oui" : "Non"] },
   formVersion: { label:"Version questionnaire", extractor:d => [d.formVersion || "Non renseignée"] },
   painDuration: { label:"Ancienneté de la douleur", extractor:d => [d.painDuration || "Non renseignée"] },
+  painQuality: { label:"Description de la douleur", extractor:d => Array.isArray(d.painQuality) && d.painQuality.length ? d.painQuality : ["Non renseignée"] },
   functionalImpact: { label:"Impact fonctionnel", extractor:d => Array.isArray(d.functionalImpact) && d.functionalImpact.length ? d.functionalImpact : ["Non renseigné"] },
   hypothesisSecondary: { label:"Hypothèse secondaire", extractor:d => [d.hypothesisSecondary || "Non renseignée"] },
   hypothesisSecondaryPct: { label:"Poids hypothèse secondaire", extractor:d => [d.hypothesisSecondaryPct !== undefined && d.hypothesisSecondaryPct !== null && d.hypothesisSecondaryPct !== "" ? String(d.hypothesisSecondaryPct) + "%" : "Non renseigné"] },
