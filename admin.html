@@ -622,12 +622,19 @@ min-height:auto;
   <p>Facteur moyen V3.1 : <span id="v31_factor">-</span></p>
 </div>
 
+    <div style="margin-bottom:20px;display:flex;gap:10px;">
+<button onclick="setStatsFilter('ALL')">Toutes</button>
+<button onclick="setStatsFilter('V1')">Stats V1</button>
+<button onclick="setStatsFilter('V2')">Stats V2</button>
+</div>
+
     <div class="statsGrid">
       <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
+      <div class="statCard"><div class="statLabel">Questionnaires V2</div><div class="statValue big" id="statV2">0</div></div>
       <div class="statCard"><div class="statLabel">Âge moyen</div><div class="statValue big" id="statAge">0</div></div>
       <div class="statCard"><div class="statLabel">Douleur moyenne</div><div class="statValue big" id="statPain">0/10</div></div>
       <div class="statCard"><div class="statLabel">Digestif présent</div><div class="statValue big" id="statDigestif">0</div></div>
-      <div class="statCard"><div class="statLabel">Douleur &gt; 3 ans</div><div class="statValue big" id="statLongPain">0</div></div>
+      <div class="statCard"><div class="statLabel">Douleur > 3 ans</div><div class="statValue big" id="statLongPain">0</div></div>
 <div class="statCard"><div class="statLabel">Absentéisme</div><div class="statValue big" id="statAbsenteeism">0</div></div>
 <div class="statCard"><div class="statLabel">Pesanteur le soir</div><div class="statValue big" id="statEveningHeaviness">0</div></div>
 <div class="statCard"><div class="statLabel">Varices MI</div><div class="statValue big" id="statVarices">0</div></div>
@@ -841,6 +848,7 @@ Analyse : sous-ensemble défini par sélection praticiens + filtres utilisateurs
 </div>
 
 <script>
+
 const ADMIN_PIN = atob("MTYxMg==");
 const PRACTITIONER_COLLECTION = "pratitioners";
 const PATIENT_COLLECTION = "patients";
@@ -877,6 +885,7 @@ let totalConfidence = 0;
 let currentPatternResult = null;
 let currentPatternPatient = null;
 let allPractitionersSelected = false;
+  let statsFilter = "ALL";
 
   console.log("V2 loaded:", typeof pelvisTrainAndSaveModel);
 console.log("V3 loaded:", typeof pelvisComputeV3);
@@ -939,6 +948,11 @@ const VARIABLE_DEFS = {
   pudNight: { label:"Douleur réveille la nuit", extractor:d => [d.pudNight || "Non renseigné"] }
 };
 
+  function setStatsFilter(mode){
+  statsFilter = mode;
+  refreshDashboard();
+}
+  
 function normalizeLevel(v){
   if (!v) return "";
   if (v === "possible") return "modéré";
@@ -1860,12 +1874,22 @@ function updateLearningCurve(docs){
 }
 
 function updateKpis(docs){
+  let filteredDocs = docs;
+
+if(statsFilter === "V1"){
+  filteredDocs = docs.filter(d => !d.formVersion);
+}
+
+if(statsFilter === "V2"){
+  filteredDocs = docs.filter(d => d.formVersion === "PPM_V2");
+}
+  const docsV2 = docs.filter(d => d.formVersion === "PPM_V2");
   const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
   const times = countValues(docs.flatMap(d => d.time || []));
   const digestif = countValues(docs.flatMap(d => (d.digestif || []).filter(x => x !== "Aucun signe digestif")));
   const echos = countValues(docs.flatMap(d => d.diagnostic_echo || []));
   const contraception = countValues(docs.map(d => d.contraceptionType || "Non renseignée"));
-  const painAvg = docs.length ? (docs.reduce((s,d) => s + Number(d.pain || 0), 0) / docs.length).toFixed(1) : "0";
+  const painAvg = filteredDocs.length ? (filteredDocs.reduce((s,d) => s + Number(d.pain || 0), 0) / filteredDocs.length).toFixed(1) : "0";
   const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
 
   const endoCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.endometriose))).length;
@@ -1885,7 +1909,8 @@ const legVarices = docs.filter(d => !!d.varices).length;
   const top2Match = computeTop2Match(docs);
   const compatible70 = computeCompatible70(docs);
 
-  document.getElementById("statEchos").innerText = docs.length;
+  document.getElementById("statEchos").innerText = filteredDocs.length;
+  document.getElementById("statV2").innerText = docsV2.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b) => a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statDigestif").innerText = digestifPresent;
