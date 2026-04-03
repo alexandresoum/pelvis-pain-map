@@ -479,7 +479,7 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         <h2>Régularité du cycle</h2>
       
         <div class="checks">
-          <label class="check"><input type="checkbox" name="opk1"> <span>Cycles irréguliers</span></label>
+         
           <label class="check"><input type="checkbox" name="opk2"> <span>Acné persistante ou pilosité excessive</span></label>
         </div>
 
@@ -845,12 +845,12 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     function computeOpkScore(d){
       let score = 0;
 
-      if (d.opk1) score += 4;
+      if (d.cycleRegularity === "Irréguliers" || d.cycleRegularity === "Absents) score += 4;
       if (d.opk2) score += 3;
       if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
-      if (d.opk1 && d.opk2) score += 1;
+      
 
-      const max = 9;
+      const max = 8;
       return {
         score,
         max,
