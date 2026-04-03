@@ -950,7 +950,7 @@ const VARIABLE_DEFS = {
 
   function setStatsFilter(mode){
   statsFilter = mode;
-  updateKpis(rows);
+  updateAll();
 }
   
 function normalizeLevel(v){
@@ -1873,51 +1873,55 @@ function updateLearningCurve(docs){
   draw("learningCurveChart", "line", curve.labels, curve.values);
 }
 
-function updateKpis(docs){
+  function updateKpis(docs){
   let filteredDocs = docs;
 
-if(statsFilter === "V1"){
-  filteredDocs = docs.filter(d => !d.formVersion);
-}
+  if (statsFilter === "V1"){
+    filteredDocs = docs.filter(d => d.formVersion !== "PPM_V2");
+  }
 
-if(statsFilter === "V2"){
-  filteredDocs = docs.filter(d => d.formVersion === "PPM_V2");
-}
-  const docsV2 = docs.filter(d => d.formVersion === "PPM_V2");
-  const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
-  const times = countValues(docs.flatMap(d => d.time || []));
-  const digestif = countValues(docs.flatMap(d => (d.digestif || []).filter(x => x !== "Aucun signe digestif")));
-  const echos = countValues(docs.flatMap(d => d.diagnostic_echo || []));
-  const contraception = countValues(docs.map(d => d.contraceptionType || "Non renseignée"));
-  const painAvg = filteredDocs.length ? (filteredDocs.reduce((s,d) => s + Number(d.pain || 0), 0) / filteredDocs.length).toFixed(1) : "0";
-  const digestifPresent = docs.filter(d => (d.digestif || []).some(x => x !== "Aucun signe digestif")).length;
+  if (statsFilter === "V2"){
+    filteredDocs = docs.filter(d => d.formVersion === "PPM_V2");
+  }
 
-  const endoCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.endometriose))).length;
-  const congCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.congestion))).length;
-  const opkCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.opk))).length;
-  const fibromeCompat = docs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.fibrome))).length;
-  const longPain = docs.filter(d => d.painDuration === "plus de 3 ans").length;
-const absenteeism = docs.filter(d =>
-  Array.isArray(d.functionalImpact) &&
-  d.functionalImpact.includes("manquer le travail / les études")
-).length;
-const eveningHeaviness = docs.filter(d => !!d.congEvening).length;
-const legVarices = docs.filter(d => !!d.varices).length;
-  
+  const docsV2 = filteredDocs.filter(d => d.formVersion === "PPM_V2");
 
-  const exactMatch = computeExactMatch(docs);
-  const top2Match = computeTop2Match(docs);
-  const compatible70 = computeCompatible70(docs);
+  const ages = filteredDocs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
+  const times = countValues(filteredDocs.flatMap(d => d.time || []));
+  const digestif = countValues(filteredDocs.flatMap(d => (d.digestif || []).filter(x => x !== "Aucun signe digestif")));
+  const echos = countValues(filteredDocs.flatMap(d => d.diagnostic_echo || []));
+  const contraception = countValues(filteredDocs.map(d => d.contraceptionType || "Non renseignée"));
+
+  const painAvg = filteredDocs.length
+    ? (filteredDocs.reduce((s,d) => s + Number(d.pain || 0), 0) / filteredDocs.length).toFixed(1)
+    : "0";
+
+  const digestifPresent = filteredDocs.filter(d =>
+    (d.digestif || []).some(x => x !== "Aucun signe digestif")
+  ).length;
+
+  const endoCompat = filteredDocs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.endometriose))).length;
+  const congCompat = filteredDocs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.congestion))).length;
+  const opkCompat = filteredDocs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.opk))).length;
+  const fibromeCompat = filteredDocs.filter(d => ["modéré","élevé"].includes(normalizeLevel(d.fibrome))).length;
+
+  const longPain = docsV2.filter(d => d.painDuration === "plus de 3 ans").length;
+  const absenteeism = docsV2.filter(d =>
+    Array.isArray(d.functionalImpact) &&
+    d.functionalImpact.includes("manquer le travail / les études")
+  ).length;
+  const eveningHeaviness = docsV2.filter(d => !!d.congEvening).length;
+  const legVarices = docsV2.filter(d => !!d.varices).length;
+
+  const exactMatch = computeExactMatch(filteredDocs);
+  const top2Match = computeTop2Match(filteredDocs);
+  const compatible70 = computeCompatible70(filteredDocs);
 
   document.getElementById("statEchos").innerText = filteredDocs.length;
   document.getElementById("statV2").innerText = docsV2.length;
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b) => a+b,0) / ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statDigestif").innerText = digestifPresent;
-  document.getElementById("statLongPain").innerText = longPain;
-document.getElementById("statAbsenteeism").innerText = absenteeism;
-document.getElementById("statEveningHeaviness").innerText = eveningHeaviness;
-document.getElementById("statVarices").innerText = legVarices;
   document.getElementById("statTopTime").innerText = topLabel(times);
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
@@ -1926,6 +1930,11 @@ document.getElementById("statVarices").innerText = legVarices;
   document.getElementById("statContraception").innerText = topLabel(contraception);
   document.getElementById("statTopDigestif").innerText = topLabel(digestif);
   document.getElementById("statTopEcho").innerText = topLabel(echos);
+
+  document.getElementById("statLongPain").innerText = longPain;
+  document.getElementById("statAbsenteeism").innerText = absenteeism;
+  document.getElementById("statEveningHeaviness").innerText = eveningHeaviness;
+  document.getElementById("statVarices").innerText = legVarices;
 
   document.getElementById("statExactMatch").innerText = exactMatch.rate + "%";
   document.getElementById("statExactMatchDetail").innerText =
@@ -1945,9 +1954,9 @@ document.getElementById("statVarices").innerText = legVarices;
     compatible70.discordant + " discordants • " +
     compatible70.total + " dossiers exploitables";
 
-  updatePublicationBlock(docs);
-  updateAdminMetrics(docs);
-  renderByPractitionerTable(docs);
+  updatePublicationBlock(filteredDocs);
+  updateAdminMetrics(filteredDocs);
+  renderByPractitionerTable(filteredDocs);
 }
 
 function updatePublicationBlock(docs){
