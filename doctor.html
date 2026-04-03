@@ -650,6 +650,7 @@ function pdfData(d) {
     prenom: d.prenom || "",
     dob: d.dob || "",
     pain: d.pain || "",
+    painQuality: d.painQuality || [],
     topo: d.topo || [],
     time: d.time || [],
     digestif: d.digestif || [],
@@ -1017,6 +1018,7 @@ const mainStatus = hypothesisMap[hypothesis]
               <h3>Questionnaire</h3>
               <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
               <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
+              <div class="detailLine"><b>Description de la douleur :</b> ${safeList(d.painQuality)}</div>
               <div class="detailLine"><b>Depuis quand :</b> ${painDuration}</div>
 <div class="detailLine"><b>Impact fonctionnel :</b> ${functionalImpact}</div>
               <div class="detailLine"><b>Symptômes associés :</b> ${buildSymptomsSummary(d)}</div>
