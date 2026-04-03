@@ -719,6 +719,7 @@ function buildPdf(doc, d) {
   "Date de naissance : " + (d.dob || "Non renseignée"),
   "Âge : " + (ageFromDob(d.dob) || "Non renseigné"),
   "Intensité : " + d.pain + "/10",
+  "Description de la douleur : " + safeList(d.painQuality),
   "Localisation : " + safeList(d.topo),
   "Quand : " + safeList(d.time),
   "Depuis quand : " + (d.painDuration || "-"),
