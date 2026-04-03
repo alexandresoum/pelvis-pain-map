@@ -845,7 +845,7 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     function computeOpkScore(d){
       let score = 0;
 
-      if (d.cycleRegularity === "Irréguliers" || d.cycleRegularity === "Absents) score += 4;
+      if (d.cycleRegularity === "Irréguliers" || d.cycleRegularity === "Absents") score += 4;
       if (d.opk2) score += 3;
       if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
       
