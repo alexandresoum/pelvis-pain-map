@@ -310,8 +310,27 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 3 -->
+      
+     <!-- PAGE 3 -->
       <section class="page" data-step="3">
+  <h2>Comment décririez-vous votre douleur ?</h2>
+  <p class="subtitle">Plusieurs réponses sont possibles.</p>
+
+  <div class="checks">
+    <label class="check"><input type="checkbox" name="painQuality" value="Crampe"> <span>Crampe</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Pesanteur / lourdeur"> <span>Pesanteur / lourdeur</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Tiraillement"> <span>Tiraillement</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Brûlure"> <span>Brûlure</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Décharge électrique"> <span>Décharge électrique</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Picotements / fourmillements"> <span>Picotements / fourmillements</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Élancement"> <span>Élancement</span></label>
+    <label class="check"><input type="checkbox" name="painQuality" value="Douleur diffuse dans plusieurs zones du bassin"> <span>Douleur diffuse dans plusieurs zones du bassin</span></label>
+  </div>
+</section>
+
+
+      <!-- PAGE 4 -->
+      <section class="page" data-step="4">
         <h2>Localisation</h2>
         <p class="subtitle">Où ressentez-vous la douleur ? Plusieurs réponses sont possibles.</p>
 
@@ -329,8 +348,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 4 -->
-      <section class="page" data-step="4">
+      <!-- PAGE 5 -->
+      <section class="page" data-step="5">
         <h2>Temporalité</h2>
         <p class="subtitle">Quand survient la douleur ? Plusieurs réponses sont possibles.</p>
 
@@ -348,8 +367,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 5 -->
-      <section class="page" data-step="5">
+      <!-- PAGE 6 -->
+      <section class="page" data-step="6">
         <h2>Ancienneté</h2>
         <p class="subtitle">Depuis combien de temps cette douleur est-elle présente ?</p>
 
@@ -363,8 +382,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 6 -->
-      <section class="page" data-step="6">
+      <!-- PAGE 7 -->
+      <section class="page" data-step="7">
         <h2>Impact fonctionnel</h2>
         <p class="subtitle">Cette douleur vous a-t-elle déjà obligée à…</p>
 
@@ -377,8 +396,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 7 -->
-      <section class="page" data-step="7">
+      <!-- PAGE 8 -->
+      <section class="page" data-step="8">
         <h2>Signes digestifs</h2>
         <p class="subtitle">Avez-vous des symptômes digestifs associés ?</p>
 
@@ -393,8 +412,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 8 -->
-      <section class="page" data-step="8">
+      <!-- PAGE 9 -->
+      <section class="page" data-step="9">
         <h2>Douleurs gynécologiques</h2>
         <p class="subtitle">Merci de cocher ce qui vous correspond.</p>
 
@@ -406,8 +425,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 9 -->
-      <section class="page" data-step="9">
+      <!-- PAGE 10 -->
+      <section class="page" data-step="10">
         <h2>Saignements utérins</h2>
         <p class="subtitle">Merci de cocher ce qui vous correspond.</p>
 
@@ -419,8 +438,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 10 -->
-      <section class="page" data-step="10">
+      <!-- PAGE 11 -->
+      <section class="page" data-step="11">
         <h2>Certaines douleurs pelviennes sont plus liées à une pesanteur et à la position</h2>
         
 
@@ -434,8 +453,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 11 -->
-      <section class="page" data-step="11">
+      <!-- PAGE 12 -->
+      <section class="page" data-step="12">
         <h2>Merci de cocher ce qui vous correspond.</h2>
         
 
@@ -455,8 +474,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 12 -->
-      <section class="page" data-step="12">
+      <!-- PAGE 13 -->
+      <section class="page" data-step="13">
         <h2>Régularité du cycle</h2>
       
         <div class="checks">
@@ -475,8 +494,8 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         </div>
       </section>
 
-      <!-- PAGE 13 -->
-      <section class="page" data-step="13">
+      <!-- PAGE 14 -->
+      <section class="page" data-step="14">
         <h2>Contexte médical</h2>
         <p class="subtitle">Dernières questions avant l’envoi.</p>
 
@@ -665,6 +684,7 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
         dob: document.getElementById("dob").value || "",
 
         pain: Number(document.getElementById("pain").value || 0),
+        painQuality: getCheckboxValues("painQuality"),
         topo: getCheckboxValues("topo"),
         time: getCheckboxValues("time"),
         painDuration: form.elements["painDuration"].value || "",
@@ -722,8 +742,10 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       if (d.endo4) score += 1;
       if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
       if (hasValue(d.digestif, "Ballonnements")) score += 1;
+      if (hasValue(d.painQuality, "Crampe")) score += 1;
+if (hasValue(d.painQuality, "Tiraillement")) score += 1;
 
-      const max = 16;
+      const max = 19;
       return {
         score,
         max,
@@ -767,8 +789,9 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
       if (d.varices) score += 2;
       if (d.cong1 && d.congEvening && d.cong4) score += 1;
+      if (hasValue(d.painQuality, "Pesanteur / lourdeur")) score += 2;
 
-      const max = 18;
+      const max = 21;
       return {
         score,
         max,
@@ -786,8 +809,11 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       if (d.pud4 || hasValue(d.topo, "Périnée") || hasValue(d.topo, "Vulve") || hasValue(d.topo, "Vagin")) score += 3;
       if (d.pudNight === "non") score += 2;
       if (d.pud1 && d.pud2 && (d.pud4 || hasValue(d.topo, "Périnée") || hasValue(d.topo, "Vulve") || hasValue(d.topo, "Vagin"))) score += 1;
+      if (hasValue(d.painQuality, "Brûlure")) score += 2;
+if (hasValue(d.painQuality, "Décharge électrique")) score += 3;
+if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
 
-      const max = 15;
+      const max = 22;
       return {
         score,
         max,
@@ -841,8 +867,9 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
       if (Array.isArray(d.digestif) && d.digestif.some(x => x !== "Aucun signe digestif")) score += 1;
       if (Array.isArray(d.functionalImpact) && d.functionalImpact.includes("manquer le travail / les études")) score += 2;
       if (d.painDuration === "plus de 3 ans") score += 2;
+      if (hasValue(d.painQuality, "Douleur diffuse dans plusieurs zones du bassin")) score += 2;
 
-      const max = 10;
+      const max = 12;
       return {
         score,
         max,
