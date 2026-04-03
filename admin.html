@@ -936,7 +936,7 @@ const VARIABLE_DEFS = {
   mixedProfile: { label:"Profil mixte", extractor:d => [d.mixedProfile ? "Oui" : "Non"] },
   varices: { label:"Varices membres inférieurs", extractor:d => [d.varices ? "Oui" : "Non"] },
   congEvening: { label:"Pesanteur plus marquée le soir", extractor:d => [d.congEvening ? "Oui" : "Non"] },
-  pudNight: { label:"Douleur réveille la nuit", extractor:d => [d.pudNight || "Non renseigné"] },
+  pudNight: { label:"Douleur réveille la nuit", extractor:d => [d.pudNight || "Non renseigné"] }
 };
 
 function normalizeLevel(v){
