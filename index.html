@@ -674,60 +674,63 @@ emailjs.init("qJ8Ye3GQNlFqqR3OU");
     }
 
     function collectData(){
-      const data = {
-        formVersion: "PPM_V2",
-        practitionerId,
-        practitionerName,
+  const data = {
+    formVersion: "PPM_V2",
+    version: "PPM_V2",
 
-        nom: (document.getElementById("nom").value || "").trim(),
-        prenom: (document.getElementById("prenom").value || "").trim(),
-        dob: document.getElementById("dob").value || "",
+    practitionerId,
+    practitionerName,
+    doc: practitionerId,
 
-        pain: Number(document.getElementById("pain").value || 0),
-        painQuality: getCheckboxValues("painQuality"),
-        topo: getCheckboxValues("topo"),
-        time: getCheckboxValues("time"),
-        painDuration: form.elements["painDuration"].value || "",
-        functionalImpact: getCheckboxValues("functionalImpact"),
-        digestif: getCheckboxValues("digestif"),
+    nom: (document.getElementById("nom").value || "").trim(),
+    prenom: (document.getElementById("prenom").value || "").trim(),
+    dob: document.getElementById("dob").value || "",
 
-        endo1: getCheckboxBool("endo1"),
-        endo2: getCheckboxBool("endo2"),
-        endo3: getCheckboxBool("endo3"),
-        endo4: getCheckboxBool("endo4"),
+    pain: Number(document.getElementById("pain").value || 0),
+    painQuality: getCheckboxValues("painQuality"),
+    topo: getCheckboxValues("topo"),
+    time: getCheckboxValues("time"),
+    painDuration: form.elements["painDuration"].value || "",
+    functionalImpact: getCheckboxValues("functionalImpact"),
+    digestif: getCheckboxValues("digestif"),
 
-        aden1: getCheckboxBool("aden1"),
-        aden2: getCheckboxBool("aden2"),
+    endo1: getCheckboxBool("endo1"),
+    endo2: getCheckboxBool("endo2"),
+    endo3: getCheckboxBool("endo3"),
+    endo4: getCheckboxBool("endo4"),
 
-        fib1: getCheckboxBool("fib1"),
-        fib2: getCheckboxBool("fib2"),
+    aden1: getCheckboxBool("aden1"),
+    aden2: getCheckboxBool("aden2"),
 
-        cong1: getCheckboxBool("cong1"),
-        cong2: getCheckboxBool("cong2"), // douleur après rapports (compatibilité)
-        cong3: getCheckboxBool("cong3"),
-        cong4: getCheckboxBool("cong4"),
-        cong5: getCheckboxBool("cong2"), // alias compatibilité score congestion
-        congEvening: getCheckboxBool("congEvening"),
-        varices: getCheckboxBool("varices"),
+    fib1: getCheckboxBool("fib1"),
+    fib2: getCheckboxBool("fib2"),
 
-        pud1: getCheckboxBool("pud1"),
-        pud2: getCheckboxBool("pud2"),
-        pud3: getCheckboxBool("pud3"),
-        pud4: getCheckboxBool("pud4"),
-        pudNight: form.elements["pudNight"].value || "oui",
+    cong1: getCheckboxBool("cong1"),
+    cong2: getCheckboxBool("cong2"),
+    cong3: getCheckboxBool("cong3"),
+    cong4: getCheckboxBool("cong4"),
+    cong5: getCheckboxBool("cong2"),
+    congEvening: getCheckboxBool("congEvening"),
+    varices: getCheckboxBool("varices"),
 
-        opk1: getCheckboxBool("opk1"),
-        opk2: getCheckboxBool("opk2"),
+    pud1: getCheckboxBool("pud1"),
+    pud2: getCheckboxBool("pud2"),
+    pud3: getCheckboxBool("pud3"),
+    pud4: getCheckboxBool("pud4"),
+    pudNight: form.elements["pudNight"].value || "oui",
 
-        contraceptionType: form.elements["contraceptionType"].value || "",
-        pillContinuous: form.elements["pillContinuous"].value || "",
-        consultation: form.elements["consultation"].value || "",
-        previousDiagnosis: form.elements["previousDiagnosis"].value || "",
-        cycleRegularity: form.elements["cycleRegularity"].value || ""
-      };
+    opk1: getCheckboxBool("opk1"),
+    opk2: getCheckboxBool("opk2"),
 
-      return data;
-    }
+    contraceptionType: form.elements["contraceptionType"].value || "",
+    pillContinuous: form.elements["pillContinuous"].value || "",
+    consultation: form.elements["consultation"].value || "",
+    previousDiagnosis: form.elements["previousDiagnosis"].value || "",
+    cycleRegularity: form.elements["cycleRegularity"].value || ""
+  };
+
+  return data;
+}
 
     function computeEndometrioseScore(d){
       let score = 0;
@@ -981,66 +984,75 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
   `;
 }
 
-    async function submitForm(){
-      try{
-        formError.textContent = "";
+ async function submitForm(){
+  try{
 
-        const d = collectData();
-        const result = computePelvisPainMapV2(d);
+    formError.textContent = "";
 
-        const payload = {
-          ...d,
+    const d = collectData();
+    const result = computePelvisPainMapV2(d);
 
-          endometriose_pct: result.scores.endometriose,
-          adenomyose_pct: result.scores.adenomyose,
-          congestion_pct: result.scores.congestion,
-          pudendal_pct: result.scores.pudendal,
-          fibrome_pct: result.scores.fibrome,
-          opk_pct: result.scores.opk,
-          hypersensibilisation_pct: result.hypersensibilisation_pct,
+    const payload = {
 
-          endometriose: result.levels.endometriose,
-          adenomyose: result.levels.adenomyose,
-          congestion: result.levels.congestion,
-          pudendal: result.levels.pudendal,
-          fibrome: result.levels.fibrome,
-          opk: result.levels.opk,
-          hypersensibilisation: result.levels.hypersensibilisation,
+      ...d,
 
-          hypothesisPrimary: result.hypothesisPrimary,
-          hypothesisPrimaryPct: result.hypothesisPrimaryPct,
-          hypothesisSecondary: result.hypothesisSecondary,
-          hypothesisSecondaryPct: result.hypothesisSecondaryPct,
-          lesionPrimary: result.hypothesisPrimary,
-          mixedProfile: result.mixedProfile,
-          clinicalConclusion: result.clinicalConclusion,
+      version: "PPM_V2",
+      doc: practitionerId,
 
-          painTypePrimary:
-            result.scores.pudendal >= 50
-              ? "neuropathique"
-              : result.hypersensibilisation_pct >= 50
-              ? "nociplastique"
-              : "nociceptive",
+      endometriose_pct: result.scores.endometriose,
+      adenomyose_pct: result.scores.adenomyose,
+      congestion_pct: result.scores.congestion,
+      pudendal_pct: result.scores.pudendal,
+      fibrome_pct: result.scores.fibrome,
+      opk_pct: result.scores.opk,
+      hypersensibilisation_pct: result.hypersensibilisation_pct,
 
-          echoPrimary: result.hypothesisPrimary,
-          diagnostic_echo: [],
-          echoScores: {},
-          doctorComment: "",
-          echoCertainty: "Non renseigné",
+      endometriose: result.levels.endometriose,
+      adenomyose: result.levels.adenomyose,
+      congestion: result.levels.congestion,
+      pudendal: result.levels.pudendal,
+      fibrome: result.levels.fibrome,
+      opk: result.levels.opk,
+      hypersensibilisation: result.levels.hypersensibilisation,
 
-          date: firebase.firestore.FieldValue.serverTimestamp()
-        };
+      hypothesisPrimary: result.hypothesisPrimary,
+      hypothesisPrimaryPct: result.hypothesisPrimaryPct,
+      hypothesisSecondary: result.hypothesisSecondary,
+      hypothesisSecondaryPct: result.hypothesisSecondaryPct,
+      lesionPrimary: result.hypothesisPrimary,
+      mixedProfile: result.mixedProfile,
+      clinicalConclusion: result.clinicalConclusion,
 
-        await db.collection("patients").add(payload);
+      painTypePrimary:
+        result.scores.pudendal >= 50
+          ? "neuropathique"
+          : result.hypersensibilisation_pct >= 50
+          ? "nociplastique"
+          : "nociceptive",
 
-        showThankYouScreen(practitionerName);
-window.scrollTo({ top: 0, behavior: "smooth" });
+      echoPrimary: result.hypothesisPrimary,
+      diagnostic_echo: [],
+      echoScores: {},
+      doctorComment: "",
+      echoCertainty: "Non renseigné",
 
-      }catch(err){
-        console.error(err);
-        formError.textContent = "Une erreur est survenue lors de l’enregistrement. Merci de réessayer.";
-      }
-    }
+      date: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection("patients").add(payload);
+
+    showThankYouScreen(practitionerName);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  }catch(err){
+
+    console.error(err);
+
+    formError.textContent =
+      "Une erreur est survenue lors de l’enregistrement. Merci de réessayer.";
+
+  }
+}
 
     updateProgress();
   </script>
