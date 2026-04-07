@@ -1201,6 +1201,19 @@ function filteredDocs(){
       return false;
     });
 }
+
+  function getVersionFilteredDocs(docs){
+  if (statsFilter === "V2") {
+    return docs.filter(d => d.formVersion === "PPM_V2");
+  }
+
+  if (statsFilter === "V1") {
+    return docs.filter(d => d.formVersion !== "PPM_V2");
+  }
+
+  return docs;
+}
+  
 function ageFromDob(dob){
   if(!dob) return null;
   const b = new Date(dob);
@@ -2025,7 +2038,7 @@ function initVariableSelectors(){
 
 function uniqueValuesForVariable(variableKey){
   if(!variableKey || !VARIABLE_DEFS[variableKey]) return [];
-  const docs = filteredDocs();
+  const docs = getVersionFilteredDocs(filteredDocs());
   const vals = docs.flatMap(d => VARIABLE_DEFS[variableKey].extractor(d) || []);
   return [...new Set(vals.map(v => String(v || "Non renseigné")))].sort((a,b)=>a.localeCompare(b,"fr"));
 }
@@ -2050,7 +2063,7 @@ function docMatchesFilter(d, variableKey, expectedValue){
 }
 
 function runCustomAnalysis(){
-  const docs = filteredDocs();
+  const docs = getVersionFilteredDocs(filteredDocs());
   const mainVar = document.getElementById("mainVariable").value;
   const filter1 = document.getElementById("filter1").value;
   const filter1Value = document.getElementById("filter1Value").value;
@@ -2171,7 +2184,7 @@ function runCustomAnalysis(){
 
 function updateAll(){
   renderPractitionerPicker();
-  const docs = filteredDocs();
+const docs = getVersionFilteredDocs(filteredDocs());
 
   updateKpis(docs);
   updateV3Stats(docs);
