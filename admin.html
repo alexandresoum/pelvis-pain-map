@@ -483,6 +483,12 @@ min-height:auto;
       </div>
     </div>
 
+    <div style="margin:10px 0 20px 0;display:flex;gap:10px;flex-wrap:wrap;">
+  <button class="ghostButton" onclick="setStatsFilter('ALL')">Toutes</button>
+  <button class="ghostButton" onclick="setStatsFilter('V1')">Stats V1</button>
+  <button class="ghostButton" onclick="setStatsFilter('V2')">Stats V2</button>
+</div>
+
 <div class="card">
   <h2>Lecture clinique de la cohorte</h2>
   <p class="muted">Répartition des dossiers selon le niveau de confiance de l’hypothèse principale.</p>
@@ -622,11 +628,7 @@ min-height:auto;
   <p>Facteur moyen V3.1 : <span id="v31_factor">-</span></p>
 </div>
 
-    <div style="margin-bottom:20px;display:flex;gap:10px;">
-<button onclick="setStatsFilter('ALL')">Toutes</button>
-<button onclick="setStatsFilter('V1')">Stats V1</button>
-<button onclick="setStatsFilter('V2')">Stats V2</button>
-</div>
+    
 
     <div class="statsGrid">
       <div class="statCard"><div class="statLabel">Nombre d’échos</div><div class="statValue big" id="statEchos">0</div></div>
