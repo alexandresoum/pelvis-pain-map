@@ -846,21 +846,47 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     }
 
     function computeOpkScore(d){
-      let score = 0;
+  let score = 0;
 
-      if (d.cycleRegularity === "Irréguliers" || d.cycleRegularity === "Absents") score += 4;
-      if (d.opk2) score += 3;
-      if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
-      
+  const irregularCycles =
+    d.cycleRegularity === "Irréguliers" ||
+    d.cycleRegularity === "Absents";
 
-      const max = 8;
-      return {
-        score,
-        max,
-        pct: Math.round((score / max) * 100),
-        level: levelFromPct(Math.round((score / max) * 100))
-      };
-    }
+  if (irregularCycles) score += 3;
+  if (d.opk2) score += 2;
+
+  // petit bonus possible, mais faible
+  if (hasValue(d.time, "Douleur à l'ovulation")) score += 1;
+
+  // frein clinique : si douleur pelvienne très intense, l'OPK ne doit pas dominer
+  const severePain = Number(d.pain || 0) >= 7;
+  const strongPelvicPattern =
+    !!d.aden1 || !!d.aden2 ||
+    !!d.endo1 || !!d.endo2 || !!d.endo3 ||
+    !!d.cong1 || !!d.cong2;
+
+  // Si l’OPK repose seulement sur cycles + hyperandrogénie
+  // mais qu’il existe une vraie signature douloureuse pelvienne,
+  // on plafonne le score OPK
+  let maxPctCap = 100;
+
+  if (severePain && strongPelvicPattern) {
+    maxPctCap = 45;
+  } else if (severePain) {
+    maxPctCap = 60;
+  }
+
+  const max = 6;
+  let pct = Math.round((score / max) * 100);
+  pct = Math.min(pct, maxPctCap);
+
+  return {
+    score,
+    max,
+    pct,
+    level: levelFromPct(pct)
+  };
+}
 
     function computeHypersensibilisationScore(d){
       let score = 0;
