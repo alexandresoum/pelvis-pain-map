@@ -908,92 +908,115 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     }
 
     function computePelvisPainMapV2(d){
-      const endometriose = computeEndometrioseScore(d).pct;
-      const adenomyose = computeAdenomyoseScore(d).pct;
-      const congestion = computeCongestionScore(d).pct;
-      const pudendal = computePudendalScore(d).pct;
-      const fibrome = computeFibromeScore(d).pct;
-      const opk = computeOpkScore(d).pct;
-      const hypersensibilisation = computeHypersensibilisationScore(d).pct;
+  const endometriose = computeEndometrioseScore(d).pct;
+  const adenomyose = computeAdenomyoseScore(d).pct;
+  const congestion = computeCongestionScore(d).pct;
+  const pudendal = computePudendalScore(d).pct;
+  const fibrome = computeFibromeScore(d).pct;
+  const opk = computeOpkScore(d).pct;
+  const hypersensibilisation = computeHypersensibilisationScore(d).pct;
 
-      const scores = {
-        endometriose,
-        adenomyose,
-        congestion,
-        pudendal,
-        fibrome,
-        opk
-      };
+  const scores = {
+    endometriose,
+    adenomyose,
+    congestion,
+    pudendal,
+    fibrome,
+    opk
+  };
 
-      const activeProfiles = Object.entries(scores)
-        .map(([key, pct]) => ({
-          key,
-          pct,
-          level: levelFromPct(pct)
-        }))
-        .filter(x => x.pct >= 25)
-        .sort((a, b) => b.pct - a.pct);
+  const activeProfiles = Object.entries(scores)
+    .map(([key, pct]) => ({
+      key,
+      pct,
+      level: levelFromPct(pct)
+    }))
+    .filter(x => x.pct >= 25)
+    .sort((a, b) => b.pct - a.pct);
 
-      if (!activeProfiles.length){
-        return {
-          scores,
-          hypersensibilisation_pct: hypersensibilisation,
-          hypothesisPrimary: "Profil non concluant",
-          hypothesisPrimaryPct: 0,
-          hypothesisSecondary: "",
-          hypothesisSecondaryPct: 0,
-          mixedProfile: false,
-          clinicalConclusion: "Profil non concluant",
-          levels: {
-            endometriose: levelFromPct(endometriose),
-            adenomyose: levelFromPct(adenomyose),
-            congestion: levelFromPct(congestion),
-            pudendal: levelFromPct(pudendal),
-            fibrome: levelFromPct(fibrome),
-            opk: levelFromPct(opk),
-            hypersensibilisation: levelFromPct(hypersensibilisation)
-          }
-        };
+  if (!activeProfiles.length){
+    return {
+      scores,
+      hypersensibilisation_pct: hypersensibilisation,
+      hypothesisPrimary: "Profil non concluant",
+      hypothesisPrimaryPct: 0,
+      hypothesisSecondary: "",
+      hypothesisSecondaryPct: 0,
+      mixedProfile: false,
+      clinicalConclusion: "Profil non concluant",
+      levels: {
+        endometriose: levelFromPct(endometriose),
+        adenomyose: levelFromPct(adenomyose),
+        congestion: levelFromPct(congestion),
+        pudendal: levelFromPct(pudendal),
+        fibrome: levelFromPct(fibrome),
+        opk: levelFromPct(opk),
+        hypersensibilisation: levelFromPct(hypersensibilisation)
       }
+    };
+  }
 
-      const top1 = activeProfiles[0];
-      const top2 = activeProfiles[1] || null;
+  const severePain = Number(d.pain || 0) >= 7;
 
-      const mixedProfile =
-        !!top2 &&
-        top1.pct >= 50 &&
-        top2.pct >= 50 &&
-        Math.abs(top1.pct - top2.pct) <= 15;
+  if (activeProfiles.length) {
+    const top = activeProfiles[0];
 
-      let clinicalConclusion = "";
-      if (mixedProfile){
-        clinicalConclusion = `Profil mixte ${labelFromKey(top1.key)} / ${labelFromKey(top2.key)}`;
-      } else if (top2 && top2.pct >= 25){
-        clinicalConclusion = `Profil principal ${labelFromKey(top1.key)} avec composante secondaire ${labelFromKey(top2.key)}`;
-      } else {
-        clinicalConclusion = `Profil principal ${labelFromKey(top1.key)}`;
-      }
+    const strongPelvicCandidate = activeProfiles.find(x =>
+      ["adenomyose", "endometriose", "congestion", "fibrome"].includes(x.key) &&
+      x.pct >= 50
+    );
 
-      return {
-        scores,
-        hypersensibilisation_pct: hypersensibilisation,
-        hypothesisPrimary: labelFromKey(top1.key),
-        hypothesisPrimaryPct: top1.pct,
-        hypothesisSecondary: top2 ? labelFromKey(top2.key) : "",
-        hypothesisSecondaryPct: top2 ? top2.pct : 0,
-        mixedProfile,
-        clinicalConclusion,
-        levels: {
-          endometriose: levelFromPct(endometriose),
-          adenomyose: levelFromPct(adenomyose),
-          congestion: levelFromPct(congestion),
-          pudendal: levelFromPct(pudendal),
-          fibrome: levelFromPct(fibrome),
-          opk: levelFromPct(opk),
-          hypersensibilisation: levelFromPct(hypersensibilisation)
-        }
-      };
+    if (
+      top.key === "opk" &&
+      severePain &&
+      strongPelvicCandidate
+    ) {
+      const oldTop = activeProfiles[0];
+      const pelvicIndex = activeProfiles.findIndex(x => x.key === strongPelvicCandidate.key);
+
+      activeProfiles[0] = activeProfiles[pelvicIndex];
+      activeProfiles[pelvicIndex] = oldTop;
     }
+  }
+
+  const top1 = activeProfiles[0];
+  const top2 = activeProfiles[1] || null;
+
+  const mixedProfile =
+    !!top2 &&
+    top1.pct >= 50 &&
+    top2.pct >= 50 &&
+    Math.abs(top1.pct - top2.pct) <= 15;
+
+  let clinicalConclusion = "";
+  if (mixedProfile){
+    clinicalConclusion = `Profil mixte ${labelFromKey(top1.key)} / ${labelFromKey(top2.key)}`;
+  } else if (top2 && top2.pct >= 25){
+    clinicalConclusion = `Profil principal ${labelFromKey(top1.key)} avec composante secondaire ${labelFromKey(top2.key)}`;
+  } else {
+    clinicalConclusion = `Profil principal ${labelFromKey(top1.key)}`;
+  }
+
+  return {
+    scores,
+    hypersensibilisation_pct: hypersensibilisation,
+    hypothesisPrimary: labelFromKey(top1.key),
+    hypothesisPrimaryPct: top1.pct,
+    hypothesisSecondary: top2 ? labelFromKey(top2.key) : "",
+    hypothesisSecondaryPct: top2 ? top2.pct : 0,
+    mixedProfile,
+    clinicalConclusion,
+    levels: {
+      endometriose: levelFromPct(endometriose),
+      adenomyose: levelFromPct(adenomyose),
+      congestion: levelFromPct(congestion),
+      pudendal: levelFromPct(pudendal),
+      fibrome: levelFromPct(fibrome),
+      opk: levelFromPct(opk),
+      hypersensibilisation: levelFromPct(hypersensibilisation)
+    }
+  };
+}
 
     function showThankYouScreen(practitionerName) {
   document.body.innerHTML = `
