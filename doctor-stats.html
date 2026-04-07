@@ -98,6 +98,11 @@
     <div class="toolbar">
       <button class="secondaryAction" onclick="window.location.href='doctor.html'">← Retour patientes</button>
     </div>
+    <div class="toolbar">
+  <button type="button" class="secondaryAction" onclick="setStatsFilter('ALL')">Toutes</button>
+  <button type="button" class="secondaryAction" onclick="setStatsFilter('V1')">Stats V1</button>
+  <button type="button" class="secondaryAction" onclick="setStatsFilter('V2')">Stats V2</button>
+</div>
 
     <div class="statsGrid">
       <div class="statCard">
@@ -337,6 +342,7 @@ const LABELS = {
 let currentPractitioner = sessionStorage.getItem("ppm_currentPractitioner") || "alexandre_soum";
 let rows = [];
 let charts = {};
+let statsFilter = "ALL"; 
 
 function normalizeLevel(v){
   if (!v) return "";
@@ -585,8 +591,26 @@ function updateHeader(){
   document.getElementById("subtitle").innerText = LABELS[currentPractitioner] || "";
 }
 
+  function setStatsFilter(mode){
+  statsFilter = mode;
+  updateStats();
+  updateDoctorConcordanceStats();
+}
+
+function getVersionFilteredDocs(docs){
+  if (statsFilter === "V2") {
+    return docs.filter(d => d.formVersion === "PPM_V2");
+  }
+
+  if (statsFilter === "V1") {
+    return docs.filter(d => d.formVersion !== "PPM_V2");
+  }
+
+  return docs;
+}
+
 function updateStats(){
-  const docs = rows.map(r => r.data);
+   const docs = getVersionFilteredDocs(rows.map(r => r.data));
 
   const ages = docs.map(d => ageFromDob(d.dob)).filter(v => v !== null);
   const topo = countValues(docs.flatMap(d => d.topo || []));
@@ -743,7 +767,8 @@ function concordanceByPathology(docs, questionKey, echoKey){
 function updateDoctorConcordanceStats(){
   if (!rows || !rows.length) return;
 
-  const docs = rows.map(r => r.data);
+  const docs = getVersionFilteredDocs(rows.map(r => r.data));
+  if (!docs.length) return;
 
   const globalScore = Math.round(
     docs.reduce((sum, d) => sum + patientConcordance(d), 0) / docs.length
