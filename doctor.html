@@ -432,12 +432,19 @@ const SECONDARY_PUDENDAL_DIAGNOSTIC = {
   return pct >= 20 || echoPositive;
 }
 
+  function mainHypothesisMatchesEcho(data){
+  const hypo = getHypothesisInterpretation(data).label;
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  return !!hypo && hypo !== "Profil non concluant" && echoList.includes(hypo);
+}
+
 function patientMainConcordance(data){
   const diagnostics = [
     { questionKey: "endometriose", echoKey: "Endométriose" },
     { questionKey: "adenomyose", echoKey: "Adénomyose" },
     { questionKey: "congestion", echoKey: "Congestion pelvienne" },
-    { questionKey: "opk", echoKey: "OPK" }
+    { questionKey: "opk", echoKey: "OPK" },
+    { questionKey: "fibrome", echoKey: "Fibrome" }
   ];
 
   let total = 0;
@@ -459,7 +466,8 @@ function patientMainConcordance(data){
       x === "Endométriose" ||
       x === "Adénomyose" ||
       x === "Congestion pelvienne" ||
-      x === "OPK"
+      x === "OPK" ||
+      x === "Fibrome"
     );
 
     const isNormalEcho =
@@ -474,7 +482,19 @@ function patientMainConcordance(data){
     return 0;
   }
 
-  return Math.round((total / max) * 100);
+  let score = Math.round((total / max) * 100);
+
+  // Si l’hypothèse principale est confirmée à l’écho,
+  // on impose un plancher pour éviter les faux scores trop bas
+  const h = getHypothesisInterpretation(data);
+
+  if (mainHypothesisMatchesEcho(data)) {
+    if (h.level === "fort") score = Math.max(score, 85);
+    else if (h.level === "probable") score = Math.max(score, 70);
+    else if (h.level === "possible") score = Math.max(score, 60);
+  }
+
+  return score;
 }
   function patientPudendalConcordance(data){
   const q = data[SECONDARY_PUDENDAL_DIAGNOSTIC.questionKey] || "";
