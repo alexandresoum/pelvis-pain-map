@@ -1087,12 +1087,14 @@ function addPractitionerFromSelect(){
   const id = select.value;
   if (!id) return;
 
+  // Si "Tous" était actif, on repart sur un seul praticien
   if (allPractitionersSelected) {
     allPractitionersSelected = false;
-    selectedPractitionerIds = new Set(PRACTITIONERS.filter(p => p.active !== false).map(p => p.id));
+    selectedPractitionerIds = new Set([id]);
+  } else {
+    selectedPractitionerIds.add(id);
   }
 
-  selectedPractitionerIds.add(id);
   select.value = "";
   renderPractitionerPicker();
   updateAll();
