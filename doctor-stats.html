@@ -98,10 +98,10 @@
     <div class="toolbar">
       <button class="secondaryAction" onclick="window.location.href='doctor.html'">← Retour patientes</button>
     </div>
-    <div class="toolbar">
-  <button type="button" class="secondaryAction" onclick="setStatsFilter('ALL')">Toutes</button>
-  <button type="button" class="secondaryAction" onclick="setStatsFilter('V1')">Stats V1</button>
-  <button type="button" class="secondaryAction" onclick="setStatsFilter('V2')">Stats V2</button>
+    <div id="versionFilterButtons" style="margin-bottom:20px;display:none;gap:10px;">
+  <button onclick="setStatsFilter('ALL')">Toutes</button>
+  <button onclick="setStatsFilter('V1')">Stats V1</button>
+  <button onclick="setStatsFilter('V2')">Stats V2</button>
 </div>
 
     <div class="statsGrid">
@@ -350,6 +350,18 @@ function normalizeLevel(v){
   return v;
 }
 
+  function updateVersionButtonsVisibility(){
+  const box = document.getElementById("versionFilterButtons");
+  if (!box) return;
+
+  if (currentPractitioner === "alexandre_soum") {
+    box.style.display = "flex";
+  } else {
+    box.style.display = "none";
+    statsFilter = "ALL";
+  }
+}
+
 function ageFromDob(dob){
   if(!dob) return null;
   const b = new Date(dob);
@@ -518,33 +530,7 @@ function computeDiagnosticMetrics(docs, pathology, thresholdMode){
   };
 }
 
-  function updateDoctorConcordanceStats(){
-
-  const docs = filteredDocs()
-
-  if(!docs.length) return
-
-  const globalScore = cohortConcordance(docs)
-
-  const endo = concordanceByPathology(docs,"endometriose","Endométriose")
-  const adeno = concordanceByPathology(docs,"adenomyose","Adénomyose")
-  const cong = concordanceByPathology(docs,"congestion","Congestion pelvienne")
-  const pud = concordanceByPathology(docs,"pudendal","Névralgie pudendale")
-  const opk = concordanceByPathology(docs,"opk","OPK")
-  const fib = concordanceByPathology(docs,"fibrome","Fibrome")
-
-  document.getElementById("doctorConcordance").innerText = globalScore + "%"
-  document.getElementById("doctorConcordanceLabel").innerText = concordanceLabel(globalScore)
-
-  document.getElementById("doctorEndo").innerText = endo + "%"
-  document.getElementById("doctorAdeno").innerText = adeno + "%"
-  document.getElementById("doctorCong").innerText = cong + "%"
-  document.getElementById("doctorPud").innerText = pud + "%"
-  document.getElementById("doctorOpk").innerText = opk + "%"
-  document.getElementById("doctorFib").innerText = fib + "%"
-
-}
-
+ 
 function updateDiagnosticMetrics(docs){
   const pathology = document.getElementById("metricPathology").value;
   const thresholdMode = document.getElementById("metricThreshold").value;
@@ -792,18 +778,21 @@ function updateDoctorConcordanceStats(){
   document.getElementById("doctorFib").innerText = fib + "%";
 }
 
-function loadRows(){
+  function loadRows(){
   updateHeader();
+
   db.collection("patients")
     .where("practitionerId", "==", currentPractitioner)
     .onSnapshot(s => {
       rows = [];
       s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+
+      updateVersionButtonsVisibility();
       updateStats();
-       updateDoctorConcordanceStats();
+      updateDoctorConcordanceStats();
     });
- 
 }
+
 
 loadRows();
 </script>
