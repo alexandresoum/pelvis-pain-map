@@ -826,24 +826,43 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     }
 
     function computeFibromeScore(d){
-      let score = 0;
+  let score = 0;
 
-      if (d.fib1) score += 3;
-      if (d.fib2) score += 3;
-      if (d.aden1) score += 2;
-      if (hasValue(d.topo, "Bas du ventre (centre)")) score += 1;
-      if (hasValue(d.topo, "Douleur profonde dans le bassin")) score += 1;
-      if (hasValue(d.time, "Pendant les règles")) score += 1;
-      if (d.fib1 && d.fib2) score += 1;
+  if (d.fib1) score += 3;
+  if (d.fib2) score += 3;
+  if (d.aden1) score += 2;
+  if (hasValue(d.topo, "Bas du ventre (centre)")) score += 1;
+  if (hasValue(d.topo, "Douleur profonde dans le bassin")) score += 1;
+  if (hasValue(d.time, "Pendant les règles")) score += 1;
+  if (d.fib1 && d.fib2) score += 1;
 
-      const max = 11;
-      return {
-        score,
-        max,
-        pct: Math.round((score / max) * 100),
-        level: levelFromPct(Math.round((score / max) * 100))
-      };
-    }
+  const severePain = Number(d.pain || 0) >= 7;
+
+  const strongPelvicPattern =
+    !!d.aden1 || !!d.aden2 ||
+    !!d.endo1 || !!d.endo2 || !!d.endo3 ||
+    !!d.cong1 || !!d.cong2 ||
+    !!d.pud1 || !!d.pud2 || !!d.pud3;
+
+  let maxPctCap = 100;
+
+  if (severePain && strongPelvicPattern) {
+    maxPctCap = 45;
+  } else if (severePain) {
+    maxPctCap = 60;
+  }
+
+  const max = 11;
+  let pct = Math.round((score / max) * 100);
+  pct = Math.min(pct, maxPctCap);
+
+  return {
+    score,
+    max,
+    pct,
+    level: levelFromPct(pct)
+  };
+}
 
     function computeOpkScore(d){
   let score = 0;
@@ -967,10 +986,10 @@ if (hasValue(d.painQuality, "Picotements / fourmillements")) score += 2;
     );
 
     if (
-      top.key === "opk" &&
-      severePain &&
-      strongPelvicCandidate
-    ) {
+  (top.key === "opk" || top.key === "fibrome") &&
+  severePain &&
+  strongPelvicCandidate
+) {
       const oldTop = activeProfiles[0];
       const pelvicIndex = activeProfiles.findIndex(x => x.key === strongPelvicCandidate.key);
 
