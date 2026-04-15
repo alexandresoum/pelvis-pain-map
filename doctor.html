@@ -376,26 +376,47 @@ function normalizeLevel(v) {
   return "concordance forte";
 }
 
-  function getPathologyConcordancePoints(data, questionKey, echoKey){
+ function getPathologyConcordancePoints(data, questionKey, echoKey){
   const pct = getPctForPathology(data, questionKey);
   const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
   const echoLevel = data.echoScores?.[echoKey] || "";
   const echoPositive = echoList.includes(echoKey) || !!echoLevel;
 
-  // Écho négative
+  const hasMorphologicEcho = echoList.some(x =>
+    x === "Endométriose" ||
+    x === "Adénomyose" ||
+    x === "Congestion pelvienne" ||
+    x === "OPK" ||
+    x === "Fibrome" ||
+    x === "Névralgie pudendale"
+  );
+
+  const isNormalOnly =
+    (echoList.includes("Normal") || echoList.includes("Non contributif") || echoList.length === 0) &&
+    !hasMorphologicEcho;
+
+  // Écho normale / non contributive isolée = situation neutre
+  if (isNormalOnly) {
+    if (pct >= 60) return 2;   // hypothèse forte mais non contredite
+    if (pct >= 20) return 1;   // hypothèse possible / probable, neutre
+    return 0;                  // rien d’évoqué, rien retrouvé
+  }
+
+  // Écho négative pour cette pathologie alors qu'il existe une autre info morphologique
   if (!echoPositive) {
     if (pct >= 60) return 0;   // forte suspicion non confirmée
     if (pct >= 20) return 1;   // suspicion partielle non confirmée
     if (pct > 0) return 1;     // faible suspicion non confirmée
-    return 0;                  // non évoqué et non retrouvé
+    return 0;
   }
 
   // Écho positive
-  if (pct === 0) return 0;     // discordance majeure
-  if (pct < 20) return 0;      // discordance
-  if (pct < 60) return 2;      // concordance modérée
-  return 3;                    // concordance forte
+  if (pct === 0) return 0;
+  if (pct < 20) return 0;
+  if (pct < 60) return 2;
+  return 3;
 }
+  
 function levelToScore(level){
   const v = String(level || "").toLowerCase().trim();
 
