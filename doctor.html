@@ -399,7 +399,7 @@ function normalizeLevel(v) {
   if (isNormalOnly) {
     if (pct >= 60) return 2;   // hypothèse forte mais non contredite
     if (pct >= 20) return 1;   // hypothèse possible / probable, neutre
-    return 0;                  // rien d’évoqué, rien retrouvé
+    return 3;                  // rien d’évoqué, rien retrouvé
   }
 
   // Écho négative pour cette pathologie alors qu'il existe une autre info morphologique
