@@ -2814,33 +2814,35 @@ function cohortStrongProfileConcordance(docs){
 }
 
 function isMajorClinicalDiscordance(d){
-  const h = getHypothesisInterpretation(d);
-  const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+   const hypo = getHypothesisInterpretation(data);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
 
-  if (h.level !== "fort") return false;
+  if (!hypo || !hypo.label) return false;
 
-  const usableEchos = echos.filter(x =>
-    x &&
-    x !== "Autre"
+  const hasMorphologicEcho = echoList.some(x =>
+    x === "Endométriose" ||
+    x === "Adénomyose" ||
+    x === "Congestion pelvienne" ||
+    x === "OPK" ||
+    x === "Fibrome" ||
+    x === "Névralgie pudendale"
   );
 
-  const morphologicHypotheses = [
-    "Endométriose",
-    "Adénomyose",
-    "Congestion pelvienne",
-    "OPK",
-    "Fibrome"
-  ];
+  const isNormalEcho =
+    echoList.includes("Normal") ||
+    echoList.includes("Non contributif") ||
+    echoList.length === 0;
 
-  const isMorphologicHypothesis = morphologicHypotheses.includes(h.label);
+  // suspicion forte non confirmée MAIS écho normale
+  // ce n'est pas une discordance majeure
+  if ((hypo.level === "fort" || hypo.level === "probable") && isNormalEcho && !hasMorphologicEcho){
+    return false;
+  }
 
-  const hasNoUsefulEcho =
-    !usableEchos.length ||
-    usableEchos.every(x => x === "Normal" || x === "Non contributif");
-
-  if (hasNoUsefulEcho) return true;
-
-  if (isMorphologicHypothesis && !usableEchos.includes(h.label)) return true;
+  // vraie discordance
+  if ((hypo.level === "fort" || hypo.level === "probable") && !echoList.includes(hypo.label)){
+    return true;
+  }
 
   return false;
 }
