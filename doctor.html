@@ -397,15 +397,16 @@ function normalizeLevel(v) {
 
   // Écho normale / non contributive isolée = situation neutre
   if (isNormalOnly) {
-    if (pct >= 60) return 2;   // hypothèse forte mais non contredite
-    if (pct >= 20) return 1;   // hypothèse possible / probable, neutre
+    if (pct >= 60) return 1;   // hypothèse forte mais non contredite
+    if (pct >= 40) return 2;   // hypothèse possible / probable, neutre
+    if (pct > 0) return 2;      //faible signal
     return 3;                  // rien d’évoqué, rien retrouvé
   }
 
   // Écho négative pour cette pathologie alors qu'il existe une autre info morphologique
   if (!echoPositive) {
     if (pct >= 60) return 0;   // forte suspicion non confirmée
-    if (pct >= 20) return 1;   // suspicion partielle non confirmée
+    if (pct >= 40) return 1;   // suspicion partielle non confirmée
     if (pct > 0) return 1;     // faible suspicion non confirmée
     return 0;
   }
