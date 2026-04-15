@@ -637,6 +637,8 @@ function buildSymptomsSummary(d){
   if (d.pud2) items.push("Douleur améliorée debout ou allongée");
   if (d.pud3) items.push("Brûlure / décharge / picotements");
   if (d.pud4) items.push("Douleur périnéale / vulvaire / anale");
+   if (d.opk1) items.push("Acné persistante");
+  if (d.opk2) items.push("Pilosité excessive");
   if (d.varices) items.push("Antécédents de varices des membres inférieurs");
   return items.length ? items.join(", ") : "-";
 }
