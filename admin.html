@@ -528,8 +528,8 @@ min-height:auto;
   <div class="statsGrid" style="margin-top:16px;">
     <div class="statCard">
       <div class="statLabel">Discordance clinique majeure</div>
-      <div class="statValue big" id="cohortMajorDiscordance">0%</div>
-      <div class="statSub" id="cohortMajorDiscordanceDetail">0 / 0 profils forts</div>
+      <div class="statValue big" id="cohortMajorDiscordanceConcordance">0%</div>
+      <div class="statSub" id="cohortMajorDiscordanceConcordanceDetail">0 / 0 profils forts</div>
     </div>
 
     <div class="statCard">
@@ -2814,10 +2814,10 @@ function cohortStrongProfileConcordance(docs){
 }
 
 function isMajorClinicalDiscordance(d){
-   const hypo = getHypothesisInterpretation(data);
-  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const hypo = getHypothesisInterpretation(d);
+  const echoList = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
 
-  if (!hypo || !hypo.label) return false;
+  if (!hypo || !hypo.label || hypo.label === "Profil non concluant") return false;
 
   const hasMorphologicEcho = echoList.some(x =>
     x === "Endométriose" ||
@@ -2833,14 +2833,14 @@ function isMajorClinicalDiscordance(d){
     echoList.includes("Non contributif") ||
     echoList.length === 0;
 
-  // suspicion forte non confirmée MAIS écho normale
+  // Hypothèse forte/probable avec écho normale seule :
   // ce n'est pas une discordance majeure
   if ((hypo.level === "fort" || hypo.level === "probable") && isNormalEcho && !hasMorphologicEcho){
     return false;
   }
 
-  // vraie discordance
-  if ((hypo.level === "fort" || hypo.level === "probable") && !echoList.includes(hypo.label)){
+  // Vraie discordance : anomalie morphologique présente mais différente de l'hypothèse principale
+  if ((hypo.level === "fort" || hypo.level === "probable") && hasMorphologicEcho && !echoList.includes(hypo.label)){
     return true;
   }
 
@@ -2886,8 +2886,8 @@ function updateConcordanceStats(docs){
   const strongEl = document.getElementById("cohortStrongConcordance");
   const strongDetailEl = document.getElementById("cohortStrongConcordanceDetail");
 
-  const majorEl = document.getElementById("cohortMajorDiscordance");
-  const majorDetailEl = document.getElementById("cohortMajorDiscordanceDetail");
+  const majorEl = document.getElementById("cohortMajorDiscordanceConcordance");
+  const majorDetailEl = document.getElementById("cohortMajorDiscordanceconcordanceDetail");
 
   const endoEl = document.getElementById("concordanceEndo");
   const adenoEl = document.getElementById("concordanceAdeno");
