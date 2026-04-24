@@ -910,6 +910,28 @@ function getPathologyPct(d, pathology){
   return map[pathology] || 0;
 }
 
+  function calibrateV3Score(pathology, rawScore){
+  const s = Number(rawScore || 0);
+
+  // Auto-correction silencieuse V3 — lecture scientifique uniquement
+  // Ne modifie ni Firestore, ni PDF, ni score patient affiché.
+
+  if (pathology === "Adénomyose") {
+    if (s < 20) return s;
+    if (s < 40) return Math.min(100, Math.round(s * 1.25));
+    if (s < 60) return Math.min(100, Math.round(s * 1.35));
+    if (s < 80) return Math.min(100, Math.round(s * 1.15));
+    return s;
+  }
+
+  return s;
+}
+
+  function getPathologyPctCalibrated(d, pathology){
+  const raw = getPathologyPct(d, pathology);
+  return calibrateV3Score(pathology, raw);
+}
+
 function buildRocData(allDocs, pathology){
   const usable = allDocs
     .filter(d => {
@@ -1471,7 +1493,7 @@ function drawDistributionChart(roc){
 
   return bins.map(bin => {
     const docsBin = usable.filter(d => {
-      const score = getPathologyPct(d, pathology);
+      const score = getPathologyPctCalibrated(d, pathology);
       return score >= bin.min && score < bin.max;
     });
 
