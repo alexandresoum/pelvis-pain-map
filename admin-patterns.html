@@ -993,6 +993,15 @@ function updateKpis(docs, patternStats){
   const useful = patternStats.filter(x => x.suggestedWeight === 2).slice(0, 4);
   const weak = patternStats.filter(x => x.suggestedWeight === 1).slice(0, 4);
   const banal = patternStats.filter(x => x.suggestedWeight === 0 && x.pctGlobal >= 30).slice(0, 4);
+  const lrStrong = patternStats
+  .filter(x => x.lrPlus >= 5 || x.lrPlus === 999)
+  .sort((a,b) => (b.lrPlus || 0) - (a.lrPlus || 0))
+  .slice(0, 4);
+
+const lrUseful = patternStats
+  .filter(x => x.lrPlus >= 2 && x.lrPlus < 5)
+  .sort((a,b) => (b.lrPlus || 0) - (a.lrPlus || 0))
+  .slice(0, 4);
 
   let text = "";
   if (strong.length) {
@@ -1001,6 +1010,13 @@ function updateKpis(docs, patternStats){
   if (useful.length) {
     text += `<p><b>Items utiles (poids 2) :</b> ${useful.map(x => `${x.label} (ratio ${x.ratio === 999 ? "∞" : x.ratio.toFixed(2)}, robustesse ${x.robustness}/100)`).join(" ; ")}.</p>`;
   }
+  if (lrStrong.length) {
+  text += `<p><b>Items avec LR+ fort :</b> ${lrStrong.map(x => `${x.label} (LR+ ${formatLR(x.lrPlus)})`).join(" ; ")}.</p>`;
+}
+
+if (lrUseful.length) {
+  text += `<p><b>Items avec LR+ utile :</b> ${lrUseful.map(x => `${x.label} (LR+ ${formatLR(x.lrPlus)})`).join(" ; ")}.</p>`;
+}
   if (weak.length) {
     text += `<p><b>Items d’appoint (poids 1) :</b> ${weak.map(x => `${x.label}`).join(" ; ")}. Ils peuvent aider, mais ne doivent pas dominer le score.</p>`;
   }
