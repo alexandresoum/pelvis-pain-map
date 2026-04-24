@@ -931,7 +931,7 @@ function echoBox(id, data) {
           onchange="updateEchoScore('${id}','${diag}', this.value)"
         >
           ${ECHO_SCORE_LEVELS.map(level =>
-            `<option value="${level}" ${level === value ? "selected" : ""}>${level || "—"}</option>`
+            `<option value="${level.value}" ${level.value === value ? "selected" : ""}>${level.label || "—"}</option>`
           ).join("")}
         </select>
       </div>
