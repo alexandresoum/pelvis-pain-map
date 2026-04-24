@@ -515,12 +515,23 @@
     </div>
   </div>
 
+     <div class="statCard">
+  <div class="statLabel">Score moyen brut</div>
+  <div class="statValue big" id="calibrationRawMean">0%</div>
+</div>
+
+<div class="statCard">
+  <div class="statLabel">Score moyen calibré</div>
+  <div class="statValue big" id="calibrationCalibratedMean">0%</div>
+</div>
+
   <p class="muted" id="calibrationText">-</p>
 
   <div class="chartBox small">
     <canvas id="calibrationChart"></canvas>
   </div>
 </div>
+    <div id="calibrationTable" class="simpleTable"></div>
     <div class="card">
       <h2>Items trompeurs / banals</h2>
       <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
@@ -1602,8 +1613,64 @@ function drawDistributionChart(roc){
   };
 }
 
+  function updateCalibrationMeans(allDocs, pathology){
+  const usable = allDocs.filter(d => {
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echos.some(x => x && x !== "Non contributif");
+  });
+
+  if (!usable.length) {
+    document.getElementById("calibrationRawMean").innerText = "0%";
+    document.getElementById("calibrationCalibratedMean").innerText = "0%";
+    return;
+  }
+
+  const rawScores = usable.map(d => getPathologyPct(d, pathology));
+  const calibratedScores = usable.map(d => getPathologyPctCalibrated(d, pathology, allDocs));
+
+  const rawMean = Math.round(rawScores.reduce((a,b) => a + b, 0) / rawScores.length);
+  const calibratedMean = Math.round(calibratedScores.reduce((a,b) => a + b, 0) / calibratedScores.length);
+
+  document.getElementById("calibrationRawMean").innerText = rawMean + "%";
+  document.getElementById("calibrationCalibratedMean").innerText = calibratedMean + "%";
+}
+
+  function renderCalibrationTable(allDocs, pathology){
+  const data = buildCalibrationData(allDocs, pathology);
+
+  document.getElementById("calibrationTable").innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Tranche score calibré</th>
+          <th>Score idéal</th>
+          <th>Fréquence réelle écho</th>
+          <th>Dossiers</th>
+          <th>Écart</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.map(row => {
+          const diff = row.observed - row.predicted;
+          return `
+            <tr>
+              <td>${row.label}%</td>
+              <td>${Math.round(row.predicted)}%</td>
+              <td>${row.observed}%</td>
+              <td>${row.n}</td>
+              <td>${diff > 0 ? "+" : ""}${Math.round(diff)} pts</td>
+            </tr>
+          `;
+        }).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
 function drawCalibrationChart(allDocs, pathology){
   const data = buildCalibrationData(allDocs, pathology);
+  updateCalibrationMeans(allDocs, pathology);
+  renderCalibrationTable(allDocs, pathology);
   const summary = getCalibrationSummary(data);
 
 document.getElementById("calibrationLabel").innerText = summary.label;
