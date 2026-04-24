@@ -103,8 +103,8 @@
     .simpleTable table{
       width:100%;
       border-collapse:collapse;
-      font-size:14px;
-      min-width:1800px;
+      font-size:13px;
+      min-width:2100px;
     }
     .simpleTable th,.simpleTable td{
       border-bottom:1px solid #e5e7eb;
@@ -118,6 +118,21 @@
       top:0;
       z-index:2;
     }
+
+ .simpleTable td:first-child,
+.simpleTable th:first-child{
+  position:sticky;
+  left:0;
+  background:#fff;
+  z-index:3;
+  max-width:280px;
+  white-space:normal;
+  font-weight:600;
+}
+
+.simpleTable th:first-child{
+  background:#f8fafc;
+}
     .muted{
       color:#6b7280;
       font-size:14px;
@@ -729,6 +744,41 @@ function computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTou
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
+  function computeLR(countPathology, totalPathology, countOthers, totalOthers){
+  const sensitivity = totalPathology ? countPathology / totalPathology : 0;
+  const falsePositiveRate = totalOthers ? countOthers / totalOthers : 0;
+  const specificity = 1 - falsePositiveRate;
+
+  const lrPlus = falsePositiveRate > 0
+    ? sensitivity / falsePositiveRate
+    : (sensitivity > 0 ? 999 : 0);
+
+  const lrMinus = specificity > 0
+    ? (1 - sensitivity) / specificity
+    : 0;
+
+  return {
+    sensitivity,
+    specificity,
+    lrPlus,
+    lrMinus
+  };
+}
+
+function formatLR(v){
+  if (v === 999) return "∞";
+  if (v === null || v === undefined || isNaN(v)) return "-";
+  return Number(v).toFixed(2);
+}
+
+function interpretLRPlus(lr){
+  if (lr === 999 || lr >= 10) return "très fort";
+  if (lr >= 5) return "fort";
+  if (lr >= 2) return "utile";
+  if (lr >= 1.2) return "faible appoint";
+  return "peu discriminant";
+}
+
 function computePatternStats(pathologyDocs, allDocs){
   const totalPathology = pathologyDocs.length;
   const otherDocs = allDocs.filter(d => !pathologyDocs.includes(d));
@@ -744,9 +794,17 @@ function computePatternStats(pathologyDocs, allDocs){
     const pctOthers = totalOthers ? (countOthers / totalOthers) * 100 : 0;
     const pctGlobal = totalGlobal ? (countGlobal / totalGlobal) * 100 : 0;
 
-    const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
-    const diagnosesTouched = getDiagnosticsTouchedForItem(item, allDocs);
-    const robustness = computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched);
+   const ratio = pctOthers > 0 ? pctPathology / pctOthers : (pctPathology > 0 ? 999 : null);
+
+const lr = computeLR(
+  countPathology,
+  totalPathology,
+  countOthers,
+  totalOthers
+);
+
+const diagnosesTouched = getDiagnosticsTouchedForItem(item, allDocs);
+const robustness = computeRobustness(countPathology, pctPathology, pctOthers, diagnosesTouched);
     const suggestedWeight = computeSuggestedWeight(
       pctPathology,
       pctOthers,
@@ -769,6 +827,11 @@ function computePatternStats(pathologyDocs, allDocs){
       countGlobal,
       pctGlobal,
       ratio,
+      lrPlus: lr.lrPlus,
+lrMinus: lr.lrMinus,
+sensitivity: lr.sensitivity,
+specificity: lr.specificity,
+lrInterpretation: interpretLRPlus(lr.lrPlus),
       diagnosesTouched,
       robustness,
       robustnessLabel: getRobustnessLabel(robustness),
@@ -964,7 +1027,10 @@ function renderTable(patternStats){
           <th>% global</th>
           <th>Diagnostics concernés</th>
           <th>Ratio discriminant</th>
-          <th>Robustesse</th>
+<th>LR+</th>
+<th>LR-</th>
+<th>Lecture LR+</th>
+<th>Robustesse</th>
           <th>Poids suggéré</th>
           <th>Interprétation score</th>
           <th>Lecture clinique</th>
@@ -980,8 +1046,11 @@ function renderTable(patternStats){
             <td>${r.pctOthers.toFixed(1)}%</td>
             <td>${r.pctGlobal.toFixed(1)}%</td>
             <td>${r.diagnosesTouched}</td>
-            <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
-            <td><span class="pill ${r.robustness >= 55 ? 'good' : r.robustness >= 35 ? 'warn' : 'soft'}">${r.robustness}/100</span></td>
+           <td><b>${r.ratio === 999 ? "∞" : (r.ratio !== null ? r.ratio.toFixed(2) : "-")}</b></td>
+<td><b>${formatLR(r.lrPlus)}</b></td>
+<td>${formatLR(r.lrMinus)}</td>
+<td><span class="pill ${r.lrPlus >= 2 || r.lrPlus === 999 ? 'good' : r.lrPlus >= 1.2 ? 'warn' : 'soft'}">${r.lrInterpretation}</span></td>
+<td><span class="pill ${r.robustness >= 55 ? 'good' : r.robustness >= 35 ? 'warn' : 'soft'}">${r.robustness}/100</span></td>
             <td><span class="pill ${getWeightBadgeClass(r.suggestedWeight)}">${r.suggestedWeight}/3</span></td>
             <td>${r.weightLabel}</td>
             <td><span class="pill ${getDiscriminantBadgeClass(r.ratio, r.pctPathology, r.pctGlobal, r.diagnosesTouched)}">${r.level}</span></td>
