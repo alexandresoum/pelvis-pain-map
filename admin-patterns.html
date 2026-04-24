@@ -315,6 +315,13 @@
       <div class="toolbar">
         <div>
           <label for="echoTarget"><b>Diagnostic écho</b></label><br>
+          <div>
+  <label><b>Version</b></label><br>
+  <select id="versionFilter" onchange="updateAll()">
+    <option value="ALL">Toutes</option>
+    <option value="V2" selected>V2 uniquement</option>
+  </select>
+</div>
           <select id="echoTarget" onchange="updateAll()">
             <option value="Endométriose">Endométriose</option>
             <option value="Adénomyose">Adénomyose</option>
@@ -659,7 +666,15 @@ function selectedPractitioners(){
 
 function filteredDocs(){
   const selected = selectedPractitioners();
-  return rows.map(r => r.data).filter(d => selected.includes(d.practitionerId));
+  const version = document.getElementById("versionFilter")?.value || "ALL";
+
+  return rows
+    .map(r => r.data)
+    .filter(d => selected.includes(d.practitionerId))
+    .filter(d => {
+      if (version === "V2") return d.formVersion === "PPM_V2";
+      return true;
+    });
 }
 
 function hasEchoDiagnosis(d, diagnosis){
