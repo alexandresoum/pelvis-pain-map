@@ -2701,7 +2701,7 @@ function getPathologyConcordancePoints(data, questionKey, echoKey){
   const echoLevel = data.echoScores?.[echoKey] || "";
   const echoPositive = echoList.includes(echoKey) || !!echoLevel;
 
-  return pct >= 20 || echoPositive;
+  return pct >= 60 || echoPositive;
 }
   
 function mainHypothesisMatchesEcho(data){
