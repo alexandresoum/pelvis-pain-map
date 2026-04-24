@@ -910,12 +910,10 @@ function getPathologyPct(d, pathology){
   return map[pathology] || 0;
 }
 
-  function calibrateV3Score(pathology, rawScore){
+ function calibrateV3Score(pathology, rawScore){
   const s = Number(rawScore || 0);
 
-  // Auto-correction silencieuse V3 — lecture scientifique uniquement
-  // Ne modifie ni Firestore, ni PDF, ni score patient affiché.
-
+  // fallback manuel si pas encore de modèle appris
   if (pathology === "Adénomyose") {
     if (s < 20) return s;
     if (s < 40) return Math.min(100, Math.round(s * 1.25));
@@ -927,8 +925,68 @@ function getPathologyPct(d, pathology){
   return s;
 }
 
-  function getPathologyPctCalibrated(d, pathology){
+  function buildAutoCalibrationModel(allDocs, pathology){
+  const usable = allDocs.filter(d => {
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echos.some(x => x && x !== "Non contributif");
+  });
+
+  const bins = [
+    { min: 0, max: 20 },
+    { min: 20, max: 40 },
+    { min: 40, max: 60 },
+    { min: 60, max: 80 },
+    { min: 80, max: 101 }
+  ];
+
+  const model = {};
+
+  bins.forEach(bin => {
+    const docsBin = usable.filter(d => {
+      const raw = getPathologyPct(d, pathology);
+      return raw >= bin.min && raw < bin.max;
+    });
+
+    const positives = docsBin.filter(d => hasEchoDiagnosis(d, pathology)).length;
+    const observed = docsBin.length ? Math.round((positives / docsBin.length) * 100) : null;
+    const midpoint = (bin.min + Math.min(bin.max, 100)) / 2;
+
+    model[`${bin.min}-${bin.max}`] = {
+      min: bin.min,
+      max: bin.max,
+      n: docsBin.length,
+      predicted: midpoint,
+      observed
+    };
+  });
+
+  return model;
+}
+
+function getAutoCalibratedScore(allDocs, pathology, rawScore){
+  const s = Number(rawScore || 0);
+  const model = buildAutoCalibrationModel(allDocs, pathology);
+
+  const row = Object.values(model).find(x => s >= x.min && s < x.max);
+
+  // sécurité scientifique : pas de correction si effectif trop faible
+  if (!row || row.observed === null || row.n < 10) {
+    return calibrateV3Score(pathology, s);
+  }
+
+  // correction partielle, pas brutale : 50% vers la réalité observée
+  const corrected = s + ((row.observed - row.predicted) * 0.5);
+
+  return Math.max(0, Math.min(100, Math.round(corrected)));
+}
+
+ function getPathologyPctCalibrated(d, pathology, allDocs = null){
   const raw = getPathologyPct(d, pathology);
+
+  if (allDocs && Array.isArray(allDocs)) {
+    return getAutoCalibratedScore(allDocs, pathology, raw);
+  }
+
   return calibrateV3Score(pathology, raw);
 }
 
@@ -1493,7 +1551,7 @@ function drawDistributionChart(roc){
 
   return bins.map(bin => {
     const docsBin = usable.filter(d => {
-      const score = getPathologyPctCalibrated(d, pathology);
+      const score = getPathologyPctCalibrated(d, pathology, allDocs);
       return score >= bin.min && score < bin.max;
     });
 
