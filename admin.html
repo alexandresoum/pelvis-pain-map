@@ -2713,6 +2713,19 @@ function mainHypothesisMatchesEcho(data){
 
 // 3️⃣ concordance patient
 function patientMainConcordance(data){
+  const echoListStart = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const hasMorphologicEchoStart = echoListStart.some(x =>
+    x === "Endométriose" ||
+    x === "Adénomyose" ||
+    x === "Congestion pelvienne" ||
+    x === "OPK" ||
+    x === "Fibrome" ||
+    x === "Névralgie pudendale"
+  );
+
+  if (echoListStart.includes("Non contributif") && !hasMorphologicEchoStart) {
+    return null;
+  }
   const diagnostics = [
     { questionKey: "endometriose", echoKey: "Endométriose" },
     { questionKey: "adenomyose", echoKey: "Adénomyose" },
@@ -2869,9 +2882,28 @@ function concordanceByPathology(docs, questionKey, echoKey){
   let max = 0;
 
   docs.forEach(d => {
-    total += getPathologyConcordancePoints(d, questionKey, echoKey);
-    max += 3;
-  });
+
+  const echoList = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+
+  const hasMorphologicEcho = echoList.some(x =>
+    x === "Endométriose" ||
+    x === "Adénomyose" ||
+    x === "Congestion pelvienne" ||
+    x === "OPK" ||
+    x === "Fibrome" ||
+    x === "Névralgie pudendale"
+  );
+
+  // 👉 on ignore les échos non contributifs seuls
+  if (echoList.includes("Non contributif") && !hasMorphologicEcho) return;
+
+  // 👉 on ignore les dossiers sans info écho
+  if (!echoList.length) return;
+
+  total += getPathologyConcordancePoints(d, questionKey, echoKey);
+  max += 3;
+
+});
 
   return max ? Math.round((total / max) * 100) : 0;
 }
