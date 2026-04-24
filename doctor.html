@@ -468,7 +468,7 @@ const SECONDARY_PUDENDAL_DIAGNOSTIC = {
   const echoLevel = data.echoScores?.[echoKey] || "";
   const echoPositive = echoList.includes(echoKey) || !!echoLevel;
 
-  return pct >= 40 || echoPositive;
+  return pct >= 60 || echoPositive;
 }
 
   function mainHypothesisMatchesEcho(data){
