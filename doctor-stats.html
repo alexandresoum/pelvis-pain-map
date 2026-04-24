@@ -742,25 +742,33 @@ function concordanceScore(questionLevel, echoLevel){
 }
 
 function patientConcordance(data){
-  const diagnostics = [
-    { questionKey: "endometriose", echoKey: "Endométriose" },
-    { questionKey: "adenomyose", echoKey: "Adénomyose" },
-    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
-    { questionKey: "pudendal", echoKey: "Névralgie pudendale" },
-    { questionKey: "opk", echoKey: "OPK" },
-    { questionKey: "fibrome", echoKey: "Fibrome" }
-  ];
+  const validEchos = getValidEchos(data);
+  if (!validEchos.length) return null;
 
-  let total = 0;
-  let max = 0;
+  const profiles = getProfileList(data).filter(p => p.pct > 0);
+  if (!profiles.length) return null;
 
-  diagnostics.forEach(({ questionKey, echoKey }) => {
-    total += getPathologyConcordancePoints(data, questionKey, echoKey);
-    max += 3;
+  const top1 = profiles[0]?.name || "";
+  const top2 = profiles[1]?.name || "";
+
+  let concordant = false;
+
+  validEchos.forEach(echoName => {
+    const echoProfile = profiles.find(p => p.name === echoName);
+    const echoPct = echoProfile ? Number(echoProfile.pct || 0) : 0;
+
+    if (
+      echoName === top1 ||
+      echoName === top2 ||
+      echoPct >= 40
+    ) {
+      concordant = true;
+    }
   });
 
-  return max ? Math.round((total / max) * 100) : 0;
+  return concordant ? 100 : 0;
 }
+  
 function concordanceLabel(score){
   if (score >= 80) return "excellente";
   if (score >= 60) return "bonne";
@@ -772,14 +780,33 @@ function concordanceByPathology(docs, questionKey, echoKey){
   if (!docs || !docs.length) return 0;
 
   let total = 0;
-  let max = 0;
+  let concordant = 0;
 
   docs.forEach(d => {
-    total += getPathologyConcordancePoints(d, questionKey, echoKey);
-    max += 3;
+    const validEchos = getValidEchos(d);
+    if (!validEchos.length) return;
+
+    total++;
+
+    const profiles = getProfileList(d).filter(p => p.pct > 0);
+    const top1 = profiles[0]?.name || "";
+    const top2 = profiles[1]?.name || "";
+    const pct = getPctForPathology(d, questionKey);
+
+    const echoHasPathology = validEchos.includes(echoKey);
+
+    if (!echoHasPathology) return;
+
+    if (
+      echoKey === top1 ||
+      echoKey === top2 ||
+      pct >= 40
+    ) {
+      concordant++;
+    }
   });
 
-  return max ? Math.round((total / max) * 100) : 0;
+  return total ? Math.round((concordant / total) * 100) : 0;
 }
 
 function updateDoctorConcordanceStats(){
@@ -788,9 +815,13 @@ function updateDoctorConcordanceStats(){
   const docs = getVersionFilteredDocs(rows.map(r => r.data));
   if (!docs.length) return;
 
-  const globalScore = Math.round(
-    docs.reduce((sum, d) => sum + patientConcordance(d), 0) / docs.length
-  );
+ const validScores = docs
+  .map(d => patientConcordance(d))
+  .filter(v => v !== null);
+
+const globalScore = validScores.length
+  ? Math.round(validScores.reduce((sum, v) => sum + v, 0) / validScores.length)
+  : 0;
 
   const endo = concordanceByPathology(docs, "endometriose", "Endométriose");
   const adeno = concordanceByPathology(docs, "adenomyose", "Adénomyose");
