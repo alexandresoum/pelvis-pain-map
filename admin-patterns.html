@@ -500,6 +500,14 @@
     </div>
 
     <div class="card">
+  <h2>Calibration du score</h2>
+  <p class="muted">Compare le score questionnaire prédit avec la fréquence réelle du diagnostic à l’écho.</p>
+  <div class="chartBox small">
+    <canvas id="calibrationChart"></canvas>
+  </div>
+</div>
+
+    <div class="card">
       <h2>Items trompeurs / banals</h2>
       <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
       <div id="misleadingTable" class="simpleTable"></div>
@@ -1433,6 +1441,80 @@ function drawDistributionChart(roc){
   });
 }
 
+  function buildCalibrationData(allDocs, pathology){
+  const usable = allDocs.filter(d => {
+    const echos = Array.isArray(d.diagnostic_echo) ? d.diagnostic_echo : [];
+    return echos.some(x => x && x !== "Non contributif");
+  });
+
+  const bins = [
+    { label: "0-20", min: 0, max: 20 },
+    { label: "20-40", min: 20, max: 40 },
+    { label: "40-60", min: 40, max: 60 },
+    { label: "60-80", min: 60, max: 80 },
+    { label: "80-100", min: 80, max: 101 }
+  ];
+
+  return bins.map(bin => {
+    const docsBin = usable.filter(d => {
+      const score = getPathologyPct(d, pathology);
+      return score >= bin.min && score < bin.max;
+    });
+
+    const positive = docsBin.filter(d => hasEchoDiagnosis(d, pathology)).length;
+
+    return {
+      label: bin.label,
+      predicted: (bin.min + Math.min(bin.max, 100)) / 2,
+      observed: docsBin.length ? Math.round((positive / docsBin.length) * 100) : 0,
+      n: docsBin.length
+    };
+  });
+}
+
+function drawCalibrationChart(allDocs, pathology){
+  const data = buildCalibrationData(allDocs, pathology);
+  const el = document.getElementById("calibrationChart");
+  if (!el) return;
+
+  if (charts["calibrationChart"]) charts["calibrationChart"].destroy();
+
+  charts["calibrationChart"] = new Chart(el, {
+    type: "line",
+    data: {
+      labels: data.map(x => `${x.label}%\n(n=${x.n})`),
+      datasets: [
+        {
+          label: "Observé à l’écho",
+          data: data.map(x => x.observed),
+          fill: false,
+          tension: 0.2
+        },
+        {
+          label: "Prédit idéal",
+          data: data.map(x => x.predicted),
+          fill: false,
+          tension: 0
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          min: 0,
+          max: 100,
+          title: { display: true, text: "Fréquence réelle (%)" }
+        },
+        x: {
+          title: { display: true, text: "Score questionnaire (%)" }
+        }
+      }
+    }
+  });
+}
+
 function updateRocSection(allDocs, diagnosis){
   const allowed = ["Endométriose", "Adénomyose", "Congestion pelvienne", "Névralgie pudendale", "OPK", "Fibrome"];
 
@@ -1640,6 +1722,7 @@ function updateAll(){
   drawWeightChart(patternStats);
   drawTimelineChart(docs, allDocs);
   updateRocSection(allDocs, diagnosis);
+  drawCalibrationChart(allDocs, diagnosis);
   renderEnhancedAI(docs, diagnosis);
 }
 
