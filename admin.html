@@ -1274,13 +1274,21 @@ function getPathologyPct(d, pathology){
 function computeExactMatch(docs){
   let total = 0;
   let concordant = 0;
+
   docs.forEach(d => {
-    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+    const h = getHypothesisInterpretation(d);
+    const hypo = h.label;
     const validEchos = getValidEchos(d);
-    if (!hypo || !validEchos.length) return;
+
+    if (!hypo || hypo === "Profil non concluant" || !validEchos.length) return;
+
+    // Exact match seulement si hypothèse forte
+    if (h.level !== "fort") return;
+
     total++;
     if (validEchos.includes(hypo)) concordant++;
   });
+
   const discordant = total - concordant;
   const rate = total ? Math.round((concordant / total) * 100) : 0;
   return { total, concordant, discordant, rate };
@@ -2639,11 +2647,16 @@ function getPctForPathology(data, questionKey){
 
 
 // 2️⃣ points de concordance
+  function isEchoLevelPositive(v){
+  const x = String(v || "").trim();
+  return x !== "" && x !== "-" && x !== "Non renseigné";
+}
+  
 function getPathologyConcordancePoints(data, questionKey, echoKey){
   const pct = getPctForPathology(data, questionKey);
   const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
   const echoLevel = data.echoScores?.[echoKey] || "";
-  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+  const echoPositive = echoList.includes(echoKey) || !!isEchoLevelPositive(echoLevel);
 
   const hasMorphologicEcho = echoList.some(x =>
     x === "Endométriose" ||
@@ -2699,7 +2712,7 @@ function getPathologyConcordancePoints(data, questionKey, echoKey){
   const pct = getPctForPathology(data, questionKey);
   const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
   const echoLevel = data.echoScores?.[echoKey] || "";
-  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+  const echoPositive = echoList.includes(echoKey) || !!isEchoLevelPositive(echoLevel);
 
   return pct >= 60 || echoPositive;
 }
@@ -2819,12 +2832,15 @@ function pudendalStatus(data){
 function cohortMainConcordance(docs){
   if (!docs || !docs.length) return 0;
 
-  const scores = docs.map(d => patientMainConcordance(d));
+  const scores = docs
+    .map(d => patientMainConcordance(d))
+    .filter(v => typeof v === "number" && !isNaN(v));
+
   return scores.length
     ? Math.round(scores.reduce((a,b) => a + b, 0) / scores.length)
     : 0;
 }
-
+  
 function cohortStrongProfileConcordance(docs){
   const strongDocs = (docs || []).filter(
     d => getHypothesisInterpretation(d).level === "fort"
@@ -2934,7 +2950,7 @@ function updateConcordanceStats(docs){
   const strongDetailEl = document.getElementById("cohortStrongConcordanceDetail");
 
   const majorEl = document.getElementById("cohortMajorDiscordanceConcordance");
-  const majorDetailEl = document.getElementById("cohortMajorDiscordanceconcordanceDetail");
+  const majorDetailEl = document.getElementById("cohortMajorDiscordanceConcordanceDetail");
 
   const endoEl = document.getElementById("concordanceEndo");
   const adenoEl = document.getElementById("concordanceAdeno");
