@@ -499,14 +499,28 @@
       </div>
     </div>
 
-    <div class="card">
+   <div class="card">
   <h2>Calibration du score</h2>
   <p class="muted">Compare le score questionnaire prédit avec la fréquence réelle du diagnostic à l’écho.</p>
+
+  <div class="statsGrid" style="margin-top:12px;">
+    <div class="statCard">
+      <div class="statLabel">Qualité calibration</div>
+      <div class="statValue small" id="calibrationLabel">-</div>
+    </div>
+
+    <div class="statCard">
+      <div class="statLabel">Erreur moyenne</div>
+      <div class="statValue big" id="calibrationError">0%</div>
+    </div>
+  </div>
+
+  <p class="muted" id="calibrationText">-</p>
+
   <div class="chartBox small">
     <canvas id="calibrationChart"></canvas>
   </div>
 </div>
-
     <div class="card">
       <h2>Items trompeurs / banals</h2>
       <p class="muted">Items fréquents mais peu spécifiques, à sous-pondérer ou exclure du score principal.</p>
@@ -1472,8 +1486,49 @@ function drawDistributionChart(roc){
   });
 }
 
+  function getCalibrationSummary(calibrationData){
+  const usable = calibrationData.filter(x => x.n > 0);
+
+  if (!usable.length) {
+    return {
+      meanError: 0,
+      label: "Non calculable",
+      text: "Pas assez de dossiers exploitables pour interpréter la calibration."
+    };
+  }
+
+  const meanError = usable.reduce((sum, x) => {
+    return sum + Math.abs(x.observed - x.predicted);
+  }, 0) / usable.length;
+
+  let label = "Bonne";
+  if (meanError > 25) label = "À améliorer";
+  else if (meanError > 15) label = "Acceptable";
+
+  let text = "";
+
+  if (label === "Bonne") {
+    text = "Le score paraît bien calibré : les pourcentages annoncés sont proches de la fréquence réelle observée à l’écho.";
+  } else if (label === "Acceptable") {
+    text = "La calibration est acceptable mais imparfaite : le score classe probablement correctement, mais les pourcentages doivent rester prudents.";
+  } else {
+    text = "La calibration est insuffisante : le score peut aider à trier les profils, mais les pourcentages annoncés ne doivent pas être interprétés comme une probabilité réelle.";
+  }
+
+  return {
+    meanError: Math.round(meanError),
+    label,
+    text
+  };
+}
+
 function drawCalibrationChart(allDocs, pathology){
   const data = buildCalibrationData(allDocs, pathology);
+  const summary = getCalibrationSummary(data);
+
+document.getElementById("calibrationLabel").innerText = summary.label;
+document.getElementById("calibrationError").innerText = summary.meanError + "%";
+document.getElementById("calibrationText").innerText = summary.text;
   const el = document.getElementById("calibrationChart");
   if (!el) return;
 
