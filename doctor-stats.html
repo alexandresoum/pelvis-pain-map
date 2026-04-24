@@ -344,6 +344,31 @@ let rows = [];
 let charts = {};
 let statsFilter = "ALL"; 
 
+const HYPOTHESIS_THRESHOLDS = {
+  nonConcluant: 30,
+  possible: 45,
+  probable: 60
+};
+
+function isEchoLevelPositive(v){
+  const x = String(v || "").trim();
+  return x !== "" && x !== "-" && x !== "Non renseigné";
+}
+
+function getHypothesisInterpretation(d){
+  const label = d.hypothesisPrimary || d.lesionPrimary || "-";
+  const pct = Number(d.hypothesisPrimaryPct || 0);
+
+  if (!label || pct <= 0 || pct < HYPOTHESIS_THRESHOLDS.nonConcluant){
+    return { label:"Profil non concluant", pct, level:"non_concluant" };
+  }
+
+  if (pct < HYPOTHESIS_THRESHOLDS.possible) return { label, pct, level:"possible" };
+  if (pct < HYPOTHESIS_THRESHOLDS.probable) return { label, pct, level:"probable" };
+
+  return { label, pct, level:"fort" };
+}
+
 function normalizeLevel(v){
   if (!v) return "";
   if (v === "possible") return "modéré";
@@ -413,10 +438,12 @@ function computeExactMatch(docs){
   let concordant = 0;
 
   docs.forEach(d => {
-    const hypo = d.hypothesisPrimary || d.lesionPrimary || d.echoPrimary || "";
+    const h = getHypothesisInterpretation(d);
+    const hypo = h.label;
     const validEchos = getValidEchos(d);
 
-    if (!hypo || !validEchos.length) return;
+    if (!hypo || hypo === "Profil non concluant" || !validEchos.length) return;
+    if (h.level !== "fort") return;
 
     total++;
     if (validEchos.includes(hypo)) concordant++;
@@ -703,7 +730,7 @@ function concordanceScore(questionLevel, echoLevel){
   const pct = getPctForPathology(data, questionKey);
   const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
   const echoLevel = data.echoScores?.[echoKey] || "";
-  const echoPositive = echoList.includes(echoKey) || !!echoLevel;
+  const echoPositive = echoList.includes(echoKey) || isEchoLevelPositive(echoLevel);
 
   const hasMorphologicEcho = echoList.some(x =>
     x === "Endométriose" ||
@@ -714,19 +741,28 @@ function concordanceScore(questionLevel, echoLevel){
     x === "Névralgie pudendale"
   );
 
-  const isNormalOnly =
-    (echoList.includes("Normal") || echoList.includes("Non contributif") || echoList.length === 0) &&
-    !hasMorphologicEcho;
+  const hasNonContributif = echoList.includes("Non contributif");
+  const hasNormal = echoList.includes("Normal");
 
-  // Écho normale / non contributive isolée
-  if (isNormalOnly) {
-    if (pct >= 60) return 1;
-    if (pct >= 40) return 2;
-    if (pct > 0) return 2;
+  // Écho non contributive seule : on ne doit pas gonfler la concordance
+  if (hasNonContributif && !hasMorphologicEcho) {
+    return 0;
+  }
+
+  // Écho normale seule
+  if (hasNormal && !hasMorphologicEcho && !hasNonContributif) {
+    if (pct >= 60) return 0;
+    if (pct >= 40) return 1;
+    if (pct > 0) return 1;
     return 3;
   }
 
-  // Écho négative pour cette pathologie alors qu'une autre anomalie morphologique existe
+  // Aucune donnée écho
+  if (!echoList.length) {
+    return 0;
+  }
+
+  // Une autre anomalie écho est présente, mais pas cette pathologie
   if (!echoPositive) {
     if (pct >= 60) return 0;
     if (pct >= 40) return 1;
@@ -734,13 +770,28 @@ function concordanceScore(questionLevel, echoLevel){
     return 0;
   }
 
-  // Écho positive
+  // Cette pathologie est retrouvée à l’écho
   if (pct === 0) return 0;
   if (pct < 20) return 0;
   if (pct < 60) return 2;
   return 3;
 }
 
+function isActiveDiagnostic(data, questionKey, echoKey){
+  const pct = getPctForPathology(data, questionKey);
+  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoLevel = data.echoScores?.[echoKey] || "";
+
+  const echoPositive =
+    echoList.includes(echoKey) ||
+    isEchoLevelPositive(echoLevel);
+
+  // 👉 On considère actif si :
+  // - suspicion forte (≥60%)
+  // - OU diagnostic écho présent
+  return pct >= 60 || echoPositive;
+}
+  
 function patientConcordance(data){
   const validEchos = getValidEchos(data);
   if (!validEchos.length) return null;
