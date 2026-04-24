@@ -2833,6 +2833,7 @@ function cohortMainConcordance(docs){
   if (!docs || !docs.length) return 0;
 
   const scores = docs
+    .filter(d => getHypothesisInterpretation(d).level === "fort")
     .map(d => patientMainConcordance(d))
     .filter(v => typeof v === "number" && !isNaN(v));
 
