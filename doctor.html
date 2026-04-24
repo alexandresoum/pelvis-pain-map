@@ -157,7 +157,12 @@ const ECHOS = [
   probable: 60
 };
 
-   const ECHO_SCORE_LEVELS = ["", "possible", "probable", "fort"];
+   const ECHO_SCORE_LEVELS = [
+  { value: "", label: "—" },
+  { value: "possible", label: "Suspect" },
+  { value: "probable", label: "Évocateur" },
+  { value: "fort", label: "Typique" }
+];
 
 const ECHO_STRUCTURED_DIAGNOSES = [
   "Endométriose",
