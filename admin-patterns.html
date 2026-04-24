@@ -437,6 +437,14 @@
       </div>
     </div>
 
+    <div class="card">
+  <h2>Likelihood ratios LR+</h2>
+  <p class="muted">Mesure combien la présence d’un item augmente la probabilité du diagnostic sélectionné.</p>
+  <div class="chartBox">
+    <canvas id="lrChart"></canvas>
+  </div>
+</div>
+
     <div class="sectionGrid">
       <div class="card">
         <h2>Poids suggérés pour le score</h2>
@@ -1251,6 +1259,26 @@ function drawRatioChart(patternStats){
   );
 }
 
+  function drawLRChart(patternStats){
+  const top = patternStats
+    .filter(x => x.lrPlus && x.lrPlus >= 1.2 && x.pctPathology >= 10)
+    .sort((a,b) => (b.lrPlus || 0) - (a.lrPlus || 0))
+    .slice(0, 15);
+
+  const maxVal = Math.max(
+    5,
+    ...top.map(x => x.lrPlus === 999 ? 10 : Number(x.lrPlus || 0))
+  );
+
+  drawHorizontalBar(
+    "lrChart",
+    top.map(x => x.label),
+    top.map(x => x.lrPlus === 999 ? 10 : Number(x.lrPlus.toFixed(2))),
+    maxVal,
+    "LR+"
+  );
+}
+
 function drawWeightChart(patternStats){
   const top = [...patternStats]
     .sort((a,b) => b.suggestedWeight - a.suggestedWeight || b.robustness - a.robustness || (b.ratio || 0) - (a.ratio || 0))
@@ -1608,6 +1636,7 @@ function updateAll(){
   renderHeatmap(allDocs, diagnosis);
   drawPatternChart(patternStats);
   drawRatioChart(patternStats);
+  drawLRChart(patternStats);
   drawWeightChart(patternStats);
   drawTimelineChart(docs, allDocs);
   updateRocSection(allDocs, diagnosis);
