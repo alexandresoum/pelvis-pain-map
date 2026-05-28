@@ -1583,7 +1583,16 @@ if (majorDiscordanceDetailEl) {
   else if (auc >= 0.5) interprete = "Faible";
   else interprete = "Sous le hasard";
 
-  return { auc, points: uniquePoints, n: usable.length, interprete };
+ const best = rawPoints
+  .map(p => ({
+    threshold: p.threshold,
+    sensitivity: p.tpr,
+    specificity: 1 - p.fpr,
+    youden: p.tpr + (1 - p.fpr) - 1
+  }))
+  .sort((a,b) => b.youden - a.youden)[0] || null;
+
+return { auc, points: uniquePoints, n: usable.length, interprete, best };
 }
 
 function buildCalibrationData(docs, pathology){
@@ -1925,9 +1934,29 @@ function drawCalibration(points){
 function updateRoc(docs){
   const pathology = document.getElementById("rocPathology").value;
   const roc = buildRocData(docs, pathology);
+
   document.getElementById("rocAucValue").innerText = roc.auc.toFixed(2);
   document.getElementById("rocAucDetail").innerText = roc.n + " dossiers exploitables";
   document.getElementById("rocAucInterpretation").innerText = roc.interprete;
+
+  const oldBox = document.getElementById("rocYoudenBox");
+  if (oldBox) oldBox.remove();
+
+  const container = document.getElementById("rocAucInterpretation").closest(".statsGrid");
+
+  if (container && roc.best) {
+    container.insertAdjacentHTML("beforeend", `
+      <div class="statCard" id="rocYoudenBox">
+        <div class="statLabel">Seuil optimal Youden</div>
+        <div class="statValue big">${roc.best.threshold}%</div>
+        <div class="statSub">
+          Sensibilité ${Math.round(roc.best.sensitivity * 100)}% ·
+          Spécificité ${Math.round(roc.best.specificity * 100)}%
+        </div>
+      </div>
+    `);
+  }
+
   drawRocCurve(roc.points);
 }
 
