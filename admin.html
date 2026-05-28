@@ -317,6 +317,12 @@ min-height:auto;
       z-index:1;
     }
 
+    .simpleTable{
+  display:block;
+  overflow-x:auto;
+  width:100%;
+}
+
     .chartBox{
       position:relative;
       width:100%;
@@ -1724,6 +1730,34 @@ function updateAdminMetrics(docs){
   if (FN) FN.innerText = m.FN;
   if (TN) TN.innerText = m.TN;
 }
+
+  function getReliabilityForCount(count){
+  if (count >= 100) {
+    return {
+      label: "🟢 Robuste",
+      detail: "≥ 100 dossiers",
+      className: "reliability-good",
+      rowClass: ""
+    };
+  }
+
+  if (count >= 50) {
+    return {
+      label: "🟠 Prudente",
+      detail: "50–99 dossiers",
+      className: "reliability-warn",
+      rowClass: "practitioner-row-mid"
+    };
+  }
+
+  return {
+    label: "🔴 Insuffisant",
+    detail: "< 50 dossiers",
+    className: "reliability-bad",
+    rowClass: "practitioner-row-low"
+  };
+}
+
 function renderByPractitionerTable(docs){
   const pathology = document.getElementById("metricPathologyAdmin").value;
   const thresholdMode = document.getElementById("metricThresholdAdmin").value;
@@ -1731,15 +1765,26 @@ function renderByPractitionerTable(docs){
 
   const rowsHtml = selected.map(prId => {
     const docsPr = docs.filter(d => d.practitionerId === prId);
+    const count = docsPr.length;
+    const reliability = getReliabilityForCount(count);
+
     const m = computeDiagnosticMetrics(docsPr, pathology, thresholdMode);
     const exactMatch = computeExactMatch(docsPr);
     const top2Match = computeTop2Match(docsPr);
     const compatible70 = computeCompatible70(docsPr);
 
     return `
-      <tr>
+      <tr class="${reliability.rowClass}">
         <td>${escapeHtml(PRACTITIONER_LABELS[prId] || prId)}</td>
-        <td>${docsPr.length}</td>
+        <td>${count}</td>
+        <td>
+          <span class="reliabilityBadge ${reliability.className}">
+            ${reliability.label}
+          </span>
+          <div class="muted" style="font-size:12px;margin-top:4px;">
+            ${reliability.detail}
+          </div>
+        </td>
         <td>${exactMatch.rate}%</td>
         <td>${top2Match.rate}%</td>
         <td>${compatible70.rate}%</td>
@@ -1761,6 +1806,7 @@ function renderByPractitionerTable(docs){
         <tr>
           <th>Praticien</th>
           <th>Dossiers</th>
+          <th>Fiabilité</th>
           <th>Exact</th>
           <th>Top-2</th>
           <th>&gt;70%</th>
@@ -1774,11 +1820,11 @@ function renderByPractitionerTable(docs){
           <th>VN</th>
         </tr>
       </thead>
-      <tbody>${rowsHtml || `<tr><td colspan="13" class="muted">Aucune donnée</td></tr>`}</tbody>
+      <tbody>${rowsHtml || `<tr><td colspan="14" class="muted">Aucune donnée</td></tr>`}</tbody>
     </table>
   `;
 }
-
+  
 function draw(id, type, labels, data){
   const el = document.getElementById(id);
   if (!el) return;
