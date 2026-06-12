@@ -108,6 +108,17 @@
     <div class="muted" id="doctorAccessStatus"></div>
   </div>
 </div>
+    <div class="card" style="margin-bottom:14px;">
+  <button
+    type="button"
+    id="btnMissingEcho"
+    class="primary"
+    onclick="toggleMissingEchoFilter()"
+  >
+    Dossiers sans résultat écho (0)
+  </button>
+</div>
+    
     <div class="toolbar toolbarTop">
       <input type="text" id="searchInput" class="searchInput" placeholder="Rechercher..." oninput="applyFiltersAndSort()">
       <select id="sortSelect" class="sortSelect" onchange="applyFiltersAndSort()">
@@ -179,6 +190,7 @@ let openCardId = null;
 let currentDisplayedList = [];
   let currentDoctorQrUrl = "";
 let currentDoctorQrImageUrl = "";
+  let showMissingEchoOnly = false; 
 
 async function checkPin() {
   const p = document.getElementById("practitionerLogin").value.trim();
@@ -1139,11 +1151,52 @@ const mainStatus = hypothesisMap[hypothesis]
   }).join("");
 }
 
+  function isMissingEcho(data){
+  const echos = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
+
+  const scores = data.echoScores || {};
+
+  const hasEcho =
+    echos.length > 0 ||
+    Object.values(scores).some(v => v && String(v).trim() !== "");
+
+  return !hasEcho;
+}
+
+function updateMissingEchoCount(){
+  const missing = rows.filter(r => isMissingEcho(r.data)).length;
+
+  document.title = missing > 0
+    ? `(${missing}) Dashboard praticien – V2`
+    : `Dashboard praticien – V2`;
+
+  const btn = document.getElementById("btnMissingEcho");
+
+  if (btn) {
+    btn.textContent = showMissingEchoOnly
+      ? `Afficher tous les dossiers (${missing} sans écho)`
+      : `Dossiers sans résultat écho (${missing})`;
+
+    btn.className = showMissingEchoOnly ? "ghostButton" : "primary";
+  }
+}
+
+function toggleMissingEchoFilter(){
+  showMissingEchoOnly = !showMissingEchoOnly;
+  updateMissingEchoCount();
+  applyFiltersAndSort();
+}
+
 function applyFiltersAndSort() {
   const q = (document.getElementById("searchInput").value || "").toLowerCase().trim();
   const sort = document.getElementById("sortSelect").value;
   let list = [...rows];
-
+if (showMissingEchoOnly) {
+  list = list.filter(r => isMissingEcho(r.data));
+}
+  
   if (q) {
     list = list.filter(r => JSON.stringify(r.data).toLowerCase().includes(q));
   }
