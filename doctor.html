@@ -69,6 +69,28 @@
   color:#24324a;
   margin-bottom:6px;
 }
+   .compactDetailsBox{
+  padding:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+}
+
+.questionnaireSummary{
+  cursor:pointer;
+  font-weight:700;
+  font-size:16px;
+  color:#24324a;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:14px;
+}
+
+.questionnaireSummary:hover{
+  background:#f8fafc;
+}
+    
   </style>
   <link rel="manifest" href="/manifest.json">
 
@@ -1166,11 +1188,13 @@ const mainStatus = hypothesisMap[hypothesis]
           <div class="detailGrid">
          ${quickClinicalView(d)}
 
-<div class="detailBox">
-  <details>
-    <summary style="cursor:pointer;font-weight:700;font-size:16px;color:#24324a;">
-       Résultats complets questionnaire
-    </summary>
+<div class="detailBox compactDetailsBox">
+
+<details>
+
+<summary class="questionnaireSummary">
+ Résultats complets questionnaire
+</summary>
 
     <div style="margin-top:12px;">
               <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
