@@ -50,6 +50,25 @@
       .summaryResponsive{grid-template-columns:1fr}
       .actionsRow{flex-direction:column}
     }
+    .quickGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
+}
+
+.quickItem{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:12px;
+  line-height:1.45;
+}
+
+.quickTitle{
+  font-weight:700;
+  color:#24324a;
+  margin-bottom:6px;
+}
   </style>
   <link rel="manifest" href="/manifest.json">
 
@@ -659,6 +678,55 @@ function getMainHypothesisPct(d){
   return `${h.displayPct} · fort`;
 }
 
+  function quickClinicalView(d){
+  return `
+    <div class="detailBox" style="grid-column:1 / -1;background:#f8fafc;border:1px solid #dbe4f0;">
+      <h3 style="margin-bottom:12px;"> Lecture rapide</h3>
+
+      <div class="quickGrid">
+        <div class="quickItem">
+          <div class="quickTitle">⏱ Quand</div>
+          <div>${safeList(d.time)}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Impact fonctionnel</div>
+          <div>${safeList(d.functionalImpact)}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Symptômes associés</div>
+          <div>${buildSymptomsSummary(d)}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Digestif</div>
+          <div>${buildDigestiveSummary(d)}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Contraception</div>
+          <div>${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Cycles</div>
+          <div>${d.cycleRegularity || "-"}</div>
+        </div>
+
+        <div class="quickItem">
+          <div class="quickTitle"> Pesanteur / congestion</div>
+          <div>
+            Pesanteur : ${d.cong1 ? "Oui" : "Non"}<br>
+            Soir : ${d.congEvening ? "Oui" : "Non"}<br>
+            Varices MI : ${d.varices ? "Oui" : "Non"}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function buildSymptomsSummary(d){
   const items = [];
   if (d.endo1) items.push("Règles très douloureuses");
@@ -1096,8 +1164,9 @@ const mainStatus = hypothesisMap[hypothesis]
 
         <div class="patientDetails">
           <div class="detailGrid">
+          ${quickClinicalView(d)}
             <div class="detailBox">
-              <h3>Questionnaire</h3>
+              <h3>Résultats complets questionnaire</h3>
               <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
               <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
               <div class="detailLine"><b>Description de la douleur :</b> ${safeList(d.painQuality)}</div>
