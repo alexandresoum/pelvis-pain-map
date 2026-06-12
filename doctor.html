@@ -1187,39 +1187,7 @@ const mainStatus = hypothesisMap[hypothesis]
         <div class="patientDetails">
           <div class="detailGrid">
          ${quickClinicalView(d)}
-
-<div class="detailBox compactDetailsBox">
-
-<details>
-
-<summary class="questionnaireSummary">
- Résultats complets questionnaire
-</summary>
-
-    <div style="margin-top:12px;">
-              <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
-              <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
-              <div class="detailLine"><b>Description de la douleur :</b> ${safeList(d.painQuality)}</div>
-              <div class="detailLine"><b>Depuis quand :</b> ${painDuration}</div>
-<div class="detailLine"><b>Impact fonctionnel :</b> ${functionalImpact}</div>
-              <div class="detailLine"><b>Symptômes associés :</b> ${buildSymptomsSummary(d)}</div>
-              <div class="detailLine"><b>Digestif :</b> ${buildDigestiveSummary(d)}</div>
-              <div class="detailLine"><b>Pesanteur plus marquée le soir :</b> ${d.congEvening ? "Oui" : "Non"}</div>
-<div class="detailLine"><b>Varices des membres inférieurs :</b> ${d.varices ? "Oui" : "Non"}</div>
-<div class="detailLine"><b>Douleur nocturne :</b> ${d.pudNight || "-"}</div>
-              <div class="detailLine"><b>Cycles hors contraception :</b> ${d.cycleRegularity || "-"}</div>
-              <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
-              <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
-              <div class="detailLine"><b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}</div>
-              
-
-              <div class="boxSectionTitle">Profils compatibles</div>
-              <div>${compatibleProfilesPills(d)}</div>
-              
-                </div>
-               </details>
-             
-            </div>
+        
 
             <div class="detailBox">
               <h3>Hypothèses et profils</h3>
@@ -1255,8 +1223,41 @@ const mainStatus = hypothesisMap[hypothesis]
                 <button class="dangerBtn" onclick='event.stopPropagation(); delRow("${r.id}", "${(d.prenom || "") + " " + (d.nom || "")}")'>Supprimer</button>
               </div>
             </div>
-          </div>
-        </div>
+            <div class="detailBox compactDetailsBox">
+
+<details>
+
+<summary class="questionnaireSummary">
+ Résultats complets questionnaire
+</summary>
+
+    <div style="margin-top:12px;">
+              <div class="detailLine"><b>Topo :</b> ${safeList(d.topo)}</div>
+              <div class="detailLine"><b>Quand :</b> ${safeList(d.time)}</div>
+              <div class="detailLine"><b>Description de la douleur :</b> ${safeList(d.painQuality)}</div>
+              <div class="detailLine"><b>Depuis quand :</b> ${painDuration}</div>
+<div class="detailLine"><b>Impact fonctionnel :</b> ${functionalImpact}</div>
+              <div class="detailLine"><b>Symptômes associés :</b> ${buildSymptomsSummary(d)}</div>
+              <div class="detailLine"><b>Digestif :</b> ${buildDigestiveSummary(d)}</div>
+              <div class="detailLine"><b>Pesanteur plus marquée le soir :</b> ${d.congEvening ? "Oui" : "Non"}</div>
+<div class="detailLine"><b>Varices des membres inférieurs :</b> ${d.varices ? "Oui" : "Non"}</div>
+<div class="detailLine"><b>Douleur nocturne :</b> ${d.pudNight || "-"}</div>
+              <div class="detailLine"><b>Cycles hors contraception :</b> ${d.cycleRegularity || "-"}</div>
+              <div class="detailLine"><b>Contraception :</b> ${(d.contraceptionType || "-")}${d.pillContinuous ? " (continu : " + d.pillContinuous + ")" : ""}</div>
+              <div class="detailLine"><b>Consultation antérieure :</b> ${d.consultation || "-"}</div>
+              <div class="detailLine"><b>Diagnostic évoqué :</b> ${d.previousDiagnosis || "-"}</div>
+              
+
+              <div class="boxSectionTitle">Profils compatibles</div>
+              <div>${compatibleProfilesPills(d)}</div>
+              
+                </div>
+               </details>
+             </div>
+            </div>
+
+           </div>
+        
       </div>
     `;
   }).join("");
