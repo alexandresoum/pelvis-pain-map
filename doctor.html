@@ -1001,7 +1001,7 @@ function toggleCard(id){
   } else {
     openCardId = id;
   }
-  renderList(getCurrentDisplayedList());
+  applyFiltersAndSort();
 }
 
 function renderList(list) {
