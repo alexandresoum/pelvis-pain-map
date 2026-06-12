@@ -1164,11 +1164,33 @@ function applyFiltersAndSort() {
   renderList(list);
 }
 
+  function updateMissingEchoCount(){
+  const missing = rows.filter(r => {
+    const echos = Array.isArray(r.data.diagnostic_echo) ? r.data.diagnostic_echo : [];
+    const scores = r.data.echoScores || {};
+    const hasEcho = echos.length > 0 || Object.values(scores).some(v => v && String(v).trim() !== "");
+    return !hasEcho;
+  }).length;
+
+  const total = rows.length;
+
+  document.title = missing > 0
+    ? `(${missing}) Dashboard praticien – V2`
+    : `Dashboard praticien – V2`;
+
+  const countEl = document.getElementById("missingEchoCount");
+  const detailEl = document.getElementById("missingEchoDetail");
+
+  if (countEl) countEl.innerText = missing;
+  if (detailEl) detailEl.innerText = `${missing} / ${total} dossier(s) sans résultat écho renseigné`;
+}
+  
 function loadRows() {
   db.collection("patients").where("practitionerId", "==", currentPractitioner).onSnapshot(s => {
     rows = [];
-    s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
-    applyFiltersAndSort();
+ s.forEach(doc => rows.push({ id: doc.id, data: doc.data() }));
+updateMissingEchoCount();
+applyFiltersAndSort();
   });
 }
 
