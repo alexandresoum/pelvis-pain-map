@@ -1194,7 +1194,7 @@ function applyFiltersAndSort() {
   const sort = document.getElementById("sortSelect").value;
   let list = [...rows];
 if (showMissingEchoOnly) {
-  list = list.filter(r => isMissingEcho(r.data));
+  list = list.filter(r => isMissingEcho(r.data) || r.id === openCardId);
 }
   
   if (q) {
