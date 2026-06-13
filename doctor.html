@@ -932,15 +932,17 @@ const badge = (text, x, yPos) => {
 
   const line = (label, value) => {
   const val = String(value || "-");
-  const labelLines = doc.splitTextToSize(label + " :", width);
+  const hasLabel = label !== null && label !== undefined && label !== "";
+const labelLines = hasLabel ? doc.splitTextToSize(label + " :", width) : [];
   const valueLines = doc.splitTextToSize(val, width - 6);
 
   checkPage((labelLines.length + valueLines.length) * 6 + 8);
-
+    
+ if (hasLabel) {
   doc.setFont(undefined, "bold");
   doc.text(labelLines, left, y);
   y += labelLines.length * 6;
-
+}
   doc.setFont(undefined, "normal");
   doc.text(valueLines, left + 4, y);
   y += valueLines.length * 6 + 5;
@@ -1069,7 +1071,7 @@ doc.setFont(undefined, "normal");
 
 if (echoDetails.length) {
   echoDetails.forEach(item => {
-    line("", item);
+    line(null, item);
   });
 } else {
   line("Résultat écho", safeList(d.diagnostic_echo));
