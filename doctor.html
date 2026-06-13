@@ -881,18 +881,23 @@ function buildPdf(doc, d) {
     }
   };
 
-  const title = (text) => {
-    checkPage(16);
-    doc.setFontSize(13);
-    doc.setFont(undefined, "bold");
-    doc.text(text, left, y);
-    y += 8;
-    doc.setDrawColor(220, 220, 220);
-    doc.line(left, y, left + width, y);
-    y += 7;
-    doc.setFont(undefined, "normal");
-    doc.setFontSize(10);
-  };
+ const title = (text) => {
+  checkPage(18);
+
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(left - 2, y - 6, width + 4, 13, 3, 3, "F");
+
+  doc.setFontSize(13);
+  doc.setFont(undefined, "bold");
+  doc.setTextColor(37, 99, 235);
+  doc.text(text, left, y + 2);
+
+  doc.setTextColor(17, 24, 39);
+  y += 16;
+
+  doc.setFont(undefined, "normal");
+  doc.setFontSize(10);
+};
 
   const line = (label, value) => {
   const val = String(value || "-");
@@ -925,15 +930,21 @@ function buildPdf(doc, d) {
   const compatible = compatibleProfiles(d).map(profileLabel);
   const allProfiles = profileEntries(d).map(profileLabel);
 
-  doc.setFontSize(18);
-  doc.setFont(undefined, "bold");
-  doc.text("Pelvis Pain Map", left, y);
-  y += 8;
+  // En-tête bleu
+doc.setFillColor(37, 99, 235);
+doc.rect(0, 0, 210, 30, "F");
 
-  doc.setFontSize(11);
-  doc.setFont(undefined, "normal");
-  doc.text("Compte-rendu questionnaire + échographie", left, y);
-  y += 12;
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(18);
+doc.setFont(undefined, "bold");
+doc.text("Pelvis Pain Map", 18, 13);
+
+doc.setFontSize(10);
+doc.setFont(undefined, "normal");
+doc.text("Compte-rendu questionnaire + échographie", 18, 22);
+
+doc.setTextColor(17, 24, 39);
+y = 42;
 
   title("1. Identité");
   line("Date", d.dateText);
