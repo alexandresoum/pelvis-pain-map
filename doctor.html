@@ -858,6 +858,7 @@ function pdfData(d) {
     varices: !!d.varices,
     pudNight: d.pudNight || "",
     diagnostic_echo: d.diagnostic_echo || [],
+    echoScores: d.echoScores || {},
     echoCertainty: d.echoCertainty || "Non renseigné",
     doctorComment: d.doctorComment || "",
     symptoms: buildSymptomsSummary(d),
@@ -915,17 +916,21 @@ function buildPdf(doc, d) {
   y += valueLines.length * 6 + 5;
 };
 
-  const paragraph = (label, value) => {
-    checkPage(16);
+ const paragraph = (label, value) => {
+  const s = doc.splitTextToSize(String(value || "-"), width);
+
+  checkPage((label ? 6 : 0) + s.length * 6 + 6);
+
+  if (label) {
     doc.setFont(undefined, "bold");
     doc.text(label, left, y);
     y += 6;
-    doc.setFont(undefined, "normal");
-    const s = doc.splitTextToSize(String(value || "-"), width);
-    checkPage(s.length * 6 + 3);
-    doc.text(s, left, y);
-    y += s.length * 6 + 5;
-  };
+  }
+
+  doc.setFont(undefined, "normal");
+  doc.text(s, left, y);
+  y += s.length * 6 + 5;
+};
 
   const compatible = compatibleProfiles(d).map(profileLabel);
   const allProfiles = profileEntries(d).map(profileLabel);
@@ -965,7 +970,13 @@ y = 42;
 
   title("3. Résultats échographiques");
   line("Résultats écho", safeList(d.diagnostic_echo));
-  line("Certitude", d.echoCertainty || "Non renseigné");
+  line(
+  "Détail écho",
+  Object.entries(d.echoScores || {})
+    .filter(([k, v]) => v)
+    .map(([k, v]) => `${k} : ${v}`)
+    .join(", ") || "-"
+);
   line(
     "Concordance clinico-écho",
     d.mainConcordance !== undefined
@@ -980,7 +991,7 @@ y = 42;
   );
 
   title("4. Commentaire praticien");
-  paragraph("Commentaire", d.doctorComment || "-");
+  paragraph("", d.doctorComment || "-");
 
   title("5. Lecture rapide");
   line("Quand", safeList(d.time));
