@@ -870,10 +870,16 @@ function pdfData(d) {
 function buildPdf(doc, d) {
   let y = 18;
   const line = (t) => {
-    const s = doc.splitTextToSize(t, 170);
-    doc.text(s, 20, y);
-    y += s.length * 7 + 3;
-  };
+  const s = doc.splitTextToSize(t, 170);
+
+  if (y + (s.length * 7) > 280) {
+    doc.addPage();
+    y = 18;
+  }
+
+  doc.text(s, 20, y);
+  y += s.length * 7 + 3;
+};
 
   const compatible = compatibleProfiles(d).map(profileLabel);
   const allProfiles = profileEntries(d).map(profileLabel);
