@@ -102,6 +102,8 @@
 <meta name="apple-mobile-web-app-title" content="PPM">
 </head>
 <body>
+<img id="ppmLogo" src="apple-touch-icon.png" style="display:none;">
+  
 <div id="pinOverlay" class="pinOverlay">
   <div class="pinCard">
     <h2>Accès Dashboard praticien</h2>
@@ -882,6 +884,7 @@ function pdfData(d) {
 function buildPdf(doc, d) {
   let y = 18;
 
+  const logo = document.getElementById("ppmLogoImg");
   const pageHeight = 285;
   const left = 18;
   const width = 174;
@@ -971,14 +974,21 @@ const labelLines = hasLabel ? doc.splitTextToSize(label + " :", width) : [];
 doc.setFillColor(37, 99, 235);
 doc.rect(0, 0, 210, 34, "F");
 
+const logo = document.getElementById("ppmLogo");
+if (logo) {
+  try {
+    doc.addImage(logo, "PNG", 6, 5, 22, 22);
+  } catch(e) {}
+}
+  
 doc.setTextColor(255, 255, 255);
 doc.setFontSize(19);
 doc.setFont(undefined, "bold");
-doc.text("Pelvis Pain Map", 18, 14);
+doc.text("Pelvis Pain Map", 32, 14);
 
 doc.setFontSize(10);
 doc.setFont(undefined, "normal");
-doc.text("Compte-rendu clinique questionnaire + échographie", 18, 23);
+doc.text("Compte-rendu clinique questionnaire + échographie", 33, 22);
 
 doc.setFontSize(9);
 doc.text("Document d’aide à l’orientation clinique — ne constitue pas un diagnostic automatisé", 18, 29);
