@@ -1056,13 +1056,17 @@ checkPage(40);
 doc.setFillColor(240,245,255);
 doc.roundedRect(left, y, width, 24, 3, 3, "F");
 
-doc.setFontSize(16);
-doc.setFont(undefined, "bold");
-doc.text(
-  echoDetails.length ? echoDetails.join(", ") : (safeList(d.diagnostic_echo) || "Non renseigné"),
-  left + 5,
-  y + 13
-);
+doc.setFontSize(13);
+doc.setFont(undefined, "normal");
+
+let yy = y + 18;
+
+echoDetails.forEach(item => {
+  doc.text("• " + item, left + 10, yy);
+  yy += 8;
+});
+
+y = yy + 10;
 
 y += 32;
 
