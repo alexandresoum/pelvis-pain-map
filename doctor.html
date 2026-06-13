@@ -1029,18 +1029,9 @@ doc.text("Orientation écho", left + 95, y + 28);
 doc.setFont(undefined, "normal");
 doc.text(d.echoPrimary || "-", left + 95, y + 36);
 
-doc.setFont(undefined, "bold");
-doc.text("Concordance clinico-écho", left, y + 50);
-doc.setFont(undefined, "normal");
-doc.text(
-  d.mainConcordance !== undefined
-    ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")"
-    : "-",
-  left + 60,
-  y + 50
-);
 
-y += 65;
+
+y += 55;
   
  title("3. Résultats échographiques");
 
@@ -1382,7 +1373,7 @@ const mainStatus = hypothesisMap[hypothesis]
               <div class="detailLine"><b>Confiance clinique :</b> ${confidence.level} (${confidence.score}/100)</div>
               <div class="detailLine"><b>Type douleur :</b> ${d.painTypePrimary || "-"}</div>
               <div class="detailLine"><b>Orientation écho :</b> ${d.echoPrimary || "-"}</div>
-              <div class="detailLine"><b>Concordance clinico-écho :</b> ${mainScore}% (${concordanceLabel(mainScore)})</div>
+             
               <div class="detailLine"><b>Profil pudendal :</b> ${pudendalStatus(d)}</div>
 
               <div class="boxSectionTitle">Profils détaillés</div>
@@ -1394,6 +1385,10 @@ const mainStatus = hypothesisMap[hypothesis]
               ${echoBox(r.id, d)}
               <div class="boxSectionTitle">Déjà cochés</div>
               <div>${pillsFromList(d.diagnostic_echo)}</div>
+              <div class="boxSectionTitle">Concordance clinico-écho</div>
+<div>
+  ${mainScore !== undefined ? mainScore + "% (" + concordanceLabel(mainScore) + ")" : "-"}
+</div>
 
              
             </div>
