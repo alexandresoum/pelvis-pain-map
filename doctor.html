@@ -1140,13 +1140,12 @@ for (let i = 1; i <= pageCount; i++) {
   doc.setFontSize(8);
   doc.setTextColor(120);
 
-  doc.text(
-    `Pelvis Pain Map –  `${(d.prenom || "")} ${(d.nom || "")}`.trim(),
-
-    10,
-    292
-  );
-
+ doc.text(
+  `Pelvis Pain Map - ${(d.prenom || "")} ${(d.nom || "")}`.trim(),
+  10,
+  292
+);
+  
   doc.text(
     `Page ${i}/${pageCount}`,
     200,
