@@ -996,16 +996,52 @@ doc.text(`${d.dob || "Non renseignée"} — ${ageFromDob(d.dob) || "?"} ans`, le
 doc.text(d.dateText || "-", left + 90, y + 32);
 
 y += 46;
-  title("2. Synthèse clinique");
-  line("Intensité", `${d.pain || "-"} /10`);
-  line("Hypothèse lésionnelle principale", d.hypothesisPrimary || "-");
-  line("Poids hypothèse", d.hypothesisPrimaryPct ? d.hypothesisPrimaryPct + "%" : "-");
-  line("Hypothèse lésionnelle secondaire", d.hypothesisSecondary || "-");
-  line("Poids hypothèse secondaire", d.hypothesisSecondaryPct ? d.hypothesisSecondaryPct + "%" : "-");
-  line("Confiance clinique", d.clinicalConclusion || "-");
-  line("Type de douleur dominant", d.painTypePrimary || "-");
-  line("Orientation échographique principale", d.echoPrimary || "-");
+  
+ title("2. Synthèse clinique");
 
+doc.setFillColor(248, 250, 252);
+doc.roundedRect(left - 2, y - 4, width + 4, 55, 3, 3, "F");
+
+doc.setFontSize(10);
+doc.setFont(undefined, "bold");
+
+doc.text("Hypothèse lésionnelle principale", left, y + 6);
+doc.setFont(undefined, "normal");
+doc.text(d.hypothesisPrimary || "-", left, y + 14);
+
+doc.setFont(undefined, "bold");
+doc.text("Hypothèse secondaire", left + 90, y + 6);
+doc.setFont(undefined, "normal");
+doc.text(d.hypothesisSecondary || "-", left + 90, y + 14);
+
+doc.setFont(undefined, "bold");
+doc.text("Intensité", left, y + 28);
+doc.setFont(undefined, "normal");
+doc.text(`${d.pain || "-"} /10`, left, y + 36);
+
+doc.setFont(undefined, "bold");
+doc.text("Type de douleur", left + 40, y + 28);
+doc.setFont(undefined, "normal");
+doc.text(d.painTypePrimary || "-", left + 40, y + 36);
+
+doc.setFont(undefined, "bold");
+doc.text("Orientation écho", left + 95, y + 28);
+doc.setFont(undefined, "normal");
+doc.text(d.echoPrimary || "-", left + 95, y + 36);
+
+doc.setFont(undefined, "bold");
+doc.text("Concordance clinico-écho", left, y + 50);
+doc.setFont(undefined, "normal");
+doc.text(
+  d.mainConcordance !== undefined
+    ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")"
+    : "-",
+  left + 60,
+  y + 50
+);
+
+y += 65;
+  
  title("3. Résultats échographiques");
 
 const echoLabels = {
