@@ -1033,7 +1033,7 @@ doc.text(d.echoPrimary || "-", left + 95, y + 36);
 
 y += 55;
   
- title("3. Résultats échographiques");
+title("3. Résultats échographiques");
 
 const echoLabels = {
   endometriose: "Endométriose",
@@ -1051,26 +1051,41 @@ const echoDetails = Object.entries(d.echoScores || {})
   .filter(([key, value]) => value && String(value).trim() !== "")
   .map(([key, value]) => `${echoLabels[key] || key} : ${value}`);
 
-if (echoDetails.length) {
-  echoDetails.forEach(item => line("•", item));
-} else {
-  line("Résultats écho", safeList(d.diagnostic_echo));
-}
-  line(
-    "Concordance clinico-écho",
+checkPage(40);
+
+doc.setFillColor(240,245,255);
+doc.roundedRect(left, y, width, 24, 3, 3, "F");
+
+doc.setFontSize(16);
+doc.setFont(undefined, "bold");
+doc.text(
+  echoDetails.length ? echoDetails.join(", ") : (safeList(d.diagnostic_echo) || "Non renseigné"),
+  left + 5,
+  y + 13
+);
+
+y += 32;
+
+doc.setFillColor(235,250,240);
+doc.roundedRect(left, y, width, 18, 3, 3, "F");
+
+doc.setFontSize(11);
+doc.setFont(undefined, "bold");
+doc.text(
+  "Concordance clinico-écho : " +
+  (
     d.mainConcordance !== undefined
       ? d.mainConcordance + "% (" + concordanceLabel(d.mainConcordance) + ")"
       : "-"
-  );
-  line(
-    "Score secondaire pudendal",
-    d.pudendalConcordance !== null && d.pudendalConcordance !== undefined
-      ? d.pudendalConcordance + "% (" + concordanceLabel(d.pudendalConcordance) + ")"
-      : "-"
-  );
+  ),
+  left + 5,
+  y + 12
+);
 
-  title("4. Commentaire praticien");
-  paragraph("", d.doctorComment || "-");
+y += 28;
+
+title("4. Commentaire praticien");
+paragraph("", d.doctorComment || "-");
 
   title("5. Lecture rapide");
   line("Quand", safeList(d.time));
