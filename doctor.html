@@ -874,6 +874,25 @@ function buildPdf(doc, d) {
   const pageHeight = 285;
   const left = 18;
   const width = 174;
+  const blue = [37, 99, 235];
+const lightBlue = [239, 246, 255];
+const grey = [248, 250, 252];
+
+const sectionBox = (height = 10) => {
+  checkPage(height + 4);
+  doc.setFillColor(...grey);
+  doc.roundedRect(left - 2, y - 5, width + 4, height, 3, 3, "F");
+};
+
+const badge = (text, x, yPos) => {
+  doc.setFillColor(239, 246, 255);
+  doc.setTextColor(37, 99, 235);
+  doc.roundedRect(x, yPos - 5, 45, 8, 2, 2, "F");
+  doc.setFontSize(9);
+  doc.setFont(undefined, "bold");
+  doc.text(text, x + 3, yPos);
+  doc.setTextColor(17, 24, 39);
+};
 
   const checkPage = (needed = 12) => {
     if (y + needed > pageHeight) {
@@ -935,29 +954,48 @@ function buildPdf(doc, d) {
   const compatible = compatibleProfiles(d).map(profileLabel);
   const allProfiles = profileEntries(d).map(profileLabel);
 
-  // En-tête bleu
+ // En-tête compte-rendu
 doc.setFillColor(37, 99, 235);
-doc.rect(0, 0, 210, 30, "F");
+doc.rect(0, 0, 210, 34, "F");
 
 doc.setTextColor(255, 255, 255);
-doc.setFontSize(18);
+doc.setFontSize(19);
 doc.setFont(undefined, "bold");
-doc.text("Pelvis Pain Map", 18, 13);
+doc.text("Pelvis Pain Map", 18, 14);
 
 doc.setFontSize(10);
 doc.setFont(undefined, "normal");
-doc.text("Compte-rendu questionnaire + échographie", 18, 22);
+doc.text("Compte-rendu clinique questionnaire + échographie", 18, 23);
+
+doc.setFontSize(9);
+doc.text("Document d’aide à l’orientation clinique — ne constitue pas un diagnostic automatisé", 18, 29);
 
 doc.setTextColor(17, 24, 39);
-y = 42;
+y = 44;
+  
+ title("1. Identité patient / praticien");
 
-  title("1. Identité");
-  line("Date", d.dateText);
-  line("Praticien", d.practitionerName);
-  line("Patiente", `${d.prenom || ""} ${d.nom || ""}`.trim());
-  line("Date de naissance", d.dob || "Non renseignée");
-  line("Âge", ageFromDob(d.dob) || "Non renseigné");
+doc.setFillColor(248, 250, 252);
+doc.roundedRect(left - 2, y - 4, width + 4, 38, 3, 3, "F");
 
+doc.setFontSize(10);
+doc.setFont(undefined, "bold");
+doc.text("Patiente", left, y + 4);
+doc.text("Praticien", left + 90, y + 4);
+
+doc.setFont(undefined, "normal");
+doc.text(`${d.prenom || ""} ${d.nom || ""}`.trim() || "-", left, y + 12);
+doc.text(d.practitionerName || "-", left + 90, y + 12);
+
+doc.setFont(undefined, "bold");
+doc.text("Date de naissance", left, y + 24);
+doc.text("Date du questionnaire", left + 90, y + 24);
+
+doc.setFont(undefined, "normal");
+doc.text(`${d.dob || "Non renseignée"} — ${ageFromDob(d.dob) || "?"} ans`, left, y + 32);
+doc.text(d.dateText || "-", left + 90, y + 32);
+
+y += 46;
   title("2. Synthèse clinique");
   line("Intensité", `${d.pain || "-"} /10`);
   line("Hypothèse lésionnelle principale", d.hypothesisPrimary || "-");
