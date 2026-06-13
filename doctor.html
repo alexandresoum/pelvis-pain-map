@@ -972,6 +972,10 @@ const labelLines = hasLabel ? doc.splitTextToSize(label + " :", width) : [];
 doc.setFillColor(37, 99, 235);
 doc.rect(0, 0, 210, 34, "F");
 
+  try {
+  doc.addImage(window.logoPpm, "PNG", 6, 5, 18, 18);
+} catch(e) {}
+
 
 doc.setTextColor(255, 255, 255);
 doc.setFontSize(19);
@@ -1131,6 +1135,9 @@ function generateDoctorPDF(data) {
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+
+  window.logoPpm = new Image();
+window.logoPpm.src = "apple-touch-icon.png";
 
   buildPdf(doc, d);
 
