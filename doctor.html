@@ -895,15 +895,20 @@ function buildPdf(doc, d) {
   };
 
   const line = (label, value) => {
-    const txt = `${label} : ${value || "-"}`;
-    const s = doc.splitTextToSize(txt, width);
-    checkPage(s.length * 6 + 3);
-    doc.setFont(undefined, "bold");
-    doc.text(label + " :", left, y);
-    doc.setFont(undefined, "normal");
-    doc.text(doc.splitTextToSize(String(value || "-"), 130), left + 55, y);
-    y += s.length * 6 + 3;
-  };
+  const val = String(value || "-");
+  const labelLines = doc.splitTextToSize(label + " :", width);
+  const valueLines = doc.splitTextToSize(val, width - 6);
+
+  checkPage((labelLines.length + valueLines.length) * 6 + 8);
+
+  doc.setFont(undefined, "bold");
+  doc.text(labelLines, left, y);
+  y += labelLines.length * 6;
+
+  doc.setFont(undefined, "normal");
+  doc.text(valueLines, left + 4, y);
+  y += valueLines.length * 6 + 5;
+};
 
   const paragraph = (label, value) => {
     checkPage(16);
