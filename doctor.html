@@ -968,15 +968,29 @@ y = 42;
   line("Type de douleur dominant", d.painTypePrimary || "-");
   line("Orientation échographique principale", d.echoPrimary || "-");
 
-  title("3. Résultats échographiques");
+ title("3. Résultats échographiques");
+
+const echoLabels = {
+  endometriose: "Endométriose",
+  adenomyose: "Adénomyose",
+  congestion: "Congestion pelvienne",
+  pudendal: "Névralgie pudendale",
+  opk: "OPK",
+  fibrome: "Fibrome",
+  normal: "Normal",
+  non_contributif: "Non contributif",
+  autre: "Autre"
+};
+
+const echoDetails = Object.entries(d.echoScores || {})
+  .filter(([key, value]) => value && String(value).trim() !== "")
+  .map(([key, value]) => `${echoLabels[key] || key} : ${value}`);
+
+if (echoDetails.length) {
+  echoDetails.forEach(item => line("•", item));
+} else {
   line("Résultats écho", safeList(d.diagnostic_echo));
-  line(
-  "Détail écho",
-  Object.entries(d.echoScores || {})
-    .filter(([k, v]) => v)
-    .map(([k, v]) => `${k} : ${v}`)
-    .join(", ") || "-"
-);
+}
   line(
     "Concordance clinico-écho",
     d.mainConcordance !== undefined
