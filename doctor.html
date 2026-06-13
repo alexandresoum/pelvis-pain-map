@@ -1002,10 +1002,15 @@ doc.setFont(undefined, "bold");
 doc.text("Patiente", left, y + 4);
 doc.text("Praticien", left + 90, y + 4);
 
-doc.setFont(undefined, "normal");
-doc.text(`${d.prenom || ""} ${d.nom || ""}`.trim() || "-", left, y + 12);
-doc.text(d.practitionerName || "-", left + 90, y + 12);
+doc.setFont(undefined, "bold");
+doc.setFontSize(13);
 
+doc.text(`${d.prenom || ""} ${d.nom || ""}`.trim() || "-", left, y + 12);
+
+doc.setFontSize(11);
+doc.setFont(undefined, "normal");
+
+doc.text(d.practitionerName || "-", left + 90, y + 12);
 doc.setFont(undefined, "bold");
 doc.text("Date de naissance", left, y + 24);
 doc.text("Date du questionnaire", left + 90, y + 24);
@@ -1126,7 +1131,28 @@ paragraph("", d.doctorComment || "-");
 
   title("7. Profils détaillés");
   paragraph("Profils compatibles", compatible.length ? compatible.join(", ") : "-");
- 
+
+  const pageCount = doc.internal.getNumberOfPages();
+
+for (let i = 1; i <= pageCount; i++) {
+  doc.setPage(i);
+
+  doc.setFontSize(8);
+  doc.setTextColor(120);
+
+  doc.text(
+    `Pelvis Pain Map – ${d.practitionerName || "Praticien"}`,
+    10,
+    292
+  );
+
+  doc.text(
+    `Page ${i}/${pageCount}`,
+    200,
+    292,
+    { align: "right" }
+  );
+}
 }
 
 function generateDoctorPDF(data) {
