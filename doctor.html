@@ -980,14 +980,21 @@ doc.rect(0, 0, 210, 34, "F");
 doc.setTextColor(255, 255, 255);
 doc.setFontSize(19);
 doc.setFont(undefined, "bold");
-doc.text("Pelvis Pain Map", 32, 14);
+doc.text("Pelvis Pain Map", 105, 14, { align: "center" });
 
-doc.setFontSize(10);
-doc.setFont(undefined, "normal");
-doc.text("Compte-rendu clinique questionnaire + échographie", 33, 22);
+doc.text(
+  "Compte-rendu clinique questionnaire + échographie",
+  105,
+  22,
+  { align: "center" }
+);
 
-doc.setFontSize(9);
-doc.text("Document d’aide à l’orientation clinique — ne constitue pas un diagnostic automatisé", 18, 29);
+doc.text(
+  "Document d'aide à l'orientation clinique — ne constitue pas un diagnostic automatisé",
+  105,
+  29,
+  { align: "center" }
+);
 
 doc.setTextColor(17, 24, 39);
 y = 44;
