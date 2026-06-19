@@ -379,8 +379,13 @@ function getHypothesisInterpretation(d){
 }
 
 function normalizeLevel(v){
-  if (!v) return "";
-  if (v === "possible") return "modéré";
+  const x = String(v || "").toLowerCase().trim();
+
+  if (!x) return "";
+  if (x === "possible") return "modéré";
+  if (x === "probable") return "modéré";
+  if (x === "fort") return "élevé";
+
   return v;
 }
 
@@ -732,13 +737,15 @@ const echoConfirmedData = {
   document.getElementById("statAge").innerText = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : "0";
   document.getElementById("statPain").innerText = painAvg + "/10";
   document.getElementById("statDigestif").innerText = digestifPresent;
-  document.getElementById("statTopTime").innerText = topLabel(times);
+  
   document.getElementById("statEndo").innerText = endoCompat;
   document.getElementById("statCong").innerText = congCompat;
   document.getElementById("statOpk").innerText = opkCompat;
   document.getElementById("statFibrome").innerText = fibromeCompat;
-  document.getElementById("statContraception").innerText = topLabel(contraception);
-  document.getElementById("statTopDigestif").innerText = topLabel(digestif);
+  // document.getElementById("statTopTime").innerText = topLabel(times);
+// document.getElementById("statContraception").innerText = topLabel(contraception);
+// document.getElementById("statTopDigestif").innerText = topLabel(digestif);
+
   document.getElementById("statTopEcho").innerText = topLabel(echos);
 
   document.getElementById("statExactMatch").innerText = exactMatch.rate + "%";
