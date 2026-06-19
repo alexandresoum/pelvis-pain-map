@@ -104,67 +104,64 @@
   <button onclick="setStatsFilter('V2')">Stats V2</button>
 </div>
 
-    <div class="statsGrid">
-      <div class="statCard">
-        <div class="statLabel">Nombre d’échos</div>
-        <div class="statValue big" id="statEchos">0</div>
-      </div>
+   <div class="statsGrid">
 
-      <div class="statCard">
-        <div class="statLabel">Âge moyen</div>
-        <div class="statValue big" id="statAge">0</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel"> Dossiers analysés</div>
+    <div class="statValue big" id="statEchos">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Douleur moyenne</div>
-        <div class="statValue big" id="statPain">0/10</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel"> Douleur moyenne</div>
+    <div class="statValue big" id="statPain">0/10</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Digestif présent</div>
-        <div class="statValue big" id="statDigestif">0</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel"> Âge moyen</div>
+    <div class="statValue big" id="statAge">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Top temporalité</div>
-        <div class="statValue small" id="statTopTime">-</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel"> Concordance globale</div>
+    <div class="statValue big" id="doctorConcordance">0%</div>
+    <div class="statSub" id="doctorConcordanceLabel">-</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Endométriose compatible</div>
-        <div class="statValue big" id="statEndo">0</div>
-      </div>
+</div>
 
-      <div class="statCard">
-        <div class="statLabel">Congestion compatible</div>
-        <div class="statValue big" id="statCong">0</div>
-      </div>
+<div class="statsGrid">
 
-      <div class="statCard">
-        <div class="statLabel">OPK compatible</div>
-        <div class="statValue big" id="statOpk">0</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel">Endométriose compatible</div>
+    <div class="statValue big" id="statEndo">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Fibrome compatible</div>
-        <div class="statValue big" id="statFibrome">0</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel">Congestion compatible</div>
+    <div class="statValue big" id="statCong">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Contraception la plus fréquente</div>
-        <div class="statValue small" id="statContraception">-</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel">OPK compatible</div>
+    <div class="statValue big" id="statOpk">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Top digestif</div>
-        <div class="statValue small" id="statTopDigestif">-</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel">Fibrome compatible</div>
+    <div class="statValue big" id="statFibrome">0</div>
+  </div>
 
-      <div class="statCard">
-        <div class="statLabel">Top résultat écho</div>
-        <div class="statValue small" id="statTopEcho">-</div>
-      </div>
+  <div class="statCard">
+    <div class="statLabel">Digestif présent</div>
+    <div class="statValue big" id="statDigestif">0</div>
+  </div>
 
+  <div class="statCard">
+    <div class="statLabel">Top résultat écho</div>
+    <div class="statValue small" id="statTopEcho">-</div>
+  </div>
+
+</div>
       <div class="statCard">
         <div class="statLabel">Exact match</div>
         <div class="statValue big" id="statExactMatch">0%</div>
@@ -303,6 +300,18 @@
         </div>
       </div>
     </div>
+
+  <div class="card">
+  <h2>Répartition des profils Pelvis Pain Map</h2>
+  <p class="muted">Profils compatibles issus du questionnaire.</p>
+  <canvas id="profileChart"></canvas>
+</div>
+
+  <div class="card">
+  <h2>PPM ↔ Échographie</h2>
+  <p class="muted">Comparaison entre profils compatibles au questionnaire et résultats échographiques renseignés.</p>
+  <canvas id="ppmEchoChart"></canvas>
+</div>
 
     <div class="chartGrid">
       <div class="card">
@@ -600,6 +609,41 @@ function draw(id, type, labels, data){
   });
 }
 
+  function drawGroupedBar(id, labels, data1, data2){
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (charts[id]) charts[id].destroy();
+
+  charts[id] = new Chart(el, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "PPM compatible",
+          data: data1
+        },
+        {
+          label: "Écho confirmée",
+          data: data2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
 function updateHeader(){
   document.getElementById("subtitle").innerText = LABELS[currentPractitioner] || "";
 }
@@ -656,6 +700,30 @@ function updateStats(){
     return x === "modéré" || x === "élevé";
   }).length;
 
+  const profileData = {
+  "Endométriose": endoCompat,
+  "Congestion": congCompat,
+  "OPK": opkCompat,
+  "Fibrome": fibromeCompat,
+  "Adénomyose": docs.filter(d=>{
+    const x = normalizeLevel(d.adenomyose);
+    return x === "modéré" || x === "élevé";
+  }).length,
+  "Pudendal": docs.filter(d=>{
+    const x = normalizeLevel(d.pudendal);
+    return x === "modéré" || x === "élevé";
+  }).length
+};
+
+const echoConfirmedData = {
+  "Endométriose": docs.filter(d => getEchoPositive(d, "Endométriose")).length,
+  "Congestion": docs.filter(d => getEchoPositive(d, "Congestion pelvienne")).length,
+  "OPK": docs.filter(d => getEchoPositive(d, "OPK")).length,
+  "Fibrome": docs.filter(d => getEchoPositive(d, "Fibrome")).length,
+  "Adénomyose": docs.filter(d => getEchoPositive(d, "Adénomyose")).length,
+  "Pudendal": docs.filter(d => getEchoPositive(d, "Névralgie pudendale")).length
+};  
+
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
   const compatible70 = computeCompatible70(docs);
@@ -693,6 +761,8 @@ function updateStats(){
 
   updateDiagnosticMetrics(docs);
 
+  draw("profileChart", "bar", Object.keys(profileData), Object.values(profileData));
+  drawGroupedBar("ppmEchoChart", Object.keys(profileData), Object.values(profileData), Object.values(echoConfirmedData));
   draw("topoChart", "bar", Object.keys(topo), Object.values(topo));
   draw("timeChart", "bar", Object.keys(times), Object.values(times));
   draw("digestiveChart", "pie", Object.keys(digestif), Object.values(digestif));
