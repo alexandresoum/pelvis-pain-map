@@ -82,10 +82,15 @@
       color:#6b7280;
       font-size:14px;
     }
-    canvas{
-      max-wth:100%;
-      min-height:280px;
-    }
+  .chartBox{
+  height:320px;
+  position:relative;
+}
+
+.chartBox canvas{
+  width:100% !important;
+  height:100% !important;
+}
   </style>
 </head>
 <body>
@@ -304,13 +309,17 @@
   <div class="card">
   <h2>Répartition des profils Pelvis Pain Map</h2>
   <p class="muted">Profils compatibles issus du questionnaire.</p>
+ <div class="chartBox">
   <canvas id="profileChart"></canvas>
+</div>
 </div>
 
   <div class="card">
   <h2>PPM ↔ Échographie</h2>
   <p class="muted">Comparaison entre profils compatibles au questionnaire et résultats échographiques renseignés.</p>
+  <div class="chartBox">
   <canvas id="ppmEchoChart"></canvas>
+</div>
 </div>
 
     <div class="chartGrid">
