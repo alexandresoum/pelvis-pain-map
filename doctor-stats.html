@@ -188,8 +188,8 @@
     </div>
 
     <div class="card">
-  <h2>Concordance questionnaire ↔ échographie</h2>
-  <p class="muted">Cohérence entre hypothèses questionnaire et résultats échographiques.</p>
+  <h2>Détection par pathologie</h2>
+  <p class="muted">Parmi les patientes positives à l'échographie, proportion détectée par le questionnaire.</p>
 
   <div class="statsGrid" style="margin-top:16px;">
 
@@ -198,31 +198,37 @@
     <div class="statCard">
       <div class="statLabel">Endométriose</div>
       <div class="statValue big" id="doctorEndo">0%</div>
+      <div class="statSub" id="doctorEndoDetail">0 / 0 détectées</div>
     </div>
 
     <div class="statCard">
       <div class="statLabel">Adénomyose</div>
       <div class="statValue big" id="doctorAdeno">0%</div>
+      <div class="statSub" id="doctorAdenoDetail">0 / 0 détectées</div>
     </div>
 
     <div class="statCard">
       <div class="statLabel">Congestion pelvienne</div>
       <div class="statValue big" id="doctorCong">0%</div>
+      <div class="statSub" id="doctorCongDetail">0 / 0 détectées</div>
     </div>
 
     <div class="statCard">
       <div class="statLabel">Névralgie pudendale</div>
       <div class="statValue big" id="doctorPud">0%</div>
+      <div class="statSub" id="doctorPudDetail">0 / 0 détectées</div>
     </div>
 
     <div class="statCard">
       <div class="statLabel">OPK</div>
       <div class="statValue big" id="doctorOpk">0%</div>
+      <div class="statSub" id="doctorOpkDetail">0 / 0 détectées</div>
     </div>
 
     <div class="statCard">
       <div class="statLabel">Fibrome</div>
       <div class="statValue big" id="doctorFib">0%</div>
+      <div class="statSub" id="doctorFibDetail">0 / 0 détectées</div>
     </div>
 
   </div>
@@ -910,37 +916,27 @@ function concordanceLabel(score){
   return "faible";
 }
 
-function concordanceByPathology(docs, questionKey, echoKey){
-  if (!docs || !docs.length) return 0;
-
-  let total = 0;
-  let concordant = 0;
+function detectionByPathology(docs, questionKey, echoKey){
+  let echoPositive = 0;
+  let detected = 0;
 
   docs.forEach(d => {
-    const validEchos = getValidEchos(d);
-    if (!validEchos.length) return;
+    const hasEcho = getEchoPositive(d, echoKey);
+    if (!hasEcho) return;
 
-    total++;
+    echoPositive++;
 
-    const profiles = getProfileList(d).filter(p => p.pct > 0);
-    const top1 = profiles[0]?.name || "";
-    const top2 = profiles[1]?.name || "";
-    const pct = getPctForPathology(d, questionKey);
+    const level = normalizeLevel(d[questionKey]);
+    const isDetected = level === "modéré" || level === "élevé";
 
-    const echoHasPathology = validEchos.includes(echoKey);
-
-    if (!echoHasPathology) return;
-
-    if (
-      echoKey === top1 ||
-      echoKey === top2 ||
-      pct >= 40
-    ) {
-      concordant++;
-    }
+    if (isDetected) detected++;
   });
 
-  return total ? Math.round((concordant / total) * 100) : 0;
+  return {
+    detected,
+    echoPositive,
+    rate: echoPositive ? Math.round((detected / echoPositive) * 100) : 0
+  };
 }
 
 function updateDoctorConcordanceStats(){
@@ -957,22 +953,29 @@ const globalScore = validScores.length
   ? Math.round(validScores.reduce((sum, v) => sum + v, 0) / validScores.length)
   : 0;
 
-  const endo = concordanceByPathology(docs, "endometriose", "Endométriose");
-  const adeno = concordanceByPathology(docs, "adenomyose", "Adénomyose");
-  const cong = concordanceByPathology(docs, "congestion", "Congestion pelvienne");
-  const pud = concordanceByPathology(docs, "pudendal", "Névralgie pudendale");
-  const opk = concordanceByPathology(docs, "opk", "OPK");
-  const fib = concordanceByPathology(docs, "fibrome", "Fibrome");
+  const endo = detectionByPathology(docs, "endometriose", "Endométriose");
+const adeno = detectionByPathology(docs, "adenomyose", "Adénomyose");
+const cong = detectionByPathology(docs, "congestion", "Congestion pelvienne");
+const pud = detectionByPathology(docs, "pudendal", "Névralgie pudendale");
+const opk = detectionByPathology(docs, "opk", "OPK");
+const fib = detectionByPathology(docs, "fibrome", "Fibrome");
 
-  document.getElementById("doctorConcordance").innerText = globalScore + "%";
-  document.getElementById("doctorConcordanceLabel").innerText = concordanceLabel(globalScore);
+document.getElementById("doctorConcordance").innerText = globalScore + "%";
+document.getElementById("doctorConcordanceLabel").innerText = concordanceLabel(globalScore);
 
-  document.getElementById("doctorEndo").innerText = endo + "%";
-  document.getElementById("doctorAdeno").innerText = adeno + "%";
-  document.getElementById("doctorCong").innerText = cong + "%";
-  document.getElementById("doctorPud").innerText = pud + "%";
-  document.getElementById("doctorOpk").innerText = opk + "%";
-  document.getElementById("doctorFib").innerText = fib + "%";
+document.getElementById("doctorEndo").innerText = endo.rate + "%";
+document.getElementById("doctorAdeno").innerText = adeno.rate + "%";
+document.getElementById("doctorCong").innerText = cong.rate + "%";
+document.getElementById("doctorPud").innerText = pud.rate + "%";
+document.getElementById("doctorOpk").innerText = opk.rate + "%";
+document.getElementById("doctorFib").innerText = fib.rate + "%";
+
+document.getElementById("doctorEndoDetail").innerText = endo.detected + " / " + endo.echoPositive + " détectées";
+document.getElementById("doctorAdenoDetail").innerText = adeno.detected + " / " + adeno.echoPositive + " détectées";
+document.getElementById("doctorCongDetail").innerText = cong.detected + " / " + cong.echoPositive + " détectées";
+document.getElementById("doctorPudDetail").innerText = pud.detected + " / " + pud.echoPositive + " détectées";
+document.getElementById("doctorOpkDetail").innerText = opk.detected + " / " + opk.echoPositive + " détectées";
+document.getElementById("doctorFibDetail").innerText = fib.detected + " / " + fib.echoPositive + " détectées";
 }
 
   function loadRows(){
