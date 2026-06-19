@@ -637,11 +637,11 @@ function draw(id, type, labels, data){
       labels,
       datasets: [
         {
-          label: "PPM compatible",
+          label: "Echo positive",
           data: data1
         },
         {
-          label: "Écho confirmée",
+          label: "détectée par PPM",
           data: data2
         }
       ]
@@ -732,14 +732,14 @@ function updateStats(){
   }).length
 };
 
-const echoConfirmedData = {
-  "Endométriose": docs.filter(d => getEchoPositive(d, "Endométriose")).length,
-  "Congestion": docs.filter(d => getEchoPositive(d, "Congestion pelvienne")).length,
-  "OPK": docs.filter(d => getEchoPositive(d, "OPK")).length,
-  "Fibrome": docs.filter(d => getEchoPositive(d, "Fibrome")).length,
-  "Adénomyose": docs.filter(d => getEchoPositive(d, "Adénomyose")).length,
-  "Pudendal": docs.filter(d => getEchoPositive(d, "Névralgie pudendale")).length
-};  
+const detectionData = {
+  "Endométriose": detectionByPathology(docs, "endometriose", "Endométriose"),
+  "Adénomyose": detectionByPathology(docs, "adenomyose", "Adénomyose"),
+  "Congestion": detectionByPathology(docs, "congestion", "Congestion pelvienne"),
+  "Pudendal": detectionByPathology(docs, "pudendal", "Névralgie pudendale"),
+  "OPK": detectionByPathology(docs, "opk", "OPK"),
+  "Fibrome": detectionByPathology(docs, "fibrome", "Fibrome")
+};
 
   const exactMatch = computeExactMatch(docs);
   const top2Match = computeTop2Match(docs);
@@ -781,7 +781,13 @@ const echoConfirmedData = {
   updateDiagnosticMetrics(docs);
 
   draw("profileChart", "bar", Object.keys(profileData), Object.values(profileData));
-  drawGroupedBar("ppmEchoChart", Object.keys(profileData), Object.values(profileData), Object.values(echoConfirmedData));
+ drawGroupedBar(
+  "ppmEchoChart",
+  Object.keys(detectionData),
+  Object.values(detectionData).map(x => x.echoPositive),
+  Object.values(detectionData).map(x => x.detected)
+);
+
   draw("topoChart", "bar", Object.keys(topo), Object.values(topo));
   draw("timeChart", "bar", Object.keys(times), Object.values(times));
   draw("digestiveChart", "pie", Object.keys(digestif), Object.values(digestif));
