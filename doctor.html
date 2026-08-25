@@ -475,11 +475,16 @@ function scoreFromEchoLevel(level){
 
 function getPathologyConcordancePoints(data, questionKey, echoKey){
   const pct = getPctForPathology(data, questionKey);
-  const qScore = scoreFromQuestionnairePct(pct);
 
-  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+  const echoList = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
+
   const echoLevel = data.echoScores?.[echoKey] || "";
-  let eScore = scoreFromEchoLevel(echoLevel);
+
+  const echoPositive =
+    echoList.includes(echoKey) ||
+    !!echoLevel;
 
   const hasMorphologicEcho = echoList.some(x =>
     x === "Endométriose" ||
@@ -493,54 +498,117 @@ function getPathologyConcordancePoints(data, questionKey, echoKey){
   const hasNonContributif = echoList.includes("Non contributif");
   const hasNormal = echoList.includes("Normal");
 
-  // Ancien dossier : pathologie cochée mais sans niveau suspect/évocateur/typique
-  if (!eScore && echoList.includes(echoKey)) {
-    eScore = 2; // par défaut : évocateur
-  }
 
-  // Écho non contributive isolée
+  // =========================================================
+  // 1. ÉCHO NON CONTRIBUTIVE
+  // =========================================================
+
   if (hasNonContributif && !hasMorphologicEcho) {
-    if (qScore === 0) return 0;
-    return 1;
+    return null;
   }
 
-  // Écho normale isolée
+
+  // =========================================================
+  // 2. ÉCHO NORMALE
+  // =========================================================
+
   if (hasNormal && !hasMorphologicEcho && !hasNonContributif) {
-    if (qScore === 0) return 3;
-    if (qScore === 1) return 1;
+
+    // Questionnaire très évocateur mais écho normale
+    if (pct >= 60) return 0;
+
+    // Signal intermédiaire
+    if (pct >= 30) return 1;
+
+    // Signal faible + écho normale = cohérent
+    return 3;
+  }
+
+
+  // =========================================================
+  // 3. PAS DE DONNÉE ÉCHOGRAPHIQUE
+  // =========================================================
+
+  if (!echoList.length && !echoLevel) {
+    return null;
+  }
+
+
+  // =========================================================
+  // 4. PATHOLOGIE NON RETROUVÉE À L'ÉCHO
+  // =========================================================
+
+  if (!echoPositive) {
+
+    if (pct >= 60) return 0;
+
+    if (pct >= 45) return 1;
+
+    if (pct >= 30) return 2;
+
+    // Signal faible non retrouvé :
+    // on ne le considère pas comme une vraie discordance.
+    return 3;
+  }
+
+
+  // =========================================================
+  // 5. PATHOLOGIE RETROUVÉE À L'ÉCHO
+  // comparaison de l'intensité questionnaire ↔ échographie
+  // =========================================================
+
+  let questionnaireLevel = 0;
+
+  if (pct >= 60) questionnaireLevel = 3;       // fort
+  else if (pct >= 45) questionnaireLevel = 2;  // probable
+  else if (pct >= 30) questionnaireLevel = 1;  // possible
+  else if (pct >= 20) questionnaireLevel = 1;  // signal faible
+  else questionnaireLevel = 0;
+
+
+  let echoScore = 0;
+
+  const level = String(echoLevel || "").toLowerCase().trim();
+
+  if (level === "possible" || level === "suspect") {
+    echoScore = 1;
+  }
+
+  else if (
+    level === "probable" ||
+    level === "évocateur" ||
+    level === "evocateur"
+  ) {
+    echoScore = 2;
+  }
+
+  else if (
+    level === "fort" ||
+    level === "typique"
+  ) {
+    echoScore = 3;
+  }
+
+  // Compatibilité anciens dossiers :
+  // diagnostic coché mais sans niveau échographique.
+  if (!echoScore && echoList.includes(echoKey)) {
+    echoScore = 2;
+  }
+
+
+  // Aucun signal questionnaire mais anomalie écho
+  if (questionnaireLevel === 0) {
     return 0;
   }
 
-  // Aucune donnée écho
-  if (!echoList.length) {
-    if (qScore > 0) return 1;
-    return 0;
-  }
 
-  // Pas de signal clinique et pas de signal écho pour cette pathologie
-  if (qScore === 0 && eScore === 0) {
-    return 0;
-  }
+  // Comparaison des deux niveaux
+  const difference = Math.abs(questionnaireLevel - echoScore);
 
-  // Signal clinique sans confirmation écho
-  if (qScore > 0 && eScore === 0) {
-    if (qScore === 1) return 1;
-    return 0;
-  }
+  if (difference === 0) return 3;
+  if (difference === 1) return 2;
 
-  // Écho positive mais questionnaire non évocateur
-  if (qScore === 0 && eScore > 0) {
-    return 0;
-  }
-
-  // Les deux sont positifs : on pondère selon l'écart d'intensité
-  const diff = Math.abs(qScore - eScore);
-
-  if (diff === 0) return 3; // suspect/suspect, évocateur/évocateur, typique/typique
-  if (diff === 1) return 2; // proche
-  if (diff === 2) return 1; // discordance partielle
-
-  return 0;
+  return 1;
 }
   
 function levelToScore(level){
@@ -599,11 +667,20 @@ function patientMainConcordance(data){
   let max = 0;
 
   diagnostics.forEach(({ questionKey, echoKey }) => {
-    if (!isActiveDiagnostic(data, questionKey, echoKey)) return;
+  if (!isActiveDiagnostic(data, questionKey, echoKey)) return;
 
-    total += getPathologyConcordancePoints(data, questionKey, echoKey);
-    max += 3;
-  });
+  const points = getPathologyConcordancePoints(
+    data,
+    questionKey,
+    echoKey
+  );
+
+  // null = donnée non exploitable pour la concordance
+  if (points === null) return;
+
+  total += points;
+  max += 3;
+});
 
   // Cas particulier : aucun diagnostic actif au questionnaire
   // et aucun diagnostic morphologique à l’écho => concordance normale
