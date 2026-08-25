@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="firebase-config.js"></script>
-  <style>F
+  <style>
     .statsGrid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -50,8 +50,8 @@
       font-size:13px;
       color:#6b7280;
     }
-    .chartGr{
-      display:gr;
+    .chartGrid{
+      display:grid;
       gr-template-columns:repeat(auto-fit,minmax(320px,1fr));
       gap:18px;
       margin-top:18px;
@@ -823,9 +823,16 @@ function concordanceScore(questionLevel, echoLevel){
 
  function getPathologyConcordancePoints(data, questionKey, echoKey){
   const pct = getPctForPathology(data, questionKey);
-  const echoList = Array.isArray(data.diagnostic_echo) ? data.diagnostic_echo : [];
+
+  const echoList = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
+
   const echoLevel = data.echoScores?.[echoKey] || "";
-  const echoPositive = echoList.includes(echoKey) || isEchoLevelPositive(echoLevel);
+
+  const echoPositive =
+    echoList.includes(echoKey) ||
+    !!echoLevel;
 
   const hasMorphologicEcho = echoList.some(x =>
     x === "Endométriose" ||
@@ -839,37 +846,75 @@ function concordanceScore(questionLevel, echoLevel){
   const hasNonContributif = echoList.includes("Non contributif");
   const hasNormal = echoList.includes("Normal");
 
-  // Écho non contributive seule : on ne doit pas gonfler la concordance
+  // Écho non contributive
   if (hasNonContributif && !hasMorphologicEcho) {
-    return 0;
+    return null;
   }
 
-  // Écho normale seule
+  // Écho normale
   if (hasNormal && !hasMorphologicEcho && !hasNonContributif) {
     if (pct >= 60) return 0;
-    if (pct >= 40) return 1;
-    if (pct > 0) return 1;
+    if (pct >= 30) return 1;
     return 3;
   }
 
-  // Aucune donnée écho
-  if (!echoList.length) {
-    return 0;
+  // Pas de donnée échographique
+  if (!echoList.length && !echoLevel) {
+    return null;
   }
 
-  // Une autre anomalie écho est présente, mais pas cette pathologie
+  // Pathologie non retrouvée
   if (!echoPositive) {
     if (pct >= 60) return 0;
-    if (pct >= 40) return 1;
-    if (pct > 0) return 1;
+    if (pct >= 45) return 1;
+    if (pct >= 30) return 2;
+    return 3;
+  }
+
+  // Pathologie retrouvée : niveau questionnaire
+  let questionnaireLevel = 0;
+
+  if (pct >= 60) questionnaireLevel = 3;
+  else if (pct >= 45) questionnaireLevel = 2;
+  else if (pct >= 30) questionnaireLevel = 1;
+  else if (pct >= 20) questionnaireLevel = 1;
+
+  // Niveau échographique
+  let echoScore = 0;
+  const level = String(echoLevel || "").toLowerCase().trim();
+
+  if (level === "possible" || level === "suspect") {
+    echoScore = 1;
+  }
+  else if (
+    level === "probable" ||
+    level === "évocateur" ||
+    level === "evocateur"
+  ) {
+    echoScore = 2;
+  }
+  else if (
+    level === "fort" ||
+    level === "typique"
+  ) {
+    echoScore = 3;
+  }
+
+  // Anciens dossiers : diagnostic présent mais pas encore coté
+  if (!echoScore && echoList.includes(echoKey)) {
+    echoScore = 2;
+  }
+
+  if (questionnaireLevel === 0) {
     return 0;
   }
 
-  // Cette pathologie est retrouvée à l’écho
-  if (pct === 0) return 0;
-  if (pct < 20) return 0;
-  if (pct < 60) return 2;
-  return 3;
+  const difference = Math.abs(questionnaireLevel - echoScore);
+
+  if (difference === 0) return 3;
+  if (difference === 1) return 2;
+
+  return 1;
 }
 
 function isActiveDiagnostic(data, questionKey, echoKey){
@@ -886,33 +931,100 @@ function isActiveDiagnostic(data, questionKey, echoKey){
   // - OU diagnostic écho présent
   return pct >= 60 || echoPositive;
 }
+
+
+  function mainHypothesisMatchesEcho(data){
+  const hypo = getHypothesisInterpretation(data).label;
+
+  const echoList = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
+
+  return !!hypo &&
+    hypo !== "Profil non concluant" &&
+    echoList.includes(hypo);
+}
   
 function patientConcordance(data){
-  const validEchos = getValidEchos(data);
-  if (!validEchos.length) return null;
 
-  const profiles = getProfileList(data).filter(p => p.pct > 0);
-  if (!profiles.length) return null;
+  const echoList = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
 
-  const top1 = profiles[0]?.name || "";
-  const top2 = profiles[1]?.name || "";
+  const echoScores = data.echoScores || {};
 
-  let concordant = false;
+  const hasAnyEchoData =
+    echoList.length > 0 ||
+    Object.values(echoScores).some(v =>
+      v && String(v).trim() !== ""
+    );
 
-  validEchos.forEach(echoName => {
-    const echoProfile = profiles.find(p => p.name === echoName);
-    const echoPct = echoProfile ? Number(echoProfile.pct || 0) : 0;
+  // Pas encore d'écho renseignée :
+  // le dossier ne participe PAS à la concordance
+  if (!hasAnyEchoData) {
+    return null;
+  }
 
-    if (
-      echoName === top1 ||
-      echoName === top2 ||
-      echoPct >= 40
-    ) {
-      concordant = true;
-    }
+  const diagnostics = [
+    { questionKey: "endometriose", echoKey: "Endométriose" },
+    { questionKey: "adenomyose", echoKey: "Adénomyose" },
+    { questionKey: "congestion", echoKey: "Congestion pelvienne" },
+    { questionKey: "opk", echoKey: "OPK" },
+    { questionKey: "fibrome", echoKey: "Fibrome" }
+  ];
+
+  let total = 0;
+  let max = 0;
+
+  diagnostics.forEach(({ questionKey, echoKey }) => {
+
+    if (!isActiveDiagnostic(data, questionKey, echoKey)) return;
+
+    const points = getPathologyConcordancePoints(
+      data,
+      questionKey,
+      echoKey
+    );
+
+    if (points === null) return;
+
+    total += points;
+    max += 3;
   });
 
-  return concordant ? 100 : 0;
+  if (max === 0) {
+
+    const hasMorphologicEcho = echoList.some(x =>
+      x === "Endométriose" ||
+      x === "Adénomyose" ||
+      x === "Congestion pelvienne" ||
+      x === "OPK" ||
+      x === "Fibrome"
+    );
+
+    const isNormalEcho =
+      echoList.includes("Normal");
+
+    if (!hasMorphologicEcho && isNormalEcho) {
+      return 100;
+    }
+
+    return 0;
+  }
+
+  let score = Math.round((total / max) * 100);
+
+  // Même plancher que doctor.html lorsque
+  // l'hypothèse principale est effectivement retrouvée
+  const h = getHypothesisInterpretation(data);
+
+  if (mainHypothesisMatchesEcho(data)) {
+    if (h.level === "fort") score = Math.max(score, 85);
+    else if (h.level === "probable") score = Math.max(score, 70);
+    else if (h.level === "possible") score = Math.max(score, 60);
+  }
+
+  return score;
 }
   
 function concordanceLabel(score){
