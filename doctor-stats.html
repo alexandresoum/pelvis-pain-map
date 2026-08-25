@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Stats praticien</title>
 
   <link rel="stylesheet" href="style.css">
@@ -12,489 +14,1123 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="firebase-config.js"></script>
 
-  <style>
-    .statsGrid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
-      margin:18px 0 24px 0;
-    }
 
-    .statCard{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 2px 10px rgba(0,0,0,.06);
-    }
+<style>
 
-    .statLabel{
-      font-size:14px;
-      color:#6b7280;
-      margin-bottom:8px;
-    }
+.statsGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+  margin:18px 0 24px 0;
+}
 
-    .statValue{
-      font-size:26px;
-      font-weight:700;
-      color:#24324a;
-      line-height:1.2;
-      word-break:break-word;
-    }
+.statCard{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
 
-    .statValue.big{
-      font-size:34px;
-      font-weight:800;
-      line-height:1.1;
-    }
+.statLabel{
+  font-size:14px;
+  color:#6b7280;
+  margin-bottom:8px;
+}
 
-    .statValue.small{
-      font-size:20px;
-      font-weight:600;
-      line-height:1.25;
-    }
+.statValue{
+  font-size:26px;
+  font-weight:700;
+  color:#24324a;
+  line-height:1.2;
+  word-break:break-word;
+}
 
-    .statSub{
-      margin-top:8px;
-      font-size:13px;
-      color:#6b7280;
-    }
+.statValue.big{
+  font-size:34px;
+  font-weight:800;
+  line-height:1.1;
+}
 
-    .chartGrid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-      gap:18px;
-      margin-top:18px;
-    }
+.statValue.small{
+  font-size:20px;
+  font-weight:600;
+  line-height:1.25;
+}
 
-    .card{
-      background:#fff;
-      border:1px solid #e5e7eb;
-      border-radius:14px;
-      padding:18px;
-      box-shadow:0 2px 10px rgba(0,0,0,.06);
-    }
+.statSub{
+  margin-top:8px;
+  font-size:13px;
+  color:#6b7280;
+}
 
-    .card h2{
-      margin-top:0;
-      font-size:20px;
-      color:#24324a;
-    }
 
-    .toolbar{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:flex-end;
-      margin:12px 0 8px 0;
-    }
+/* GRILLE DES GRAPHIQUES */
 
-    .toolbar select,
-    .toolbar input{
-      min-width:180px;
-    }
+.chartGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:18px;
+  margin-top:18px;
+}
 
-    .muted{
-      color:#6b7280;
-      font-size:14px;
-    }
 
-    .chartBox{
-      height:320px;
-      position:relative;
-    }
+/* CARTES */
 
-    .chartBox canvas{
-      width:100% !important;
-      height:100% !important;
-    }
-  </style>
+.card{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  margin-bottom:18px;
+}
+
+.card h2{
+  margin-top:0;
+  font-size:20px;
+  color:#24324a;
+}
+
+
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  margin:12px 0 8px 0;
+}
+
+.toolbar select,
+.toolbar input{
+  min-width:180px;
+}
+
+
+/* TEXTE */
+
+.muted{
+  color:#6b7280;
+  font-size:14px;
+}
+
+
+/* GRAPHIQUES PRINCIPAUX */
+
+.chartBox{
+  height:320px;
+  position:relative;
+}
+
+.chartBox canvas{
+  width:100% !important;
+  height:100% !important;
+}
+
+
+/* PPM ↔ ÉCHOGRAPHIE */
+
+.ppmEchoBox{
+  height:400px;
+  position:relative;
+  margin-top:14px;
+}
+
+.ppmEchoBox canvas{
+  width:100% !important;
+  height:100% !important;
+}
+
+.ppmEchoLegend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px 24px;
+  margin-top:12px;
+  margin-bottom:6px;
+  font-size:13px;
+  color:#475569;
+  line-height:1.45;
+}
+
+.ppmEchoLegend strong{
+  color:#24324a;
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+  .ppmEchoBox{
+    height:460px;
+  }
+
+  .chartGrid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header class="header">
+
   <h1>Statistiques praticien</h1>
+
   <p class="info" id="subtitle"></p>
+
 </header>
+
+
 
 <div class="container wide">
 
-  <div class="toolbar">
-    <button
-      class="secondaryAction"
-      onclick="window.location.href='doctor.html'"
+
+<!-- RETOUR -->
+
+<div class="toolbar">
+
+  <button
+    class="secondaryAction"
+    onclick="window.location.href='doctor.html'"
+  >
+    ← Retour patientes
+  </button>
+
+</div>
+
+
+
+<!-- FILTRE VERSIONS -->
+
+<div
+  id="versionFilterButtons"
+  style="margin-bottom:20px;display:none;gap:10px;"
+>
+
+  <button onclick="setStatsFilter('ALL')">
+    Toutes
+  </button>
+
+  <button onclick="setStatsFilter('V1')">
+    Stats V1
+  </button>
+
+  <button onclick="setStatsFilter('V2')">
+    Stats V2
+  </button>
+
+</div>
+
+
+
+<!-- KPI PRINCIPAUX -->
+
+<div class="statsGrid">
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Dossiers analysés
+    </div>
+
+    <div
+      class="statValue big"
+      id="statEchos"
     >
-      ← Retour patientes
-    </button>
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Douleur moyenne
+    </div>
+
+    <div
+      class="statValue big"
+      id="statPain"
+    >
+      0/10
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Âge moyen
+    </div>
+
+    <div
+      class="statValue big"
+      id="statAge"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Concordance globale
+    </div>
+
+    <div
+      class="statValue big"
+      id="doctorConcordance"
+    >
+      0%
+    </div>
+
+    <div
+      class="statSub"
+      id="doctorConcordanceLabel"
+    >
+      -
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<!-- PROFILS -->
+
+<div class="statsGrid">
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Endométriose compatible
+    </div>
+
+    <div
+      class="statValue big"
+      id="statEndo"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Congestion compatible
+    </div>
+
+    <div
+      class="statValue big"
+      id="statCong"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      OPK compatible
+    </div>
+
+    <div
+      class="statValue big"
+      id="statOpk"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Fibrome compatible
+    </div>
+
+    <div
+      class="statValue big"
+      id="statFibrome"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Digestif présent
+    </div>
+
+    <div
+      class="statValue big"
+      id="statDigestif"
+    >
+      0
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Top résultat écho
+    </div>
+
+    <div
+      class="statValue small"
+      id="statTopEcho"
+    >
+      -
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<!-- MATCHING -->
+
+<div class="statsGrid">
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Exact match
+    </div>
+
+    <div
+      class="statValue big"
+      id="statExactMatch"
+    >
+      0%
+    </div>
+
+    <div
+      class="statSub"
+      id="statExactMatchDetail"
+    >
+      0 / 0 concordants
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Top-2 match
+    </div>
+
+    <div
+      class="statValue big"
+      id="statTop2Match"
+    >
+      0%
+    </div>
+
+    <div
+      class="statSub"
+      id="statTop2MatchDetail"
+    >
+      0 / 0 concordants
+    </div>
+
+  </div>
+
+
+
+  <div class="statCard">
+
+    <div class="statLabel">
+      Compatible &gt; 70%
+    </div>
+
+    <div
+      class="statValue big"
+      id="statCompatible70"
+    >
+      0%
+    </div>
+
+    <div
+      class="statSub"
+      id="statCompatible70Detail"
+    >
+      0 / 0 concordants
+    </div>
+
+  </div>
+
+
+</div>
+
+
+
+<!-- DÉTECTION PAR PATHOLOGIE -->
+
+<div class="card">
+
+<h2>
+  Détection par pathologie
+</h2>
+
+<p class="muted">
+  Parmi les patientes positives à l'échographie,
+  proportion détectée par le questionnaire.
+</p>
+
+
+<div
+  class="statsGrid"
+  style="margin-top:16px;"
+>
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Endométriose
   </div>
 
   <div
-    id="versionFilterButtons"
-    style="margin-bottom:20px;display:none;gap:10px;"
+    class="statValue big"
+    id="doctorEndo"
   >
-    <button onclick="setStatsFilter('ALL')">Toutes</button>
-    <button onclick="setStatsFilter('V1')">Stats V1</button>
-    <button onclick="setStatsFilter('V2')">Stats V2</button>
+    0%
   </div>
 
-
-  <!-- ============================= -->
-  <!-- KPI PRINCIPAUX -->
-  <!-- ============================= -->
-
-  <div class="statsGrid">
-
-    <div class="statCard">
-      <div class="statLabel">Dossiers analysés</div>
-      <div class="statValue big" id="statEchos">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Douleur moyenne</div>
-      <div class="statValue big" id="statPain">0/10</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Âge moyen</div>
-      <div class="statValue big" id="statAge">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Concordance globale</div>
-      <div class="statValue big" id="doctorConcordance">0%</div>
-      <div class="statSub" id="doctorConcordanceLabel">-</div>
-    </div>
-
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- PROFILS -->
-  <!-- ============================= -->
-
-  <div class="statsGrid">
-
-    <div class="statCard">
-      <div class="statLabel">Endométriose compatible</div>
-      <div class="statValue big" id="statEndo">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Congestion compatible</div>
-      <div class="statValue big" id="statCong">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">OPK compatible</div>
-      <div class="statValue big" id="statOpk">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Fibrome compatible</div>
-      <div class="statValue big" id="statFibrome">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Digestif présent</div>
-      <div class="statValue big" id="statDigestif">0</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Top résultat écho</div>
-      <div class="statValue small" id="statTopEcho">-</div>
-    </div>
-
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- MATCH -->
-  <!-- ============================= -->
-
-  <div class="statsGrid">
-
-    <div class="statCard">
-      <div class="statLabel">Exact match</div>
-      <div class="statValue big" id="statExactMatch">0%</div>
-      <div class="statSub" id="statExactMatchDetail">0 / 0 concordants</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Top-2 match</div>
-      <div class="statValue big" id="statTop2Match">0%</div>
-      <div class="statSub" id="statTop2MatchDetail">0 / 0 concordants</div>
-    </div>
-
-    <div class="statCard">
-      <div class="statLabel">Compatible &gt; 70%</div>
-      <div class="statValue big" id="statCompatible70">0%</div>
-      <div class="statSub" id="statCompatible70Detail">0 / 0 concordants</div>
-    </div>
-
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- DÉTECTION PAR PATHOLOGIE -->
-  <!-- ============================= -->
-
-  <div class="card">
-
-    <h2>Détection par pathologie</h2>
-
-    <p class="muted">
-      Parmi les patientes positives à l'échographie,
-      proportion détectée par le questionnaire.
-    </p>
-
-    <div class="statsGrid" style="margin-top:16px;">
-
-      <div class="statCard">
-        <div class="statLabel">Endométriose</div>
-        <div class="statValue big" id="doctorEndo">0%</div>
-        <div class="statSub" id="doctorEndoDetail">0 / 0 détectées</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Adénomyose</div>
-        <div class="statValue big" id="doctorAdeno">0%</div>
-        <div class="statSub" id="doctorAdenoDetail">0 / 0 détectées</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Congestion pelvienne</div>
-        <div class="statValue big" id="doctorCong">0%</div>
-        <div class="statSub" id="doctorCongDetail">0 / 0 détectées</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Névralgie pudendale</div>
-        <div class="statValue big" id="doctorPud">0%</div>
-        <div class="statSub" id="doctorPudDetail">0 / 0 détectées</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">OPK</div>
-        <div class="statValue big" id="doctorOpk">0%</div>
-        <div class="statSub" id="doctorOpkDetail">0 / 0 détectées</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Fibrome</div>
-        <div class="statValue big" id="doctorFib">0%</div>
-        <div class="statSub" id="doctorFibDetail">0 / 0 détectées</div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- VALIDATION -->
-  <!-- ============================= -->
-
-  <div class="card">
-
-    <h2>Validation diagnostique paramétrable</h2>
-
-    <p class="muted">
-      Le test correspond au questionnaire.
-      La référence correspond au diagnostic écho.
-    </p>
-
-    <div class="toolbar">
-
-      <div>
-        <label for="metricPathology"><b>Pathologie</b></label><br>
-
-        <select
-          id="metricPathology"
-          onchange="updateStats()"
-        >
-          <option value="Endométriose">Endométriose</option>
-          <option value="Adénomyose">Adénomyose</option>
-          <option value="Congestion pelvienne">Congestion pelvienne</option>
-          <option value="Névralgie pudendale">Névralgie pudendale</option>
-          <option value="OPK">OPK</option>
-          <option value="Fibrome">Fibrome</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="metricThreshold"><b>Seuil questionnaire</b></label><br>
-
-        <select
-          id="metricThreshold"
-          onchange="updateStats()"
-        >
-          <option value="modere">modéré ou élevé</option>
-          <option value="eleve">élevé uniquement</option>
-        </select>
-      </div>
-
-    </div>
-
-
-    <div class="statsGrid">
-
-      <div class="statCard">
-        <div class="statLabel">Sensibilité</div>
-        <div class="statValue big" id="metricSensitivity">0%</div>
-        <div class="statSub" id="metricSensitivitySub">0 / 0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Spécificité</div>
-        <div class="statValue big" id="metricSpecificity">0%</div>
-        <div class="statSub" id="metricSpecificitySub">0 / 0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">VPP</div>
-        <div class="statValue big" id="metricPPV">0%</div>
-        <div class="statSub" id="metricPPVSub">0 / 0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">VPN</div>
-        <div class="statValue big" id="metricNPV">0%</div>
-        <div class="statSub" id="metricNPVSub">0 / 0</div>
-      </div>
-
-    </div>
-
-
-    <div class="statsGrid">
-
-      <div class="statCard">
-        <div class="statLabel">Vrais positifs</div>
-        <div class="statValue big" id="metricTP">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Faux positifs</div>
-        <div class="statValue big" id="metricFP">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Faux négatifs</div>
-        <div class="statValue big" id="metricFN">0</div>
-      </div>
-
-      <div class="statCard">
-        <div class="statLabel">Vrais négatifs</div>
-        <div class="statValue big" id="metricTN">0</div>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- GRAPHIQUES -->
-  <!-- ============================= -->
-
-  <div class="card">
-    <h2>Répartition des profils Pelvis Pain Map</h2>
-    <p class="muted">
-      Profils compatibles issus du questionnaire.
-    </p>
-
-    <div class="chartBox">
-      <canvas id="profileChart"></canvas>
-    </div>
-  </div>
-
-
-  <div class="card">
-    <h2>PPM ↔ Échographie</h2>
-    <p class="muted">
-      Comparaison entre profils compatibles au questionnaire
-      et résultats échographiques renseignés.
-    </p>
-
-    <div class="chartBox">
-      <canvas id="ppmEchoChart"></canvas>
-    </div>
-  </div>
-
-
-  <div class="chartGrid">
-
-    <div class="card">
-      <h2>Top localisations</h2>
-      <canvas id="topoChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>Top temporalités</h2>
-      <canvas id="timeChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>Digestif</h2>
-      <canvas id="digestiveChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>Résultats écho</h2>
-      <canvas id="echoChart"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>Contraception</h2>
-      <canvas id="contraceptionChart"></canvas>
-    </div>
-
+  <div
+    class="statSub"
+    id="doctorEndoDetail"
+  >
+    0 / 0 détectées
   </div>
 
 </div>
 
 
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Adénomyose
+  </div>
+
+  <div
+    class="statValue big"
+    id="doctorAdeno"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="doctorAdenoDetail"
+  >
+    0 / 0 détectées
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Congestion pelvienne
+  </div>
+
+  <div
+    class="statValue big"
+    id="doctorCong"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="doctorCongDetail"
+  >
+    0 / 0 détectées
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Névralgie pudendale
+  </div>
+
+  <div
+    class="statValue big"
+    id="doctorPud"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="doctorPudDetail"
+  >
+    0 / 0 détectées
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    OPK
+  </div>
+
+  <div
+    class="statValue big"
+    id="doctorOpk"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="doctorOpkDetail"
+  >
+    0 / 0 détectées
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Fibrome
+  </div>
+
+  <div
+    class="statValue big"
+    id="doctorFib"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="doctorFibDetail"
+  >
+    0 / 0 détectées
+  </div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- VALIDATION DIAGNOSTIQUE -->
+
+<div class="card">
+
+<h2>
+  Validation diagnostique paramétrable
+</h2>
+
+<p class="muted">
+  Le test correspond au questionnaire.
+  La référence correspond au diagnostic écho.
+</p>
+
+
+
+<div class="toolbar">
+
+
+<div>
+
+<label for="metricPathology">
+  <b>Pathologie</b>
+</label>
+
+<br>
+
+<select
+  id="metricPathology"
+  onchange="updateStats()"
+>
+
+<option value="Endométriose">
+  Endométriose
+</option>
+
+<option value="Adénomyose">
+  Adénomyose
+</option>
+
+<option value="Congestion pelvienne">
+  Congestion pelvienne
+</option>
+
+<option value="Névralgie pudendale">
+  Névralgie pudendale
+</option>
+
+<option value="OPK">
+  OPK
+</option>
+
+<option value="Fibrome">
+  Fibrome
+</option>
+
+</select>
+
+</div>
+
+
+
+<div>
+
+<label for="metricThreshold">
+  <b>Seuil questionnaire</b>
+</label>
+
+<br>
+
+<select
+  id="metricThreshold"
+  onchange="updateStats()"
+>
+
+<option value="modere">
+  modéré ou élevé
+</option>
+
+<option value="eleve">
+  élevé uniquement
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+
+<div class="statsGrid">
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Sensibilité
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricSensitivity"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="metricSensitivitySub"
+  >
+    0 / 0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Spécificité
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricSpecificity"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="metricSpecificitySub"
+  >
+    0 / 0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    VPP
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricPPV"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="metricPPVSub"
+  >
+    0 / 0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    VPN
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricNPV"
+  >
+    0%
+  </div>
+
+  <div
+    class="statSub"
+    id="metricNPVSub"
+  >
+    0 / 0
+  </div>
+
+</div>
+
+
+</div>
+
+
+
+<div
+  class="statsGrid"
+  style="margin-top:4px;"
+>
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Vrais positifs
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricTP"
+  >
+    0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Faux positifs
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricFP"
+  >
+    0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Faux négatifs
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricFN"
+  >
+    0
+  </div>
+
+</div>
+
+
+
+<div class="statCard">
+
+  <div class="statLabel">
+    Vrais négatifs
+  </div>
+
+  <div
+    class="statValue big"
+    id="metricTN"
+  >
+    0
+  </div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- RÉPARTITION DES PROFILS -->
+
+<div class="card">
+
+<h2>
+  Répartition des profils Pelvis Pain Map
+</h2>
+
+<p class="muted">
+  Profils compatibles issus du questionnaire.
+</p>
+
+<div class="chartBox">
+
+  <canvas id="profileChart"></canvas>
+
+</div>
+
+</div>
+
+
+
+<!-- PPM / ÉCHO -->
+
+<div class="card">
+
+<h2>
+  PPM ↔ Échographie
+</h2>
+
+<p class="muted">
+  Fréquence des diagnostics retrouvés à l’échographie
+  et capacité du questionnaire à les détecter.
+</p>
+
+
+<div class="ppmEchoLegend">
+
+  <span>
+    <strong>Écho positive :</strong>
+    proportion des dossiers échographiques présentant la pathologie.
+  </span>
+
+  <span>
+    <strong>Détectée par PPM :</strong>
+    parmi ces échos positives, proportion repérée par le questionnaire.
+  </span>
+
+</div>
+
+
+<div class="ppmEchoBox">
+
+  <canvas id="ppmEchoChart"></canvas>
+
+</div>
+
+</div>
+
+
+
+<!-- AUTRES GRAPHIQUES -->
+
+<div class="chartGrid">
+
+
+<div class="card">
+
+  <h2>
+    Top localisations
+  </h2>
+
+  <canvas id="topoChart"></canvas>
+
+</div>
+
+
+
+<div class="card">
+
+  <h2>
+    Top temporalités
+  </h2>
+
+  <canvas id="timeChart"></canvas>
+
+</div>
+
+
+
+<div class="card">
+
+  <h2>
+    Digestif
+  </h2>
+
+  <canvas id="digestiveChart"></canvas>
+
+</div>
+
+
+
+<div class="card">
+
+  <h2>
+    Résultats écho
+  </h2>
+
+  <canvas id="echoChart"></canvas>
+
+</div>
+
+
+
+<div class="card">
+
+  <h2>
+    Contraception
+  </h2>
+
+  <canvas id="contraceptionChart"></canvas>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
 <script>
 
-/* ==========================================================
-   CONFIGURATION
-========================================================== */
 
 const LABELS = {
+
   alexandre_soum: "Alexandre Soum",
+
   praticien_2: "Dr Jean-Marc Levaillant",
+
   praticien_3: "Anne-Laure Siraga"
+
 };
+
 
 let currentPractitioner =
   sessionStorage.getItem("ppm_currentPractitioner")
   || "alexandre_soum";
 
+
 let rows = [];
+
 let charts = {};
+
 let statsFilter = "ALL";
 
 
+
 const HYPOTHESIS_THRESHOLDS = {
-  nonConcluant: 30,
-  possible: 45,
-  probable: 60
+
+  nonConcluant:30,
+
+  possible:45,
+
+  probable:60
+
 };
 
 
-/* ==========================================================
-   OUTILS GÉNÉRAUX
-========================================================== */
 
 function isEchoLevelPositive(v){
 
-  const x = String(v || "").trim();
+  const x =
+    String(v || "")
+    .trim();
 
   return (
     x !== "" &&
     x !== "-" &&
     x !== "Non renseigné"
   );
+
 }
+
 
 
 function getHypothesisInterpretation(d){
@@ -505,98 +1141,156 @@ function getHypothesisInterpretation(d){
     "-";
 
   const pct =
-    Number(d.hypothesisPrimaryPct || 0);
+    Number(
+      d.hypothesisPrimaryPct || 0
+    );
+
 
   if (
     !label ||
     pct <= 0 ||
     pct < HYPOTHESIS_THRESHOLDS.nonConcluant
   ){
+
     return {
       label:"Profil non concluant",
       pct,
       level:"non_concluant"
     };
+
   }
 
-  if (pct < HYPOTHESIS_THRESHOLDS.possible){
+
+  if (
+    pct <
+    HYPOTHESIS_THRESHOLDS.possible
+  ){
+
     return {
       label,
       pct,
       level:"possible"
     };
+
   }
 
-  if (pct < HYPOTHESIS_THRESHOLDS.probable){
+
+  if (
+    pct <
+    HYPOTHESIS_THRESHOLDS.probable
+  ){
+
     return {
       label,
       pct,
       level:"probable"
     };
+
   }
 
+
   return {
+
     label,
     pct,
     level:"fort"
+
   };
+
 }
+
 
 
 function normalizeLevel(v){
 
   const x =
     String(v || "")
-      .toLowerCase()
-      .trim();
+    .toLowerCase()
+    .trim();
+
 
   if (!x) return "";
 
-  if (x === "possible") return "modéré";
-  if (x === "probable") return "modéré";
-  if (x === "fort") return "élevé";
+
+  if (x === "possible")
+    return "modéré";
+
+
+  if (x === "probable")
+    return "modéré";
+
+
+  if (x === "fort")
+    return "élevé";
+
 
   return v;
+
 }
+
 
 
 function updateVersionButtonsVisibility(){
 
   const box =
-    document.getElementById("versionFilterButtons");
+    document.getElementById(
+      "versionFilterButtons"
+    );
+
 
   if (!box) return;
 
-  if (currentPractitioner === "alexandre_soum") {
 
-    box.style.display = "flex";
+  if (
+    currentPractitioner ===
+    "alexandre_soum"
+  ){
 
-  } else {
-
-    box.style.display = "none";
-    statsFilter = "ALL";
+    box.style.display =
+      "flex";
 
   }
+  else {
+
+    box.style.display =
+      "none";
+
+    statsFilter =
+      "ALL";
+
+  }
+
 }
+
 
 
 function ageFromDob(dob){
 
-  if(!dob) return null;
+  if (!dob)
+    return null;
 
-  const b = new Date(dob);
 
-  if(isNaN(b)) return null;
+  const b =
+    new Date(dob);
 
-  const t = new Date();
+
+  if (isNaN(b))
+    return null;
+
+
+  const t =
+    new Date();
+
 
   let a =
-    t.getFullYear() -
-    b.getFullYear();
+    t.getFullYear()
+    - b.getFullYear();
+
 
   const m =
-    t.getMonth() -
-    b.getMonth();
+    t.getMonth()
+    - b.getMonth();
+
 
   if (
     m < 0 ||
@@ -605,28 +1299,40 @@ function ageFromDob(dob){
       t.getDate() < b.getDate()
     )
   ){
+
     a--;
+
   }
 
+
   return a;
+
 }
+
 
 
 function topLabel(map){
 
   const entries =
     Object.entries(map)
-      .sort((a,b)=>b[1]-a[1]);
+    .sort(
+      (a,b) =>
+        b[1] - a[1]
+    );
+
 
   return entries.length
     ? entries[0][0]
     : "-";
+
 }
+
 
 
 function countValues(items){
 
   const m = {};
+
 
   items.forEach(v => {
 
@@ -636,13 +1342,17 @@ function countValues(items){
         ? String(v)
         : "Non renseigné";
 
+
     m[key] =
       (m[key] || 0) + 1;
 
   });
 
+
   return m;
+
 }
+
 
 
 function getValidEchos(d){
@@ -652,13 +1362,21 @@ function getValidEchos(d){
       ? d.diagnostic_echo
       : [];
 
+
   return echos.filter(x =>
+
     x &&
+
     x !== "Normal" &&
+
     x !== "Non contributif" &&
+
     x !== "Autre"
+
   );
+
 }
+
 
 
 function getProfileList(d){
@@ -667,46 +1385,61 @@ function getProfileList(d){
 
     {
       name:"Endométriose",
-      pct:Number(d.endometriose_pct || 0)
+      pct:Number(
+        d.endometriose_pct || 0
+      )
     },
 
     {
       name:"Adénomyose",
-      pct:Number(d.adenomyose_pct || 0)
+      pct:Number(
+        d.adenomyose_pct || 0
+      )
     },
 
     {
       name:"Congestion pelvienne",
-      pct:Number(d.congestion_pct || 0)
+      pct:Number(
+        d.congestion_pct || 0
+      )
     },
 
     {
       name:"Névralgie pudendale",
-      pct:Number(d.pudendal_pct || 0)
+      pct:Number(
+        d.pudendal_pct || 0
+      )
     },
 
     {
       name:"OPK",
-      pct:Number(d.opk_pct || 0)
+      pct:Number(
+        d.opk_pct || 0
+      )
     },
 
     {
       name:"Fibrome",
-      pct:Number(d.fibrome_pct || 0)
+      pct:Number(
+        d.fibrome_pct || 0
+      )
     }
 
-  ].sort((a,b)=>b.pct-a.pct);
+  ].sort(
+    (a,b) =>
+      b.pct - a.pct
+  );
+
 }
 
 
-/* ==========================================================
-   EXACT / TOP2 / >70
-========================================================== */
 
 function computeExactMatch(docs){
 
   let total = 0;
+
   let concordant = 0;
+
 
   docs.forEach(d => {
 
@@ -719,6 +1452,7 @@ function computeExactMatch(docs){
     const validEchos =
       getValidEchos(d);
 
+
     if (
       !hypo ||
       hypo === "Profil non concluant" ||
@@ -727,139 +1461,216 @@ function computeExactMatch(docs){
       return;
     }
 
-    if (h.level !== "fort") return;
+
+    if (
+      h.level !== "fort"
+    ){
+      return;
+    }
+
 
     total++;
 
-    if (validEchos.includes(hypo)){
+
+    if (
+      validEchos.includes(hypo)
+    ){
+
       concordant++;
+
     }
 
   });
 
+
   const discordant =
     total - concordant;
+
 
   const rate =
     total
       ? Math.round(
-          (concordant / total) * 100
+          (concordant / total)
+          * 100
         )
       : 0;
 
+
   return {
+
     total,
+
     concordant,
+
     discordant,
+
     rate
+
   };
+
 }
+
 
 
 function computeTop2Match(docs){
 
   let total = 0;
+
   let concordant = 0;
+
 
   docs.forEach(d => {
 
     const validEchos =
       getValidEchos(d);
 
-    if (!validEchos.length) return;
+
+    if (!validEchos.length)
+      return;
+
 
     const profiles =
       getProfileList(d)
-        .filter(p => p.pct > 0)
-        .slice(0,2)
-        .map(p => p.name);
 
-    if (!profiles.length) return;
+      .filter(
+        p => p.pct > 0
+      )
+
+      .slice(0,2)
+
+      .map(
+        p => p.name
+      );
+
+
+    if (!profiles.length)
+      return;
+
 
     total++;
 
+
     if (
-      profiles.some(name =>
-        validEchos.includes(name)
+      profiles.some(
+        name =>
+          validEchos.includes(name)
       )
     ){
+
       concordant++;
+
     }
 
   });
 
+
   const discordant =
     total - concordant;
+
 
   const rate =
     total
       ? Math.round(
-          (concordant / total) * 100
+          (concordant / total)
+          * 100
         )
       : 0;
 
+
   return {
+
     total,
+
     concordant,
+
     discordant,
+
     rate
+
   };
+
 }
+
 
 
 function computeCompatible70(docs){
 
   let total = 0;
+
   let concordant = 0;
+
 
   docs.forEach(d => {
 
     const validEchos =
       getValidEchos(d);
 
-    if (!validEchos.length) return;
+
+    if (!validEchos.length)
+      return;
+
 
     const compatible =
       getProfileList(d)
-        .filter(p => p.pct >= 70)
-        .map(p => p.name);
 
-    if (!compatible.length) return;
+      .filter(
+        p => p.pct >= 70
+      )
+
+      .map(
+        p => p.name
+      );
+
+
+    if (!compatible.length)
+      return;
+
 
     total++;
 
+
     if (
-      compatible.some(name =>
-        validEchos.includes(name)
+      compatible.some(
+        name =>
+          validEchos.includes(name)
       )
     ){
+
       concordant++;
+
     }
 
   });
 
+
   const discordant =
     total - concordant;
+
 
   const rate =
     total
       ? Math.round(
-          (concordant / total) * 100
+          (concordant / total)
+          * 100
         )
       : 0;
 
+
   return {
+
     total,
+
     concordant,
+
     discordant,
+
     rate
+
   };
+
 }
 
 
-/* ==========================================================
-   VALIDATION DIAGNOSTIQUE
-========================================================== */
 
 function getQuestionnairePositive(
   d,
@@ -870,57 +1681,91 @@ function getQuestionnairePositive(
   const map = {
 
     "Endométriose":
-      normalizeLevel(d.endometriose || ""),
+      normalizeLevel(
+        d.endometriose || ""
+      ),
 
     "Adénomyose":
-      normalizeLevel(d.adenomyose || ""),
+      normalizeLevel(
+        d.adenomyose || ""
+      ),
 
     "Congestion pelvienne":
-      normalizeLevel(d.congestion || ""),
+      normalizeLevel(
+        d.congestion || ""
+      ),
 
     "Névralgie pudendale":
-      normalizeLevel(d.pudendal || ""),
+      normalizeLevel(
+        d.pudendal || ""
+      ),
 
     "OPK":
-      normalizeLevel(d.opk || ""),
+      normalizeLevel(
+        d.opk || ""
+      ),
 
     "Fibrome":
-      normalizeLevel(d.fibrome || "")
+      normalizeLevel(
+        d.fibrome || ""
+      )
+
   };
+
 
   const level =
     map[pathology] || "";
 
+
   if (
     thresholdMode === "eleve"
   ){
-    return level === "élevé";
+
+    return (
+      level === "élevé"
+    );
+
   }
+
 
   return (
     level === "modéré" ||
     level === "élevé"
   );
+
 }
 
 
-function getEchoPositive(d, pathology){
+
+function getEchoPositive(
+  d,
+  pathology
+){
 
   const echos =
     Array.isArray(d.diagnostic_echo)
       ? d.diagnostic_echo
       : [];
 
-  return echos.includes(pathology);
+
+  return echos.includes(
+    pathology
+  );
+
 }
 
 
-function pct(num, den){
+
+function pct(num,den){
 
   return den
-    ? Math.round((num / den) * 100)
+    ? Math.round(
+        (num / den) * 100
+      )
     : 0;
+
 }
+
 
 
 function computeDiagnosticMetrics(
@@ -930,26 +1775,39 @@ function computeDiagnosticMetrics(
 ){
 
   let TP = 0;
+
   let FP = 0;
+
   let FN = 0;
+
   let TN = 0;
+
 
   docs.forEach(d => {
 
     const echos =
-      Array.isArray(d.diagnostic_echo)
-        ? d.diagnostic_echo
-        : [];
+      Array.isArray(
+        d.diagnostic_echo
+      )
+      ? d.diagnostic_echo
+      : [];
 
-    if (!echos.length) return;
+
+    if (!echos.length)
+      return;
+
 
     const hasUsableEcho =
-      echos.some(x =>
-        x &&
-        x !== "Non contributif"
+      echos.some(
+        x =>
+          x &&
+          x !== "Non contributif"
       );
 
-    if (!hasUsableEcho) return;
+
+    if (!hasUsableEcho)
+      return;
+
 
     const testPositive =
       getQuestionnairePositive(
@@ -958,73 +1816,107 @@ function computeDiagnosticMetrics(
         thresholdMode
       );
 
+
     const diseasePositive =
       getEchoPositive(
         d,
         pathology
       );
 
+
     if (
       testPositive &&
       diseasePositive
     ){
+
       TP++;
+
     }
 
     else if (
       testPositive &&
       !diseasePositive
     ){
+
       FP++;
+
     }
 
     else if (
       !testPositive &&
       diseasePositive
     ){
+
       FN++;
+
     }
 
-    else{
+    else {
+
       TN++;
+
     }
 
   });
 
+
   return {
 
     TP,
+
     FP,
+
     FN,
+
     TN,
 
     sensitivity:
-      pct(TP,TP+FN),
+      pct(
+        TP,
+        TP + FN
+      ),
 
     specificity:
-      pct(TN,TN+FP),
+      pct(
+        TN,
+        TN + FP
+      ),
 
     ppv:
-      pct(TP,TP+FP),
+      pct(
+        TP,
+        TP + FP
+      ),
 
     npv:
-      pct(TN,TN+FN)
+      pct(
+        TN,
+        TN + FN
+      )
 
   };
+
 }
+
 
 
 function updateDiagnosticMetrics(docs){
 
   const pathology =
     document
-      .getElementById("metricPathology")
-      .value;
+    .getElementById(
+      "metricPathology"
+    )
+    .value;
+
 
   const thresholdMode =
     document
-      .getElementById("metricThreshold")
-      .value;
+    .getElementById(
+      "metricThreshold"
+    )
+    .value;
+
 
   const m =
     computeDiagnosticMetrics(
@@ -1033,457 +1925,654 @@ function updateDiagnosticMetrics(docs){
       thresholdMode
     );
 
+
   document
-    .getElementById("metricSensitivity")
-    .innerText =
+  .getElementById(
+    "metricSensitivity"
+  )
+  .innerText =
     m.sensitivity + "%";
 
+
   document
-    .getElementById("metricSpecificity")
-    .innerText =
+  .getElementById(
+    "metricSpecificity"
+  )
+  .innerText =
     m.specificity + "%";
 
-  document
-    .getElementById("metricPPV")
-    .innerText =
-    m.ppv + "%";
 
   document
-    .getElementById("metricNPV")
-    .innerText =
+  .getElementById(
+    "metricPPV"
+  )
+  .innerText =
+    m.ppv + "%";
+
+
+  document
+  .getElementById(
+    "metricNPV"
+  )
+  .innerText =
     m.npv + "%";
 
 
   document
-    .getElementById("metricSensitivitySub")
-    .innerText =
-    m.TP + " / " + (m.TP + m.FN);
-
-  document
-    .getElementById("metricSpecificitySub")
-    .innerText =
-    m.TN + " / " + (m.TN + m.FP);
-
-  document
-    .getElementById("metricPPVSub")
-    .innerText =
-    m.TP + " / " + (m.TP + m.FP);
-
-  document
-    .getElementById("metricNPVSub")
-    .innerText =
-    m.TN + " / " + (m.TN + m.FN);
+  .getElementById(
+    "metricSensitivitySub"
+  )
+  .innerText =
+    m.TP +
+    " / " +
+    (m.TP + m.FN);
 
 
   document
-    .getElementById("metricTP")
-    .innerText = m.TP;
+  .getElementById(
+    "metricSpecificitySub"
+  )
+  .innerText =
+    m.TN +
+    " / " +
+    (m.TN + m.FP);
+
 
   document
-    .getElementById("metricFP")
-    .innerText = m.FP;
+  .getElementById(
+    "metricPPVSub"
+  )
+  .innerText =
+    m.TP +
+    " / " +
+    (m.TP + m.FP);
+
 
   document
-    .getElementById("metricFN")
-    .innerText = m.FN;
+  .getElementById(
+    "metricNPVSub"
+  )
+  .innerText =
+    m.TN +
+    " / " +
+    (m.TN + m.FN);
+
 
   document
-    .getElementById("metricTN")
-    .innerText = m.TN;
+  .getElementById(
+    "metricTP"
+  )
+  .innerText =
+    m.TP;
+
+
+  document
+  .getElementById(
+    "metricFP"
+  )
+  .innerText =
+    m.FP;
+
+
+  document
+  .getElementById(
+    "metricFN"
+  )
+  .innerText =
+    m.FN;
+
+
+  document
+  .getElementById(
+    "metricTN"
+  )
+  .innerText =
+    m.TN;
+
 }
 
 
-/* ==========================================================
-   PLUGIN POURCENTAGES GRAPHIQUES
-========================================================== */
 
-const percentageLabelsPlugin = {
-
-  id:"percentageLabels",
-
-  afterDatasetsDraw(
-    chart,
-    args,
-    pluginOptions
-  ){
-
-    if (
-      !pluginOptions ||
-      !pluginOptions.enabled
-    ){
-      return;
-    }
-
-    const denominator =
-      Number(
-        pluginOptions.denominator || 0
-      );
-
-    if (!denominator) return;
-
-    const ctx =
-      chart.ctx;
-
-    ctx.save();
-
-    ctx.font =
-      "bold 12px Arial";
-
-    ctx.fillStyle =
-      "#24324a";
-
-    ctx.textAlign =
-      "center";
-
-    chart.data.datasets.forEach(
-      (dataset,datasetIndex) => {
-
-        const meta =
-          chart.getDatasetMeta(
-            datasetIndex
-          );
-
-        meta.data.forEach(
-          (element,index) => {
-
-            const value =
-              Number(
-                dataset.data[index] || 0
-              );
-
-            if (!value) return;
-
-            const percent =
-              Math.round(
-                (value / denominator) * 100
-              );
-
-            const pos =
-              element.tooltipPosition();
-
-            if (
-              chart.config.type === "pie" ||
-              chart.config.type === "doughnut"
-            ){
-
-              ctx.textBaseline =
-                "middle";
-
-              ctx.fillText(
-                percent + "%",
-                pos.x,
-                pos.y
-              );
-
-            }
-            else{
-
-              ctx.textBaseline =
-                "bottom";
-
-              ctx.fillText(
-                percent + "%",
-                pos.x,
-                pos.y - 5
-              );
-
-            }
-
-          }
-        );
-
-      }
-    );
-
-    ctx.restore();
-
-  }
-};
-
-Chart.register(
-  percentageLabelsPlugin
-);
-
-
-/* ==========================================================
-   GRAPHIQUES
-========================================================== */
+/* ======================================================
+   GRAPHIQUES SIMPLES
+====================================================== */
 
 function draw(
   id,
   type,
   labels,
-  data,
-  denominator = 0
+  data
 ){
 
   const el =
     document.getElementById(id);
 
-  if (!el) return;
 
-  if (charts[id]){
+  if (!el)
+    return;
+
+
+  if (charts[id])
     charts[id].destroy();
-  }
+
 
   charts[id] =
-    new Chart(el,{
+    new Chart(
+      el,
+      {
 
-      type,
+        type,
 
-      data:{
-        labels,
-        datasets:[
-          {
-            data
-          }
-        ]
-      },
+        data:{
 
-      options:{
+          labels,
 
-        responsive:true,
-        maintainAspectRatio:false,
+          datasets:[
+            {
+              data
+            }
+          ]
 
-        layout:{
-          padding:{
-            top:24
-          }
         },
 
-        plugins:{
+        options:{
 
-          legend:{
-            display:
-              type === "pie" ||
-              type === "doughnut"
-          },
+          responsive:true,
 
-          percentageLabels:{
-            enabled:
-              denominator > 0,
-            denominator
-          },
+          maintainAspectRatio:false,
 
-          tooltip:{
+          plugins:{
 
-            callbacks:{
+            legend:{
 
-              label:function(context){
-
-                const value =
-                  Number(
-                    context.raw || 0
-                  );
-
-                if (!denominator){
-                  return " " + value;
-                }
-
-                const percent =
-                  Math.round(
-                    (value / denominator) * 100
-                  );
-
-                return (
-                  " " +
-                  percent +
-                  "% · " +
-                  value +
-                  " dossier" +
-                  (value > 1 ? "s" : "")
-                );
-              }
+              display:
+                type === "pie" ||
+                type === "doughnut"
 
             }
 
           }
 
-        },
-
-        scales:
-          type === "bar"
-            ? {
-                y:{
-                  beginAtZero:true
-                }
-              }
-            : undefined
+        }
 
       }
+    );
 
-    });
 }
 
+
+
+/* ======================================================
+   GRAPHIQUE PPM ↔ ÉCHOGRAPHIE
+====================================================== */
 
 function drawGroupedBar(
   id,
   labels,
-  data1,
-  data2
+  echoPositivePct,
+  detectedPct,
+  detectionDetails
 ){
 
   const el =
     document.getElementById(id);
 
-  if (!el) return;
+
+  if (!el)
+    return;
+
 
   if (charts[id]){
+
     charts[id].destroy();
+
   }
 
-  charts[id] =
-    new Chart(el,{
 
-      type:"bar",
 
-      data:{
+  const valueLabelsPlugin = {
 
-        labels,
+    id:
+      "ppmEchoValueLabels",
 
-        datasets:[
 
-          {
-            label:"Écho positive",
-            data:data1
-          },
+    afterDatasetsDraw(chart){
 
-          {
-            label:"Détectée par PPM",
-            data:data2
-          }
+      const ctx =
+        chart.ctx;
 
-        ]
 
-      },
+      ctx.save();
 
-      options:{
 
-        responsive:true,
-        maintainAspectRatio:false,
+      ctx.font =
+        "700 13px Arial";
 
-        plugins:{
-          legend:{
-            display:true
-          },
 
-          tooltip:{
-            callbacks:{
-              label:function(context){
-                return (
-                  " " +
-                  context.dataset.label +
-                  " : " +
-                  context.raw
+      ctx.fillStyle =
+        "#24324a";
+
+
+      ctx.textBaseline =
+        "middle";
+
+
+      chart.data.datasets
+      .forEach(
+        (
+          dataset,
+          datasetIndex
+        ) => {
+
+          const meta =
+            chart
+            .getDatasetMeta(
+              datasetIndex
+            );
+
+
+          meta.data.forEach(
+            (
+              bar,
+              index
+            ) => {
+
+              const value =
+                Number(
+                  dataset.data[index]
+                  || 0
                 );
-              }
+
+
+              ctx.textAlign =
+                "left";
+
+
+              const labelX =
+                Math.min(
+                  bar.x + 7,
+                  chart.chartArea.right - 32
+                );
+
+
+              ctx.fillText(
+                value + "%",
+                labelX,
+                bar.y
+              );
+
             }
-          }
+          );
+
+        }
+      );
+
+
+      ctx.restore();
+
+    }
+
+  };
+
+
+
+  charts[id] =
+    new Chart(
+      el,
+      {
+
+        type:"bar",
+
+
+        data:{
+
+          labels,
+
+
+          datasets:[
+
+            {
+
+              label:
+                "Écho positive",
+
+              data:
+                echoPositivePct,
+
+              backgroundColor:
+                "rgba(54,162,235,.75)",
+
+              borderColor:
+                "rgba(54,162,235,1)",
+
+              borderWidth:1,
+
+              borderRadius:5,
+
+              barThickness:14
+
+            },
+
+
+            {
+
+              label:
+                "Détectée par PPM",
+
+              data:
+                detectedPct,
+
+              backgroundColor:
+                "rgba(255,99,132,.72)",
+
+              borderColor:
+                "rgba(255,99,132,1)",
+
+              borderWidth:1,
+
+              borderRadius:5,
+
+              barThickness:14
+
+            }
+
+          ]
+
         },
 
-        scales:{
-          y:{
-            beginAtZero:true
+
+        options:{
+
+          indexAxis:"y",
+
+          responsive:true,
+
+          maintainAspectRatio:false,
+
+
+          layout:{
+
+            padding:{
+
+              right:50,
+
+              top:8,
+
+              bottom:8
+
+            }
+
+          },
+
+
+          interaction:{
+
+            mode:"index",
+
+            intersect:false
+
+          },
+
+
+          plugins:{
+
+
+            legend:{
+
+              display:true,
+
+              position:"top",
+
+              labels:{
+
+                usePointStyle:true,
+
+                pointStyle:
+                  "rectRounded",
+
+                padding:20,
+
+                font:{
+
+                  size:13
+
+                }
+
+              }
+
+            },
+
+
+            tooltip:{
+
+              callbacks:{
+
+
+                label(context){
+
+                  const index =
+                    context.dataIndex;
+
+
+                  const info =
+                    detectionDetails[index]
+                    || {
+                      echoPositive:0,
+                      detected:0
+                    };
+
+
+                  if (
+                    context.datasetIndex
+                    === 0
+                  ){
+
+                    return (
+                      " Écho positive : " +
+                      context.raw +
+                      "% (" +
+                      info.echoPositive +
+                      " dossiers)"
+                    );
+
+                  }
+
+
+                  return (
+                    " Détectée par PPM : " +
+                    context.raw +
+                    "% (" +
+                    info.detected +
+                    " / " +
+                    info.echoPositive +
+                    ")"
+                  );
+
+                }
+
+              }
+
+            }
+
+          },
+
+
+          scales:{
+
+
+            x:{
+
+              beginAtZero:true,
+
+              min:0,
+
+              max:100,
+
+              grid:{
+
+                color:
+                  "rgba(148,163,184,.18)"
+
+              },
+
+              ticks:{
+
+                stepSize:20,
+
+                callback(value){
+
+                  return value + "%";
+
+                },
+
+                font:{
+
+                  size:12
+
+                }
+
+              }
+
+            },
+
+
+            y:{
+
+              grid:{
+
+                display:false
+
+              },
+
+              ticks:{
+
+                color:
+                  "#24324a",
+
+                font:{
+
+                  size:13,
+
+                  weight:"600"
+
+                }
+
+              }
+
+            }
+
           }
-        }
+
+        },
+
+
+        plugins:[
+          valueLabelsPlugin
+        ]
 
       }
+    );
 
-    });
 }
 
 
-/* ==========================================================
-   HEADER / FILTRE VERSION
-========================================================== */
 
 function updateHeader(){
 
   document
-    .getElementById("subtitle")
-    .innerText =
-    LABELS[currentPractitioner] || "";
+  .getElementById(
+    "subtitle"
+  )
+  .innerText =
+    LABELS[
+      currentPractitioner
+    ] || "";
+
 }
+
 
 
 function setStatsFilter(mode){
 
-  statsFilter = mode;
+  statsFilter =
+    mode;
+
 
   updateStats();
+
   updateDoctorConcordanceStats();
+
 }
 
 
-function getVersionFilteredDocs(docs){
 
-  if (statsFilter === "V2"){
+function getVersionFilteredDocs(
+  docs
+){
+
+  if (
+    statsFilter === "V2"
+  ){
 
     return docs.filter(
       d =>
-        d.formVersion === "PPM_V2"
+        d.formVersion ===
+        "PPM_V2"
     );
 
   }
 
-  if (statsFilter === "V1"){
+
+  if (
+    statsFilter === "V1"
+  ){
 
     return docs.filter(
       d =>
-        d.formVersion !== "PPM_V2"
+        d.formVersion !==
+        "PPM_V2"
     );
 
   }
+
 
   return docs;
+
 }
 
 
-/* ==========================================================
-   STATS PRINCIPALES
-========================================================== */
+
+/* ======================================================
+   UPDATE STATISTIQUES
+====================================================== */
 
 function updateStats(){
 
   const docs =
     getVersionFilteredDocs(
-      rows.map(r => r.data)
+      rows.map(
+        r => r.data
+      )
     );
-
-
-  const docsWithEcho =
-    docs.filter(d => {
-
-      const echoList =
-        Array.isArray(d.diagnostic_echo)
-          ? d.diagnostic_echo
-          : [];
-
-      const echoScores =
-        d.echoScores || {};
-
-      return (
-        echoList.length > 0 ||
-        Object.values(echoScores).some(
-          v =>
-            v &&
-            String(v).trim() !== ""
-        )
-      );
-
-    });
 
 
   const ages =
     docs
-      .map(d => ageFromDob(d.dob))
-      .filter(v => v !== null);
+    .map(
+      d =>
+        ageFromDob(d.dob)
+    )
+    .filter(
+      v =>
+        v !== null
+    );
 
 
   const topo =
     countValues(
       docs.flatMap(
-        d => d.topo || []
+        d =>
+          d.topo || []
       )
     );
 
@@ -1491,24 +2580,25 @@ function updateStats(){
   const times =
     countValues(
       docs.flatMap(
-        d => d.time || []
+        d =>
+          d.time || []
       )
     );
 
 
   const digestif =
     countValues(
-
       docs.flatMap(
         d =>
-          (d.digestif || [])
-            .filter(
-              x =>
-                x !==
-                "Aucun signe digestif"
-            )
+          (
+            d.digestif || []
+          )
+          .filter(
+            x =>
+              x !==
+              "Aucun signe digestif"
+          )
       )
-
     );
 
 
@@ -1516,111 +2606,136 @@ function updateStats(){
     countValues(
       docs.flatMap(
         d =>
-          d.diagnostic_echo || []
+          d.diagnostic_echo
+          || []
       )
     );
 
 
   const contraception =
     countValues(
-
       docs.map(
         d =>
-          d.contraceptionType ||
-          "Non renseignée"
+          d.contraceptionType
+          || "Non renseignée"
       )
-
     );
 
 
   const painAvg =
     docs.length
-
       ? (
           docs.reduce(
-            (s,d)=>
-              s + Number(d.pain || 0),
+            (
+              sum,
+              d
+            ) =>
+              sum +
+              Number(
+                d.pain || 0
+              ),
             0
-          ) / docs.length
+          )
+          /
+          docs.length
         ).toFixed(1)
-
       : "0";
 
 
   const digestifPresent =
     docs.filter(
       d =>
-        (d.digestif || [])
-          .some(
-            x =>
-              x !==
-              "Aucun signe digestif"
-          )
-    ).length;
+        (
+          d.digestif || []
+        )
+        .some(
+          x =>
+            x !==
+            "Aucun signe digestif"
+        )
+    )
+    .length;
+
 
 
   const endoCompat =
-    docs.filter(d => {
+    docs.filter(
+      d => {
 
-      const x =
-        normalizeLevel(
-          d.endometriose
+        const x =
+          normalizeLevel(
+            d.endometriose
+          );
+
+        return (
+          x === "modéré" ||
+          x === "élevé"
         );
 
-      return (
-        x === "modéré" ||
-        x === "élevé"
-      );
+      }
+    )
+    .length;
 
-    }).length;
 
 
   const congCompat =
-    docs.filter(d => {
+    docs.filter(
+      d => {
 
-      const x =
-        normalizeLevel(
-          d.congestion
+        const x =
+          normalizeLevel(
+            d.congestion
+          );
+
+        return (
+          x === "modéré" ||
+          x === "élevé"
         );
 
-      return (
-        x === "modéré" ||
-        x === "élevé"
-      );
+      }
+    )
+    .length;
 
-    }).length;
 
 
   const opkCompat =
-    docs.filter(d => {
+    docs.filter(
+      d => {
 
-      const x =
-        normalizeLevel(
-          d.opk
+        const x =
+          normalizeLevel(
+            d.opk
+          );
+
+        return (
+          x === "modéré" ||
+          x === "élevé"
         );
 
-      return (
-        x === "modéré" ||
-        x === "élevé"
-      );
+      }
+    )
+    .length;
 
-    }).length;
 
 
   const fibromeCompat =
-    docs.filter(d => {
+    docs.filter(
+      d => {
 
-      const x =
-        normalizeLevel(
-          d.fibrome
+        const x =
+          normalizeLevel(
+            d.fibrome
+          );
+
+        return (
+          x === "modéré" ||
+          x === "élevé"
         );
 
-      return (
-        x === "modéré" ||
-        x === "élevé"
-      );
+      }
+    )
+    .length;
 
-    }).length;
 
 
   const profileData = {
@@ -1628,48 +2743,58 @@ function updateStats(){
     "Endométriose":
       endoCompat,
 
+
     "Congestion":
       congCompat,
+
 
     "OPK":
       opkCompat,
 
+
     "Fibrome":
       fibromeCompat,
 
+
     "Adénomyose":
+      docs.filter(
+        d => {
 
-      docs.filter(d => {
+          const x =
+            normalizeLevel(
+              d.adenomyose
+            );
 
-        const x =
-          normalizeLevel(
-            d.adenomyose
+          return (
+            x === "modéré" ||
+            x === "élevé"
           );
 
-        return (
-          x === "modéré" ||
-          x === "élevé"
-        );
+        }
+      )
+      .length,
 
-      }).length,
 
     "Pudendal":
+      docs.filter(
+        d => {
 
-      docs.filter(d => {
+          const x =
+            normalizeLevel(
+              d.pudendal
+            );
 
-        const x =
-          normalizeLevel(
-            d.pudendal
+          return (
+            x === "modéré" ||
+            x === "élevé"
           );
 
-        return (
-          x === "modéré" ||
-          x === "élevé"
-        );
-
-      }).length
+        }
+      )
+      .length
 
   };
+
 
 
   const detectionData = {
@@ -1681,12 +2806,14 @@ function updateStats(){
         "Endométriose"
       ),
 
+
     "Adénomyose":
       detectionByPathology(
         docs,
         "adenomyose",
         "Adénomyose"
       ),
+
 
     "Congestion":
       detectionByPathology(
@@ -1695,6 +2822,7 @@ function updateStats(){
         "Congestion pelvienne"
       ),
 
+
     "Pudendal":
       detectionByPathology(
         docs,
@@ -1702,12 +2830,14 @@ function updateStats(){
         "Névralgie pudendale"
       ),
 
+
     "OPK":
       detectionByPathology(
         docs,
         "opk",
         "OPK"
       ),
+
 
     "Fibrome":
       detectionByPathology(
@@ -1719,87 +2849,126 @@ function updateStats(){
   };
 
 
+
   const exactMatch =
     computeExactMatch(docs);
 
+
   const top2Match =
     computeTop2Match(docs);
+
 
   const compatible70 =
     computeCompatible70(docs);
 
 
+
   document
-    .getElementById("statEchos")
-    .innerText =
+  .getElementById(
+    "statEchos"
+  )
+  .innerText =
     docs.length;
 
 
+
   document
-    .getElementById("statAge")
-    .innerText =
+  .getElementById(
+    "statAge"
+  )
+  .innerText =
     ages.length
       ? (
           ages.reduce(
-            (a,b)=>a+b,
+            (a,b) =>
+              a + b,
             0
-          ) /
+          )
+          /
           ages.length
-        ).toFixed(1)
+        )
+        .toFixed(1)
       : "0";
 
 
+
   document
-    .getElementById("statPain")
-    .innerText =
+  .getElementById(
+    "statPain"
+  )
+  .innerText =
     painAvg + "/10";
 
 
+
   document
-    .getElementById("statDigestif")
-    .innerText =
+  .getElementById(
+    "statDigestif"
+  )
+  .innerText =
     digestifPresent;
 
 
+
   document
-    .getElementById("statEndo")
-    .innerText =
+  .getElementById(
+    "statEndo"
+  )
+  .innerText =
     endoCompat;
 
 
+
   document
-    .getElementById("statCong")
-    .innerText =
+  .getElementById(
+    "statCong"
+  )
+  .innerText =
     congCompat;
 
 
+
   document
-    .getElementById("statOpk")
-    .innerText =
+  .getElementById(
+    "statOpk"
+  )
+  .innerText =
     opkCompat;
 
 
+
   document
-    .getElementById("statFibrome")
-    .innerText =
+  .getElementById(
+    "statFibrome"
+  )
+  .innerText =
     fibromeCompat;
 
 
+
   document
-    .getElementById("statTopEcho")
-    .innerText =
+  .getElementById(
+    "statTopEcho"
+  )
+  .innerText =
     topLabel(echos);
 
 
+
   document
-    .getElementById("statExactMatch")
-    .innerText =
-    exactMatch.rate + "%";
+  .getElementById(
+    "statExactMatch"
+  )
+  .innerText =
+    exactMatch.rate +
+    "%";
 
 
   document
-    .getElementById("statExactMatchDetail")
-    .innerText =
+  .getElementById(
+    "statExactMatchDetail"
+  )
+  .innerText =
 
     exactMatch.concordant +
     " concordants • " +
@@ -1811,15 +2980,21 @@ function updateStats(){
     " dossiers exploitables";
 
 
+
   document
-    .getElementById("statTop2Match")
-    .innerText =
-    top2Match.rate + "%";
+  .getElementById(
+    "statTop2Match"
+  )
+  .innerText =
+    top2Match.rate +
+    "%";
 
 
   document
-    .getElementById("statTop2MatchDetail")
-    .innerText =
+  .getElementById(
+    "statTop2MatchDetail"
+  )
+  .innerText =
 
     top2Match.concordant +
     " concordants • " +
@@ -1831,15 +3006,21 @@ function updateStats(){
     " dossiers exploitables";
 
 
+
   document
-    .getElementById("statCompatible70")
-    .innerText =
-    compatible70.rate + "%";
+  .getElementById(
+    "statCompatible70"
+  )
+  .innerText =
+    compatible70.rate +
+    "%";
 
 
   document
-    .getElementById("statCompatible70Detail")
-    .innerText =
+  .getElementById(
+    "statCompatible70Detail"
+  )
+  .innerText =
 
     compatible70.concordant +
     " concordants • " +
@@ -1851,40 +3032,161 @@ function updateStats(){
     " dossiers exploitables";
 
 
-  updateDiagnosticMetrics(docs);
+
+  updateDiagnosticMetrics(
+    docs
+  );
 
 
-  /* ===== GRAPHIQUES AVEC POURCENTAGES ===== */
+
+  /* PROFILS */
 
   draw(
     "profileChart",
     "bar",
     Object.keys(profileData),
-    Object.values(profileData),
-    docs.length
+    Object.values(profileData)
   );
+
+
+
+  /* ==================================================
+     PPM ↔ ÉCHOGRAPHIE EN POURCENTAGES
+  ================================================== */
+
+
+  const usableEchoDocs =
+    docs.filter(
+      d => {
+
+        const echoList =
+          Array.isArray(
+            d.diagnostic_echo
+          )
+            ? d.diagnostic_echo
+            : [];
+
+
+        const echoScores =
+          d.echoScores || {};
+
+
+        const hasDiagnosticEcho =
+          echoList.some(
+            x =>
+              x &&
+              x !==
+              "Non contributif"
+          );
+
+
+        const hasStructuredEcho =
+          Object.values(
+            echoScores
+          )
+          .some(
+            v =>
+              v &&
+              String(v).trim() !== ""
+          );
+
+
+        return (
+          hasDiagnosticEcho ||
+          hasStructuredEcho
+        );
+
+      }
+    )
+    .length;
+
+
+
+  const detectionEntries =
+    Object.values(
+      detectionData
+    );
+
+
+
+  /*
+    Pourcentage des dossiers avec écho
+    présentant chaque pathologie
+  */
+
+  const echoPositivePct =
+    detectionEntries.map(
+      x => {
+
+        return usableEchoDocs
+          ? Math.round(
+              (
+                x.echoPositive /
+                usableEchoDocs
+              )
+              * 100
+            )
+          : 0;
+
+      }
+    );
+
+
+
+  /*
+    Parmi les échos positives :
+    proportion détectée par PPM
+  */
+
+  const detectedPct =
+    detectionEntries.map(
+      x =>
+        x.rate
+    );
+
+
+
+  const detectionDetails =
+    detectionEntries.map(
+      x => ({
+
+        echoPositive:
+          x.echoPositive,
+
+        detected:
+          x.detected
+
+      })
+    );
+
 
 
   drawGroupedBar(
+
     "ppmEchoChart",
-    Object.keys(detectionData),
 
-    Object
-      .values(detectionData)
-      .map(x => x.echoPositive),
+    Object.keys(
+      detectionData
+    ),
 
-    Object
-      .values(detectionData)
-      .map(x => x.detected)
+    echoPositivePct,
+
+    detectedPct,
+
+    detectionDetails
+
   );
+
+
+
+  /* AUTRES GRAPHIQUES */
 
 
   draw(
     "topoChart",
     "bar",
     Object.keys(topo),
-    Object.values(topo),
-    docs.length
+    Object.values(topo)
   );
 
 
@@ -1892,8 +3194,7 @@ function updateStats(){
     "timeChart",
     "bar",
     Object.keys(times),
-    Object.values(times),
-    docs.length
+    Object.values(times)
   );
 
 
@@ -1901,8 +3202,7 @@ function updateStats(){
     "digestiveChart",
     "pie",
     Object.keys(digestif),
-    Object.values(digestif),
-    docs.length
+    Object.values(digestif)
   );
 
 
@@ -1910,8 +3210,7 @@ function updateStats(){
     "echoChart",
     "doughnut",
     Object.keys(echos),
-    Object.values(echos),
-    docsWithEcho.length
+    Object.values(echos)
   );
 
 
@@ -1919,41 +3218,43 @@ function updateStats(){
     "contraceptionChart",
     "bar",
     Object.keys(contraception),
-    Object.values(contraception),
-    docs.length
+    Object.values(contraception)
   );
 
 }
 
 
-/* ==========================================================
+
+/* ======================================================
    CONCORDANCE
-========================================================== */
+====================================================== */
 
 function levelToScore(level){
 
   if (
     level === "fort" ||
     level === "élevé"
-  ){
+  )
     return 3;
-  }
+
 
   if (
     level === "probable"
-  ){
+  )
     return 2;
-  }
+
 
   if (
     level === "possible" ||
     level === "modéré"
-  ){
+  )
     return 1;
-  }
+
 
   return 0;
+
 }
+
 
 
 function concordanceScore(
@@ -1962,16 +3263,24 @@ function concordanceScore(
 ){
 
   const q =
-    levelToScore(questionLevel);
+    levelToScore(
+      questionLevel
+    );
+
 
   const e =
-    levelToScore(echoLevel);
+    levelToScore(
+      echoLevel
+    );
+
 
   return Math.max(
     0,
     3 - Math.abs(q-e)
   );
+
 }
+
 
 
 function getPctForPathology(
@@ -1983,38 +3292,50 @@ function getPctForPathology(
 
     endometriose:
       Number(
-        data.endometriose_pct || 0
+        data.endometriose_pct
+        || 0
       ),
 
     adenomyose:
       Number(
-        data.adenomyose_pct || 0
+        data.adenomyose_pct
+        || 0
       ),
 
     congestion:
       Number(
-        data.congestion_pct || 0
+        data.congestion_pct
+        || 0
       ),
 
     pudendal:
       Number(
-        data.pudendal_pct || 0
+        data.pudendal_pct
+        || 0
       ),
 
     opk:
       Number(
-        data.opk_pct || 0
+        data.opk_pct
+        || 0
       ),
 
     fibrome:
       Number(
-        data.fibrome_pct || 0
+        data.fibrome_pct
+        || 0
       )
 
   };
 
-  return pctMap[questionKey] || 0;
+
+  return (
+    pctMap[questionKey]
+    || 0
+  );
+
 }
+
 
 
 function getPathologyConcordancePoints(
@@ -2029,30 +3350,48 @@ function getPathologyConcordancePoints(
       questionKey
     );
 
+
   const echoList =
-    Array.isArray(data.diagnostic_echo)
+    Array.isArray(
+      data.diagnostic_echo
+    )
       ? data.diagnostic_echo
       : [];
 
+
   const echoLevel =
-    data.echoScores?.[echoKey] || "";
+    data.echoScores?.[
+      echoKey
+    ] || "";
+
 
   const echoPositive =
-    echoList.includes(echoKey) ||
+    echoList.includes(
+      echoKey
+    )
+    ||
     !!echoLevel;
 
 
-  const hasMorphologicEcho =
-    echoList.some(x =>
 
-      x === "Endométriose" ||
-      x === "Adénomyose" ||
-      x === "Congestion pelvienne" ||
-      x === "OPK" ||
-      x === "Fibrome" ||
-      x === "Névralgie pudendale"
+  const hasMorphologicEcho =
+    echoList.some(
+      x =>
+
+        x === "Endométriose" ||
+
+        x === "Adénomyose" ||
+
+        x === "Congestion pelvienne" ||
+
+        x === "OPK" ||
+
+        x === "Fibrome" ||
+
+        x === "Névralgie pudendale"
 
     );
+
 
 
   const hasNonContributif =
@@ -2060,10 +3399,12 @@ function getPathologyConcordancePoints(
       "Non contributif"
     );
 
+
   const hasNormal =
     echoList.includes(
       "Normal"
     );
+
 
 
   /* ÉCHO NON CONTRIBUTIVE */
@@ -2072,8 +3413,11 @@ function getPathologyConcordancePoints(
     hasNonContributif &&
     !hasMorphologicEcho
   ){
+
     return null;
+
   }
+
 
 
   /* ÉCHO NORMALE */
@@ -2084,62 +3428,90 @@ function getPathologyConcordancePoints(
     !hasNonContributif
   ){
 
-    if (pct >= 60) return 0;
-    if (pct >= 30) return 1;
+    if (pct >= 60)
+      return 0;
+
+
+    if (pct >= 30)
+      return 1;
+
 
     return 3;
+
   }
 
 
-  /* AUCUNE ÉCHO */
+
+  /* PAS DE DONNÉE ÉCHO */
 
   if (
     !echoList.length &&
     !echoLevel
   ){
+
     return null;
+
   }
+
 
 
   /* PATHOLOGIE NON RETROUVÉE */
 
   if (!echoPositive){
 
-    if (pct >= 60) return 0;
-    if (pct >= 45) return 1;
-    if (pct >= 30) return 2;
+    if (pct >= 60)
+      return 0;
+
+
+    if (pct >= 45)
+      return 1;
+
+
+    if (pct >= 30)
+      return 2;
+
 
     return 3;
+
   }
+
 
 
   /* PATHOLOGIE RETROUVÉE */
 
-  let questionnaireLevel = 0;
+  let questionnaireLevel =
+    0;
 
-  if (pct >= 60){
+
+  if (pct >= 60)
     questionnaireLevel = 3;
-  }
 
-  else if (pct >= 45){
+  else if (pct >= 45)
     questionnaireLevel = 2;
-  }
 
-  else if (pct >= 30){
+  else if (pct >= 30)
     questionnaireLevel = 1;
-  }
 
-  else if (pct >= 20){
+  else if (pct >= 20)
     questionnaireLevel = 1;
-  }
 
+
+
+  /*
+    NIVEAU ÉCHOGRAPHIQUE
+    suspect / évocateur / typique
+  */
 
   let echoScore = 0;
 
+
   const level =
-    String(echoLevel || "")
-      .toLowerCase()
-      .trim();
+    String(
+      echoLevel || ""
+    )
+    .toLowerCase()
+    .trim();
+
 
 
   if (
@@ -2151,19 +3523,28 @@ function getPathologyConcordancePoints(
 
   }
 
+
   else if (
+
     level === "probable" ||
+
     level === "évocateur" ||
+
     level === "evocateur"
+
   ){
 
     echoScore = 2;
 
   }
 
+
   else if (
+
     level === "fort" ||
+
     level === "typique"
+
   ){
 
     echoScore = 3;
@@ -2171,11 +3552,17 @@ function getPathologyConcordancePoints(
   }
 
 
-  /* ANCIENS DOSSIERS */
+
+  /*
+    ANCIENS DOSSIERS :
+    diagnostic présent mais niveau non coté
+  */
 
   if (
     !echoScore &&
-    echoList.includes(echoKey)
+    echoList.includes(
+      echoKey
+    )
   ){
 
     echoScore = 2;
@@ -2183,11 +3570,15 @@ function getPathologyConcordancePoints(
   }
 
 
+
   if (
     questionnaireLevel === 0
   ){
+
     return 0;
+
   }
+
 
 
   const difference =
@@ -2197,16 +3588,28 @@ function getPathologyConcordancePoints(
     );
 
 
-  if (difference === 0){
+  if (
+    difference === 0
+  ){
+
     return 3;
+
   }
 
-  if (difference === 1){
+
+  if (
+    difference === 1
+  ){
+
     return 2;
+
   }
+
 
   return 1;
+
 }
+
 
 
 function isActiveDiagnostic(
@@ -2221,53 +3624,84 @@ function isActiveDiagnostic(
       questionKey
     );
 
+
   const echoList =
-    Array.isArray(data.diagnostic_echo)
+    Array.isArray(
+      data.diagnostic_echo
+    )
       ? data.diagnostic_echo
       : [];
 
+
   const echoLevel =
-    data.echoScores?.[echoKey] || "";
+    data.echoScores?.[
+      echoKey
+    ] || "";
 
 
   const echoPositive =
-    echoList.includes(echoKey) ||
-    isEchoLevelPositive(echoLevel);
+    echoList.includes(
+      echoKey
+    )
+    ||
+    isEchoLevelPositive(
+      echoLevel
+    );
 
 
   return (
     pct >= 60 ||
     echoPositive
   );
+
 }
 
 
-function mainHypothesisMatchesEcho(data){
+
+function mainHypothesisMatchesEcho(
+  data
+){
 
   const hypo =
     getHypothesisInterpretation(
       data
-    ).label;
+    )
+    .label;
 
 
   const echoList =
-    Array.isArray(data.diagnostic_echo)
+    Array.isArray(
+      data.diagnostic_echo
+    )
       ? data.diagnostic_echo
       : [];
 
 
   return (
+
     !!hypo &&
-    hypo !== "Profil non concluant" &&
-    echoList.includes(hypo)
+
+    hypo !==
+      "Profil non concluant" &&
+
+    echoList.includes(
+      hypo
+    )
+
   );
+
 }
 
 
-function patientConcordance(data){
+
+function patientConcordance(
+  data
+){
 
   const echoList =
-    Array.isArray(data.diagnostic_echo)
+    Array.isArray(
+      data.diagnostic_echo
+    )
       ? data.diagnostic_echo
       : [];
 
@@ -2278,54 +3712,84 @@ function patientConcordance(data){
 
   const hasAnyEchoData =
 
-    echoList.length > 0 ||
+    echoList.length > 0
 
-    Object
-      .values(echoScores)
-      .some(
-        v =>
-          v &&
-          String(v).trim() !== ""
-      );
+    ||
 
+    Object.values(
+      echoScores
+    )
+    .some(
+      v =>
+        v &&
+        String(v).trim() !== ""
+    );
+
+
+
+  /*
+    Pas encore d'écho :
+    dossier exclu du calcul
+  */
 
   if (!hasAnyEchoData){
+
     return null;
+
   }
+
 
 
   const diagnostics = [
 
     {
-      questionKey:"endometriose",
-      echoKey:"Endométriose"
+      questionKey:
+        "endometriose",
+
+      echoKey:
+        "Endométriose"
     },
 
     {
-      questionKey:"adenomyose",
-      echoKey:"Adénomyose"
+      questionKey:
+        "adenomyose",
+
+      echoKey:
+        "Adénomyose"
     },
 
     {
-      questionKey:"congestion",
-      echoKey:"Congestion pelvienne"
+      questionKey:
+        "congestion",
+
+      echoKey:
+        "Congestion pelvienne"
     },
 
     {
-      questionKey:"opk",
-      echoKey:"OPK"
+      questionKey:
+        "opk",
+
+      echoKey:
+        "OPK"
     },
 
     {
-      questionKey:"fibrome",
-      echoKey:"Fibrome"
+      questionKey:
+        "fibrome",
+
+      echoKey:
+        "Fibrome"
     }
 
   ];
 
 
+
   let total = 0;
+
   let max = 0;
+
 
 
   diagnostics.forEach(
@@ -2334,6 +3798,7 @@ function patientConcordance(data){
       echoKey
     }) => {
 
+
       if (
         !isActiveDiagnostic(
           data,
@@ -2341,42 +3806,67 @@ function patientConcordance(data){
           echoKey
         )
       ){
+
         return;
+
       }
+
 
 
       const points =
         getPathologyConcordancePoints(
+
           data,
+
           questionKey,
+
           echoKey
+
         );
 
 
       if (
         points === null
       ){
+
         return;
+
       }
 
 
-      total += points;
-      max += 3;
+      total +=
+        points;
+
+
+      max +=
+        3;
 
     }
   );
 
 
-  if (max === 0){
+
+  /*
+    AUCUN DIAGNOSTIC ACTIF
+  */
+
+  if (
+    max === 0
+  ){
 
     const hasMorphologicEcho =
-      echoList.some(x =>
+      echoList.some(
+        x =>
 
-        x === "Endométriose" ||
-        x === "Adénomyose" ||
-        x === "Congestion pelvienne" ||
-        x === "OPK" ||
-        x === "Fibrome"
+          x === "Endométriose" ||
+
+          x === "Adénomyose" ||
+
+          x === "Congestion pelvienne" ||
+
+          x === "OPK" ||
+
+          x === "Fibrome"
 
       );
 
@@ -2391,19 +3881,32 @@ function patientConcordance(data){
       !hasMorphologicEcho &&
       isNormalEcho
     ){
+
       return 100;
+
     }
 
 
     return 0;
+
   }
+
 
 
   let score =
     Math.round(
-      (total / max) * 100
+      (
+        total /
+        max
+      )
+      * 100
     );
 
+
+
+  /*
+    PLANCHER SI HYPOTHÈSE PRINCIPALE CONFIRMÉE
+  */
 
   const h =
     getHypothesisInterpretation(
@@ -2420,61 +3923,81 @@ function patientConcordance(data){
     if (
       h.level === "fort"
     ){
+
       score =
         Math.max(
           score,
           85
         );
+
     }
+
 
     else if (
       h.level === "probable"
     ){
+
       score =
         Math.max(
           score,
           70
         );
+
     }
+
 
     else if (
       h.level === "possible"
     ){
+
       score =
         Math.max(
           score,
           60
         );
+
     }
 
   }
 
 
   return score;
+
 }
 
 
-function concordanceLabel(score){
 
-  if (score >= 80){
+function concordanceLabel(
+  score
+){
+
+  if (
+    score >= 80
+  )
     return "excellente";
-  }
 
-  if (score >= 60){
+
+  if (
+    score >= 60
+  )
     return "bonne";
-  }
 
-  if (score >= 40){
+
+  if (
+    score >= 40
+  )
     return "modérée";
-  }
+
 
   return "faible";
+
 }
 
 
-/* ==========================================================
+
+/* ======================================================
    DÉTECTION PAR PATHOLOGIE
-========================================================== */
+====================================================== */
 
 function detectionByPathology(
   docs,
@@ -2483,41 +4006,53 @@ function detectionByPathology(
 ){
 
   let echoPositive = 0;
+
   let detected = 0;
 
 
-  docs.forEach(d => {
 
-    const hasEcho =
-      getEchoPositive(
-        d,
-        echoKey
-      );
+  docs.forEach(
+    d => {
 
-    if (!hasEcho){
-      return;
+      const hasEcho =
+        getEchoPositive(
+          d,
+          echoKey
+        );
+
+
+      if (!hasEcho)
+        return;
+
+
+      echoPositive++;
+
+
+
+      const level =
+        normalizeLevel(
+          d[questionKey]
+        );
+
+
+      const isDetected =
+
+        level === "modéré"
+
+        ||
+
+        level === "élevé";
+
+
+
+      if (isDetected){
+
+        detected++;
+
+      }
+
     }
-
-
-    echoPositive++;
-
-
-    const level =
-      normalizeLevel(
-        d[questionKey]
-      );
-
-
-    const isDetected =
-      level === "modéré" ||
-      level === "élevé";
-
-
-    if (isDetected){
-      detected++;
-    }
-
-  });
+  );
 
 
   return {
@@ -2529,17 +4064,23 @@ function detectionByPathology(
     rate:
       echoPositive
         ? Math.round(
-            (detected / echoPositive) * 100
+            (
+              detected /
+              echoPositive
+            )
+            * 100
           )
         : 0
 
   };
+
 }
 
 
-/* ==========================================================
-   CONCORDANCE PRATICIEN
-========================================================== */
+
+/* ======================================================
+   CONCORDANCE GLOBALE
+====================================================== */
 
 function updateDoctorConcordanceStats(){
 
@@ -2547,48 +4088,57 @@ function updateDoctorConcordanceStats(){
     !rows ||
     !rows.length
   ){
+
     return;
+
   }
 
 
   const docs =
     getVersionFilteredDocs(
-      rows.map(r => r.data)
+      rows.map(
+        r =>
+          r.data
+      )
     );
 
 
-  if (!docs.length){
+  if (!docs.length)
     return;
-  }
+
 
 
   const validScores =
     docs
-      .map(
-        d =>
-          patientConcordance(d)
-      )
-      .filter(
-        v =>
-          v !== null
-      );
+
+    .map(
+      d =>
+        patientConcordance(d)
+    )
+
+    .filter(
+      v =>
+        v !== null
+    );
+
 
 
   const globalScore =
     validScores.length
-
       ? Math.round(
-
           validScores.reduce(
-            (sum,v)=>
+            (
+              sum,
+              v
+            ) =>
               sum + v,
             0
-          ) /
+          )
+          /
           validScores.length
-
         )
-
       : 0;
+
 
 
   const endo =
@@ -2639,59 +4189,87 @@ function updateDoctorConcordanceStats(){
     );
 
 
+
   document
-    .getElementById("doctorConcordance")
-    .innerText =
-    globalScore + "%";
+  .getElementById(
+    "doctorConcordance"
+  )
+  .innerText =
+    globalScore +
+    "%";
 
 
   document
-    .getElementById("doctorConcordanceLabel")
-    .innerText =
+  .getElementById(
+    "doctorConcordanceLabel"
+  )
+  .innerText =
     concordanceLabel(
       globalScore
     );
 
 
-  document
-    .getElementById("doctorEndo")
-    .innerText =
-    endo.rate + "%";
-
 
   document
-    .getElementById("doctorAdeno")
-    .innerText =
-    adeno.rate + "%";
+  .getElementById(
+    "doctorEndo"
+  )
+  .innerText =
+    endo.rate +
+    "%";
 
 
   document
-    .getElementById("doctorCong")
-    .innerText =
-    cong.rate + "%";
+  .getElementById(
+    "doctorAdeno"
+  )
+  .innerText =
+    adeno.rate +
+    "%";
 
 
   document
-    .getElementById("doctorPud")
-    .innerText =
-    pud.rate + "%";
+  .getElementById(
+    "doctorCong"
+  )
+  .innerText =
+    cong.rate +
+    "%";
 
 
   document
-    .getElementById("doctorOpk")
-    .innerText =
-    opk.rate + "%";
+  .getElementById(
+    "doctorPud"
+  )
+  .innerText =
+    pud.rate +
+    "%";
 
 
   document
-    .getElementById("doctorFib")
-    .innerText =
-    fib.rate + "%";
+  .getElementById(
+    "doctorOpk"
+  )
+  .innerText =
+    opk.rate +
+    "%";
 
 
   document
-    .getElementById("doctorEndoDetail")
-    .innerText =
+  .getElementById(
+    "doctorFib"
+  )
+  .innerText =
+    fib.rate +
+    "%";
+
+
+
+  document
+  .getElementById(
+    "doctorEndoDetail"
+  )
+  .innerText =
     endo.detected +
     " / " +
     endo.echoPositive +
@@ -2699,8 +4277,10 @@ function updateDoctorConcordanceStats(){
 
 
   document
-    .getElementById("doctorAdenoDetail")
-    .innerText =
+  .getElementById(
+    "doctorAdenoDetail"
+  )
+  .innerText =
     adeno.detected +
     " / " +
     adeno.echoPositive +
@@ -2708,8 +4288,10 @@ function updateDoctorConcordanceStats(){
 
 
   document
-    .getElementById("doctorCongDetail")
-    .innerText =
+  .getElementById(
+    "doctorCongDetail"
+  )
+  .innerText =
     cong.detected +
     " / " +
     cong.echoPositive +
@@ -2717,8 +4299,10 @@ function updateDoctorConcordanceStats(){
 
 
   document
-    .getElementById("doctorPudDetail")
-    .innerText =
+  .getElementById(
+    "doctorPudDetail"
+  )
+  .innerText =
     pud.detected +
     " / " +
     pud.echoPositive +
@@ -2726,8 +4310,10 @@ function updateDoctorConcordanceStats(){
 
 
   document
-    .getElementById("doctorOpkDetail")
-    .innerText =
+  .getElementById(
+    "doctorOpkDetail"
+  )
+  .innerText =
     opk.detected +
     " / " +
     opk.echoPositive +
@@ -2735,8 +4321,10 @@ function updateDoctorConcordanceStats(){
 
 
   document
-    .getElementById("doctorFibDetail")
-    .innerText =
+  .getElementById(
+    "doctorFibDetail"
+  )
+  .innerText =
     fib.detected +
     " / " +
     fib.echoPositive +
@@ -2745,9 +4333,10 @@ function updateDoctorConcordanceStats(){
 }
 
 
-/* ==========================================================
+
+/* ======================================================
    FIRESTORE
-========================================================== */
+====================================================== */
 
 function loadRows(){
 
@@ -2755,51 +4344,57 @@ function loadRows(){
 
 
   db
-    .collection("patients")
+  .collection(
+    "patients"
+  )
 
-    .where(
-      "practitionerId",
-      "==",
-      currentPractitioner
-    )
+  .where(
+    "practitionerId",
+    "==",
+    currentPractitioner
+  )
 
-    .onSnapshot(
-      snapshot => {
+  .onSnapshot(
+    snapshot => {
 
-        rows = [];
-
-
-        snapshot.forEach(
-          doc => {
-
-            rows.push({
-              id:doc.id,
-              data:doc.data()
-            });
-
-          }
-        );
+      rows = [];
 
 
-        updateVersionButtonsVisibility();
+      snapshot.forEach(
+        doc => {
 
-        updateStats();
+          rows.push({
 
-        updateDoctorConcordanceStats();
+            id:
+              doc.id,
 
-      }
-    );
+            data:
+              doc.data()
+
+          });
+
+        }
+      );
+
+
+      updateVersionButtonsVisibility();
+
+      updateStats();
+
+      updateDoctorConcordanceStats();
+
+    }
+  );
 
 }
 
 
-/* ==========================================================
-   LANCEMENT
-========================================================== */
 
 loadRows();
 
+
 </script>
+
 
 </body>
 </html>
