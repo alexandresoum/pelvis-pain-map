@@ -2700,9 +2700,9 @@ function getQuestionnaireLevelFromPct(data, questionKey){
 
   const pct = pctMap[questionKey] || 0;
 
-  if (pct >= 70) return "fort";
-  if (pct >= 40) return "probable";
-  if (pct >= 20) return "possible";
+  if (pct >= 60) return "fort";
+  if (pct >= 45) return "probable";
+  if (pct >= 30) return "possible";
   return "";
 }
 
