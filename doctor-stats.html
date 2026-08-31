@@ -3338,278 +3338,162 @@ function getPctForPathology(
 
 
 
-function getPathologyConcordancePoints(
-  data,
-  questionKey,
-  echoKey
-){
+function getPathologyConcordancePoints(data, questionKey, echoKey){
 
-  const pct =
-    getPctForPathology(
-      data,
-      questionKey
-    );
+  const pct = getPctForPathology(data, questionKey);
 
+  const echoList = Array.isArray(data.diagnostic_echo)
+    ? data.diagnostic_echo
+    : [];
 
-  const echoList =
-    Array.isArray(
-      data.diagnostic_echo
-    )
-      ? data.diagnostic_echo
-      : [];
-
-
-  const echoLevel =
-    data.echoScores?.[
-      echoKey
-    ] || "";
-
+  const echoLevel = data.echoScores?.[echoKey] || "";
 
   const echoPositive =
-    echoList.includes(
-      echoKey
-    )
-    ||
-    !!echoLevel;
+    echoList.includes(echoKey) ||
+    isEchoLevelPositive(echoLevel);
+
+  const hasMorphologicEcho = echoList.some(x =>
+    x === "Endométriose" ||
+    x === "Adénomyose" ||
+    x === "Congestion pelvienne" ||
+    x === "OPK" ||
+    x === "Fibrome" ||
+    x === "Névralgie pudendale"
+  );
+
+  const hasNonContributif = echoList.includes("Non contributif");
+  const hasNormal = echoList.includes("Normal");
+
+  // La pathologie correspond-elle explicitement
+  // à l'hypothèse secondaire du questionnaire ?
+  const isSecondaryHypothesis =
+    String(data.hypothesisSecondary || "").trim() === echoKey;
 
 
-
-  const hasMorphologicEcho =
-    echoList.some(
-      x =>
-
-        x === "Endométriose" ||
-
-        x === "Adénomyose" ||
-
-        x === "Congestion pelvienne" ||
-
-        x === "OPK" ||
-
-        x === "Fibrome" ||
-
-        x === "Névralgie pudendale"
-
-    );
-
-
-
-  const hasNonContributif =
-    echoList.includes(
-      "Non contributif"
-    );
-
-
-  const hasNormal =
-    echoList.includes(
-      "Normal"
-    );
-
-
-
-  /* ÉCHO NON CONTRIBUTIVE */
-
-  if (
-    hasNonContributif &&
-    !hasMorphologicEcho
-  ){
-
+  // 1. Écho non contributive seule
+  if (hasNonContributif && !hasMorphologicEcho) {
     return null;
-
   }
 
 
+  // 2. Écho normale seule
+  if (hasNormal && !hasMorphologicEcho && !hasNonContributif) {
 
-  /* ÉCHO NORMALE */
-
-  if (
-    hasNormal &&
-    !hasMorphologicEcho &&
-    !hasNonContributif
-  ){
-
-    if (pct >= 60)
-      return 0;
-
-
-    if (pct >= 30)
-      return 1;
-
+    if (pct >= 60) return 0;
+    if (pct >= 45) return 1;
+    if (pct >= 30) return 2;
 
     return 3;
-
   }
 
 
-
-  /* PAS DE DONNÉE ÉCHO */
-
-  if (
-    !echoList.length &&
-    !echoLevel
-  ){
-
+  // 3. Pas encore de donnée échographique
+  if (!echoList.length && !echoLevel) {
     return null;
-
   }
 
 
+  // 4. Cette pathologie n'est PAS retrouvée à l'écho
+  if (!echoPositive) {
 
-  /* PATHOLOGIE NON RETROUVÉE */
-
-  if (!echoPositive){
-
-    if (pct >= 60)
-      return 0;
-
-
-    if (pct >= 45)
-      return 1;
-
-
-    if (pct >= 30)
-      return 2;
-
+    if (pct >= 60) return 0;
+    if (pct >= 45) return 1;
+    if (pct >= 30) return 2;
 
     return 3;
-
   }
-
-
-
-  /* PATHOLOGIE RETROUVÉE */
-
-  let questionnaireLevel =
-    0;
-
-
-  if (pct >= 60)
-    questionnaireLevel = 3;
-
-  else if (pct >= 45)
-    questionnaireLevel = 2;
-
-  else if (pct >= 30)
-    questionnaireLevel = 1;
-
-  else if (pct >= 20)
-    questionnaireLevel = 1;
-
 
 
   /*
-    NIVEAU ÉCHOGRAPHIQUE
-    suspect / évocateur / typique
+    5. PATHOLOGIE RETROUVÉE À L'ÉCHO
+
+    Nouvelle règle importante :
+    un petit score de fond <30 % ne peut plus produire
+    artificiellement une concordance parfaite.
+
+    Exception :
+    si cette pathologie est explicitement l'hypothèse secondaire,
+    on autorise un seuil plus bas.
   */
 
+  if (pct < 30 && !isSecondaryHypothesis) {
+    return 0;
+  }
+
+  if (pct < 20) {
+    return 0;
+  }
+
+
+  // Niveau questionnaire
+  let questionnaireLevel = 0;
+
+  if (pct >= 60) {
+    questionnaireLevel = 3;
+  }
+  else if (pct >= 45) {
+    questionnaireLevel = 2;
+  }
+  else if (pct >= 30) {
+    questionnaireLevel = 1;
+  }
+  else if (isSecondaryHypothesis && pct >= 20) {
+    // hypothèse secondaire explicitement identifiée
+    questionnaireLevel = 1;
+  }
+
+
+  // Niveau échographique
   let echoScore = 0;
 
-
-  const level =
-    String(
-      echoLevel || ""
-    )
+  const level = String(echoLevel || "")
     .toLowerCase()
     .trim();
-
-
 
   if (
     level === "possible" ||
     level === "suspect"
-  ){
-
+  ) {
     echoScore = 1;
-
   }
 
-
   else if (
-
     level === "probable" ||
-
     level === "évocateur" ||
-
     level === "evocateur"
-
-  ){
-
+  ) {
     echoScore = 2;
-
   }
-
 
   else if (
-
     level === "fort" ||
-
     level === "typique"
-
-  ){
-
+  ) {
     echoScore = 3;
-
   }
 
 
-
-  /*
-    ANCIENS DOSSIERS :
-    diagnostic présent mais niveau non coté
-  */
-
-  if (
-    !echoScore &&
-    echoList.includes(
-      echoKey
-    )
-  ){
-
+  // Ancien dossier :
+  // diagnostic présent mais pas encore coté suspect/évocateur/typique
+  if (!echoScore && echoList.includes(echoKey)) {
     echoScore = 2;
-
   }
 
 
-
-  if (
-    questionnaireLevel === 0
-  ){
-
+  if (questionnaireLevel === 0) {
     return 0;
-
   }
 
 
-
+  // Comparaison graduée questionnaire ↔ niveau échographique
   const difference =
-    Math.abs(
-      questionnaireLevel -
-      echoScore
-    );
+    Math.abs(questionnaireLevel - echoScore);
 
-
-  if (
-    difference === 0
-  ){
-
-    return 3;
-
-  }
-
-
-  if (
-    difference === 1
-  ){
-
-    return 2;
-
-  }
-
+  if (difference === 0) return 3;
+  if (difference === 1) return 2;
 
   return 1;
-
 }
-
 
 
 function isActiveDiagnostic(
