@@ -330,6 +330,16 @@ function normalizeLevel(v) {
   return v;
 }
 
+  function isEchoLevelPositive(v){
+  const x = String(v || "").trim();
+
+  return (
+    x !== "" &&
+    x !== "-" &&
+    x !== "Non renseigné"
+  );
+}
+
   function displayEchoLevel(v){
   const s = String(v || "").toLowerCase().trim();
 
